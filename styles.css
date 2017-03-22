@@ -1,0 +1,116 @@
+<style>
+
+/**
+ * Copyright: Marko Manninen, 04/2016 (https://www.github.com/markomanninen)
+ */
+
+.rendered_html table.data,
+.rendered_html table.data tr,
+.rendered_html table.data th,
+.rendered_html table.data td {
+    border: 0
+}
+
+table.data {
+    color: black;
+    border: 0;
+	margin: 1.5em auto;
+	border-bottom: 1px solid #999;
+	border-collapse: collapse;
+	-webkit-border-top-left-radius: 8px;
+	-webkit-border-top-right-radius: 8px;
+	-moz-border-radius: 8px 8px 0 0;
+	border-radius: 8px 8px 0 0;
+	background: #444;
+}
+table.data caption {
+    margin-bottom: .75em;
+    text-align: center;
+	font-style: italic;
+}
+table.data td {
+	-moz-transition: background 0.2s linear;
+	-o-transition: background 0.2s linear;
+	transition: background 0.2s linear;
+	white-space: nowrap;
+	border-top: 1px solid #eee;
+	border-left: 1px solid #eee;
+	padding: 0.4em 0.8em;
+	background: #fff;
+}
+table.data tfoot,
+table.data tbody {
+    outline-offset: -1px;
+    outline: 1px solid #ccc;
+}
+
+table.data thead {}
+table.data thead th {
+	border: none;
+    border-bottom: 2px solid #eee;
+	background: transparent;
+	color: #fff;
+	text-align: center;
+	cursor: pointer;
+    padding: 0.4em 0.8em;
+}
+
+table.data tbody {}
+table.data tbody tr:not(.html5):hover td {
+	background: #ffe;
+    color: black;
+}
+table.data tbody tr:not(.html5) td:not(.html5):hover {
+	background: #f5f6d2;
+}
+table.data tbody tr td:last-child {
+	text-align: center
+}
+
+table.data tbody tr th {
+	color: white;
+    padding: 0.4em 0.8em;
+    text-transform: uppercase
+}
+
+
+table.data tfoot {}
+table.data tfoot td {
+    padding: 0.4em 0.8em;
+	text-align: center;
+	font-style: italic;
+}
+
+table.data .right {
+    text-align: right
+}
+
+table.data tr.ok td {background-color: white;}
+table.data tr.failed td {background-color: red; color: white}
+table.data tr.error td {background-color: lightpink}
+table.data tbody.failures {}
+table.data tbody.errors {}
+
+table.data .html4 {
+
+}
+
+table.data tr td.html5,
+table.data tr:hover td.html5,
+table.data tr td.html5:hover {
+	height: 50px;
+	background: 15px 3px #fff no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAsVBMVEX////kTSbxZSnr6+sAAADkVC7nUybzfkzHx8flZkb98+7lakvq3tuzs7M2Nja6urpRUVGUlJTzglFnZ2f0jWHtiG/rWif1vK58fHzpycH87Ojvln/nl4LujXSqqqrxajDlWTXnpZTrfGDqd1jyqZb3zMH52dHe3t4iIiI8PDwUFBTnmob4uZ/5x7L849j2oHz71cXouq7p0sz3q4r0taXqz8j40sji4uLycjvycDj2o4Ba0xTVAAAB9ElEQVRIibXU63KqMBQF4I0E5VKt9kA9At4AL/X0UOm9ff8H697RICS79FfXjM4QPpyQLAOgci1GMBSjhaBMxnjlCjEciwmw0bmYjLq5OAh8xP4r/tgwlk91c0EckAPykTjsO/l+N2nwxd3ijvhhvx9+P/cLt0FyzILhtuviZwfwRl8715ZfOxdj8/P5rbw6P+S1xUvrh5QtHuu3+83gddyejc57zaDXJr/q5iuNB13csgKNZ2Qcr86gzpJ4pvE58cCuc7kzID7XeEp8xfEP4qnGCzljjvd6t5ZVaHwq+RXCKxlfpZR8qvGN5C/IM2NlkG80vpWoQj7n+Fbjcc1Tg/eNDpxbsEa+5riuTy1IbfWu9at+ch0A8IjPzYV8oGX3DC4XJDN5yHUAIGq3oB6XHYgMnsiOBSo3FBp/J54YvDAL/E7jbAdUC6rZbOYpTr/usx1QLXhULSAe4nDJdkC1YIY8UvwBh49sB5otqHKH+DI84vB/vgONFuC+VunT0Zej95L7JneI/9PX/YnvwLkF2WObxyHfAYD8tOBeUr2duH/8HJyOjZzhUb1FTrZ+Ke/DZX3KmB04t4A7lrgO6C24/PP6XAcAnk1OlPLM8DhtnpO9W2WtIGV2ST4xjbSTeBVNv7HnbItc2bwwu8LE3ySel2yYnYcvzuElaKKAbG4AAAAASUVORK5CYII=');
+}
+
+div.output_scroll {height: inherit;}
+
+table#data { margin: 1em auto; border-collapse: collapse; border: 0} 
+table#data caption { font-size: 1.2em; text-align: center; padding: 3px} 
+table#data th, table#data td { padding: .25em; border: 1px solid #000; font-family: sans-serif; color: white} 
+table#data th { color: #004900; font-weight: bold; text-align: left; } 
+table#data thead th { border-bottom: 3px double #000; background-color: #ddd; text-align: center; } 
+table#data tfoot td { border-top: 3px double #000; color: #fff; font-style: italic; font-size: .8em; text-align: center; background-color: brown} 
+table#data tbody th { color: #000; }
+table#data #tbody2 {font-weight: bold;font-size: 1.5em;}
+
+</style>
