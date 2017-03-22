@@ -695,7 +695,7 @@ Columns are:
 
 .. raw:: html
 
-    <table class="data"><caption>HTML Element Specifications</caption><thead><tr><th>Tag name</th><th>Tag title</th><th>Forbidden</th><th>Omit</th><th>HTML4</th><th>HTML5</th></tr></thead><tbody><tr><td>A</td><td>a</td><td>False</td><td>False</td><td class="html4">True</td><td class="html5"/></tr><tr><td>ABBR</td><td>abbr</td><td>False</td><td>False</td><td class="html4">True</td><td class="html5"/></tr><tr><td>ACRONYM</td><td>acronym</td><td>False</td><td>False</td><td class="html4">True</td><td class=""/></tr><tr><td>ADDRESS</td><td>address</td><td>False</td><td>False</td><td class="html4">True</td><td class="html5"/></tr><tr><td>APPLET</td><td>applet</td><td>False</td><td>False</td><td class="html4">True</td><td class=""/></tr></tbody></table>
+    <table class="data"><caption>HTML Element Specifications</caption><thead><tr><th>Tag name</th><th>Tag title</th><th>Forbidden</th><th>Omit</th><th>HTML4</th><th>HTML5</th></tr></thead><tbody><tr><td>A</td><td>a</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>ABBR</td><td>abbr</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>ACRONYM</td><td>acronym</td><td>False</td><td>False</td><td class="html4">✓</td><td class=""/></tr><tr><td>ADDRESS</td><td>address</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>APPLET</td><td>applet</td><td>False</td><td>False</td><td class="html4">✓</td><td class=""/></tr></tbody></table>
 
 
 
@@ -733,17 +733,17 @@ Columns are:
       <thead>
         <tr style="text-align: right;">
           <th></th>
-          <th>﷐:forbidden</th>
-          <th>﷐:html4</th>
-          <th>﷐:html5</th>
-          <th>﷐:name</th>
-          <th>﷐:omit</th>
-          <th>﷐:title</th>
+          <th>:forbidden</th>
+          <th>:html4</th>
+          <th>:html5</th>
+          <th>:name</th>
+          <th>:omit</th>
+          <th>:title</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <th>﷐:a</th>
+          <th>:a</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -752,7 +752,7 @@ Columns are:
           <td>Anchor</td>
         </tr>
         <tr>
-          <th>﷐:abbr</th>
+          <th>:abbr</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -761,7 +761,7 @@ Columns are:
           <td>Abbreviation</td>
         </tr>
         <tr>
-          <th>﷐:acronym</th>
+          <th>:acronym</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -770,7 +770,7 @@ Columns are:
           <td>Acronym</td>
         </tr>
         <tr>
-          <th>﷐:address</th>
+          <th>:address</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -779,7 +779,7 @@ Columns are:
           <td>Address</td>
         </tr>
         <tr>
-          <th>﷐:applet</th>
+          <th>:applet</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -788,7 +788,7 @@ Columns are:
           <td>Java applet</td>
         </tr>
         <tr>
-          <th>﷐:area</th>
+          <th>:area</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -797,7 +797,7 @@ Columns are:
           <td>Image map region</td>
         </tr>
         <tr>
-          <th>﷐:article</th>
+          <th>:article</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -806,7 +806,7 @@ Columns are:
           <td>Defines an article</td>
         </tr>
         <tr>
-          <th>﷐:aside</th>
+          <th>:aside</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -815,7 +815,7 @@ Columns are:
           <td>Defines content aside from the page content</td>
         </tr>
         <tr>
-          <th>﷐:audio</th>
+          <th>:audio</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -824,7 +824,7 @@ Columns are:
           <td>Defines sound content</td>
         </tr>
         <tr>
-          <th>﷐:b</th>
+          <th>:b</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -833,7 +833,7 @@ Columns are:
           <td>Bold text</td>
         </tr>
         <tr>
-          <th>﷐:base</th>
+          <th>:base</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -842,7 +842,7 @@ Columns are:
           <td>Document base URI</td>
         </tr>
         <tr>
-          <th>﷐:basefont</th>
+          <th>:basefont</th>
           <td>True</td>
           <td>True</td>
           <td>False</td>
@@ -851,7 +851,7 @@ Columns are:
           <td>Base font change</td>
         </tr>
         <tr>
-          <th>﷐:bdi</th>
+          <th>:bdi</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -860,7 +860,7 @@ Columns are:
           <td>Isolates a part of text that might be formatte...</td>
         </tr>
         <tr>
-          <th>﷐:bdo</th>
+          <th>:bdo</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -869,7 +869,7 @@ Columns are:
           <td>BiDi override</td>
         </tr>
         <tr>
-          <th>﷐:big</th>
+          <th>:big</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -878,7 +878,7 @@ Columns are:
           <td>Large text</td>
         </tr>
         <tr>
-          <th>﷐:blockquote</th>
+          <th>:blockquote</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -887,7 +887,7 @@ Columns are:
           <td>Block quotation</td>
         </tr>
         <tr>
-          <th>﷐:body</th>
+          <th>:body</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -896,7 +896,7 @@ Columns are:
           <td>Document body</td>
         </tr>
         <tr>
-          <th>﷐:br</th>
+          <th>:br</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -905,7 +905,7 @@ Columns are:
           <td>Line break</td>
         </tr>
         <tr>
-          <th>﷐:button</th>
+          <th>:button</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -914,7 +914,7 @@ Columns are:
           <td>Button</td>
         </tr>
         <tr>
-          <th>﷐:canvas</th>
+          <th>:canvas</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -923,7 +923,7 @@ Columns are:
           <td>Used to draw graphics, on the fly, via scripti...</td>
         </tr>
         <tr>
-          <th>﷐:caption</th>
+          <th>:caption</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -932,7 +932,7 @@ Columns are:
           <td>Table caption</td>
         </tr>
         <tr>
-          <th>﷐:center</th>
+          <th>:center</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -941,7 +941,7 @@ Columns are:
           <td>Centered block</td>
         </tr>
         <tr>
-          <th>﷐:cite</th>
+          <th>:cite</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -950,7 +950,7 @@ Columns are:
           <td>Citation</td>
         </tr>
         <tr>
-          <th>﷐:code</th>
+          <th>:code</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -959,7 +959,7 @@ Columns are:
           <td>Computer code</td>
         </tr>
         <tr>
-          <th>﷐:col</th>
+          <th>:col</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -968,7 +968,7 @@ Columns are:
           <td>Table column</td>
         </tr>
         <tr>
-          <th>﷐:colgroup</th>
+          <th>:colgroup</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -977,7 +977,7 @@ Columns are:
           <td>Table column group</td>
         </tr>
         <tr>
-          <th>﷐:datalist</th>
+          <th>:datalist</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -986,7 +986,7 @@ Columns are:
           <td>Specifies a list of pre-defined options for in...</td>
         </tr>
         <tr>
-          <th>﷐:dd</th>
+          <th>:dd</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -995,7 +995,7 @@ Columns are:
           <td>Definition description</td>
         </tr>
         <tr>
-          <th>﷐:del</th>
+          <th>:del</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1004,7 +1004,7 @@ Columns are:
           <td>Deleted text</td>
         </tr>
         <tr>
-          <th>﷐:details</th>
+          <th>:details</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1013,7 +1013,7 @@ Columns are:
           <td>Defines additional details that the user can v...</td>
         </tr>
         <tr>
-          <th>﷐:dfn</th>
+          <th>:dfn</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1022,7 +1022,7 @@ Columns are:
           <td>Defined term</td>
         </tr>
         <tr>
-          <th>﷐:dialog</th>
+          <th>:dialog</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1031,7 +1031,7 @@ Columns are:
           <td>Defines a dialog box or window</td>
         </tr>
         <tr>
-          <th>﷐:dir</th>
+          <th>:dir</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -1040,7 +1040,7 @@ Columns are:
           <td>Directory list</td>
         </tr>
         <tr>
-          <th>﷐:div</th>
+          <th>:div</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1049,7 +1049,7 @@ Columns are:
           <td>Generic block-level container</td>
         </tr>
         <tr>
-          <th>﷐:dl</th>
+          <th>:dl</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1058,7 +1058,7 @@ Columns are:
           <td>Definition list</td>
         </tr>
         <tr>
-          <th>﷐:dt</th>
+          <th>:dt</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1067,7 +1067,7 @@ Columns are:
           <td>Definition term</td>
         </tr>
         <tr>
-          <th>﷐:em</th>
+          <th>:em</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1076,7 +1076,7 @@ Columns are:
           <td>Emphasis</td>
         </tr>
         <tr>
-          <th>﷐:embed</th>
+          <th>:embed</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1085,7 +1085,7 @@ Columns are:
           <td>Defines a container for an external (non-HTML)...</td>
         </tr>
         <tr>
-          <th>﷐:fieldset</th>
+          <th>:fieldset</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1094,7 +1094,7 @@ Columns are:
           <td>Form control group</td>
         </tr>
         <tr>
-          <th>﷐:figcaption</th>
+          <th>:figcaption</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1103,7 +1103,7 @@ Columns are:
           <td>Defines a caption for a &lt;figure&gt; element</td>
         </tr>
         <tr>
-          <th>﷐:figure</th>
+          <th>:figure</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1112,7 +1112,7 @@ Columns are:
           <td>Specifies self-contained content</td>
         </tr>
         <tr>
-          <th>﷐:font</th>
+          <th>:font</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -1121,7 +1121,7 @@ Columns are:
           <td>Font change</td>
         </tr>
         <tr>
-          <th>﷐:footer</th>
+          <th>:footer</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1130,7 +1130,7 @@ Columns are:
           <td>Defines a footer for a document or section</td>
         </tr>
         <tr>
-          <th>﷐:form</th>
+          <th>:form</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1139,7 +1139,7 @@ Columns are:
           <td>Interactive form</td>
         </tr>
         <tr>
-          <th>﷐:frame</th>
+          <th>:frame</th>
           <td>True</td>
           <td>True</td>
           <td>False</td>
@@ -1148,7 +1148,7 @@ Columns are:
           <td>Frame</td>
         </tr>
         <tr>
-          <th>﷐:frameset</th>
+          <th>:frameset</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -1157,7 +1157,7 @@ Columns are:
           <td>Frameset</td>
         </tr>
         <tr>
-          <th>﷐:h1</th>
+          <th>:h1</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1166,7 +1166,7 @@ Columns are:
           <td>Level-one heading</td>
         </tr>
         <tr>
-          <th>﷐:h2</th>
+          <th>:h2</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1175,7 +1175,7 @@ Columns are:
           <td>Level-two heading</td>
         </tr>
         <tr>
-          <th>﷐:h3</th>
+          <th>:h3</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1184,7 +1184,7 @@ Columns are:
           <td>Level-three heading</td>
         </tr>
         <tr>
-          <th>﷐:h4</th>
+          <th>:h4</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1193,7 +1193,7 @@ Columns are:
           <td>Level-four heading</td>
         </tr>
         <tr>
-          <th>﷐:h5</th>
+          <th>:h5</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1202,7 +1202,7 @@ Columns are:
           <td>Level-five heading</td>
         </tr>
         <tr>
-          <th>﷐:h6</th>
+          <th>:h6</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1211,7 +1211,7 @@ Columns are:
           <td>Level-six heading</td>
         </tr>
         <tr>
-          <th>﷐:head</th>
+          <th>:head</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1220,7 +1220,7 @@ Columns are:
           <td>Document head</td>
         </tr>
         <tr>
-          <th>﷐:header</th>
+          <th>:header</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1229,7 +1229,7 @@ Columns are:
           <td>Defines a header for a document or section</td>
         </tr>
         <tr>
-          <th>﷐:hr</th>
+          <th>:hr</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1238,7 +1238,7 @@ Columns are:
           <td>Horizontal rule</td>
         </tr>
         <tr>
-          <th>﷐:html</th>
+          <th>:html</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1247,7 +1247,7 @@ Columns are:
           <td>HTML document</td>
         </tr>
         <tr>
-          <th>﷐:i</th>
+          <th>:i</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1256,7 +1256,7 @@ Columns are:
           <td>Italic text</td>
         </tr>
         <tr>
-          <th>﷐:iframe</th>
+          <th>:iframe</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1265,7 +1265,7 @@ Columns are:
           <td>Inline frame</td>
         </tr>
         <tr>
-          <th>﷐:img</th>
+          <th>:img</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1274,7 +1274,7 @@ Columns are:
           <td>Inline image</td>
         </tr>
         <tr>
-          <th>﷐:input</th>
+          <th>:input</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1283,7 +1283,7 @@ Columns are:
           <td>Form input</td>
         </tr>
         <tr>
-          <th>﷐:ins</th>
+          <th>:ins</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1292,7 +1292,7 @@ Columns are:
           <td>Inserted text</td>
         </tr>
         <tr>
-          <th>﷐:isindex</th>
+          <th>:isindex</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1301,7 +1301,7 @@ Columns are:
           <td>Input prompt</td>
         </tr>
         <tr>
-          <th>﷐:kbd</th>
+          <th>:kbd</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1310,7 +1310,7 @@ Columns are:
           <td>Text to be input</td>
         </tr>
         <tr>
-          <th>﷐:keygen</th>
+          <th>:keygen</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1319,7 +1319,7 @@ Columns are:
           <td>Defines a key-pair generator field (for forms)</td>
         </tr>
         <tr>
-          <th>﷐:label</th>
+          <th>:label</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1328,7 +1328,7 @@ Columns are:
           <td>Form field label</td>
         </tr>
         <tr>
-          <th>﷐:legend</th>
+          <th>:legend</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1337,7 +1337,7 @@ Columns are:
           <td>Fieldset caption</td>
         </tr>
         <tr>
-          <th>﷐:li</th>
+          <th>:li</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1346,7 +1346,7 @@ Columns are:
           <td>List item</td>
         </tr>
         <tr>
-          <th>﷐:link</th>
+          <th>:link</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1355,7 +1355,7 @@ Columns are:
           <td>Document relationship</td>
         </tr>
         <tr>
-          <th>﷐:main</th>
+          <th>:main</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1364,7 +1364,7 @@ Columns are:
           <td>Specifies the main content of a document</td>
         </tr>
         <tr>
-          <th>﷐:map</th>
+          <th>:map</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1373,7 +1373,7 @@ Columns are:
           <td>Image map</td>
         </tr>
         <tr>
-          <th>﷐:mark</th>
+          <th>:mark</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1382,7 +1382,7 @@ Columns are:
           <td>Defines marked/highlighted text</td>
         </tr>
         <tr>
-          <th>﷐:menu</th>
+          <th>:menu</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1391,7 +1391,7 @@ Columns are:
           <td>Menu list</td>
         </tr>
         <tr>
-          <th>﷐:menuitem</th>
+          <th>:menuitem</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1400,7 +1400,7 @@ Columns are:
           <td>Defines a command/menu item that the user can ...</td>
         </tr>
         <tr>
-          <th>﷐:meta</th>
+          <th>:meta</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1409,7 +1409,7 @@ Columns are:
           <td>Metadata</td>
         </tr>
         <tr>
-          <th>﷐:meter</th>
+          <th>:meter</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1418,7 +1418,7 @@ Columns are:
           <td>Defines a scalar measurement within a known ra...</td>
         </tr>
         <tr>
-          <th>﷐:nav</th>
+          <th>:nav</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1427,7 +1427,7 @@ Columns are:
           <td>Defines navigation links</td>
         </tr>
         <tr>
-          <th>﷐:noframes</th>
+          <th>:noframes</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -1436,7 +1436,7 @@ Columns are:
           <td>Frames alternate content</td>
         </tr>
         <tr>
-          <th>﷐:noscript</th>
+          <th>:noscript</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1445,7 +1445,7 @@ Columns are:
           <td>Alternate script content</td>
         </tr>
         <tr>
-          <th>﷐:object</th>
+          <th>:object</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1454,7 +1454,7 @@ Columns are:
           <td>Object</td>
         </tr>
         <tr>
-          <th>﷐:ol</th>
+          <th>:ol</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1463,7 +1463,7 @@ Columns are:
           <td>Ordered list</td>
         </tr>
         <tr>
-          <th>﷐:optgroup</th>
+          <th>:optgroup</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1472,7 +1472,7 @@ Columns are:
           <td>Option group</td>
         </tr>
         <tr>
-          <th>﷐:option</th>
+          <th>:option</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1481,7 +1481,7 @@ Columns are:
           <td>Menu option</td>
         </tr>
         <tr>
-          <th>﷐:output</th>
+          <th>:output</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1490,7 +1490,7 @@ Columns are:
           <td>Defines the result of a calculation</td>
         </tr>
         <tr>
-          <th>﷐:p</th>
+          <th>:p</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1499,7 +1499,7 @@ Columns are:
           <td>Paragraph</td>
         </tr>
         <tr>
-          <th>﷐:param</th>
+          <th>:param</th>
           <td>True</td>
           <td>True</td>
           <td>True</td>
@@ -1508,7 +1508,7 @@ Columns are:
           <td>Object parameter</td>
         </tr>
         <tr>
-          <th>﷐:picture</th>
+          <th>:picture</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1517,7 +1517,7 @@ Columns are:
           <td>Defines a container for multiple image resources</td>
         </tr>
         <tr>
-          <th>﷐:pre</th>
+          <th>:pre</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1526,7 +1526,7 @@ Columns are:
           <td>Preformatted text</td>
         </tr>
         <tr>
-          <th>﷐:progress</th>
+          <th>:progress</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1535,7 +1535,7 @@ Columns are:
           <td>Represents the progress of a task</td>
         </tr>
         <tr>
-          <th>﷐:q</th>
+          <th>:q</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1544,7 +1544,7 @@ Columns are:
           <td>Short quotation</td>
         </tr>
         <tr>
-          <th>﷐:rp</th>
+          <th>:rp</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1553,7 +1553,7 @@ Columns are:
           <td>Defines what to show in browsers that do not s...</td>
         </tr>
         <tr>
-          <th>﷐:rt</th>
+          <th>:rt</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1562,7 +1562,7 @@ Columns are:
           <td>Defines an explanation/pronunciation of charac...</td>
         </tr>
         <tr>
-          <th>﷐:ruby</th>
+          <th>:ruby</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1571,7 +1571,7 @@ Columns are:
           <td>Defines a ruby annotation (for East Asian typo...</td>
         </tr>
         <tr>
-          <th>﷐:s</th>
+          <th>:s</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1580,7 +1580,7 @@ Columns are:
           <td>Strike-through text</td>
         </tr>
         <tr>
-          <th>﷐:samp</th>
+          <th>:samp</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1589,7 +1589,7 @@ Columns are:
           <td>Sample output</td>
         </tr>
         <tr>
-          <th>﷐:script</th>
+          <th>:script</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1598,7 +1598,7 @@ Columns are:
           <td>Client-side script</td>
         </tr>
         <tr>
-          <th>﷐:section</th>
+          <th>:section</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1607,7 +1607,7 @@ Columns are:
           <td>Defines a section in a document</td>
         </tr>
         <tr>
-          <th>﷐:select</th>
+          <th>:select</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1616,7 +1616,7 @@ Columns are:
           <td>Option selector</td>
         </tr>
         <tr>
-          <th>﷐:small</th>
+          <th>:small</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1625,7 +1625,7 @@ Columns are:
           <td>Small text</td>
         </tr>
         <tr>
-          <th>﷐:source</th>
+          <th>:source</th>
           <td>True</td>
           <td>False</td>
           <td>True</td>
@@ -1634,7 +1634,7 @@ Columns are:
           <td>Defines multiple media resources for media ele...</td>
         </tr>
         <tr>
-          <th>﷐:span</th>
+          <th>:span</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1643,7 +1643,7 @@ Columns are:
           <td>Generic inline container</td>
         </tr>
         <tr>
-          <th>﷐:strike</th>
+          <th>:strike</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -1652,7 +1652,7 @@ Columns are:
           <td>Strike-through text</td>
         </tr>
         <tr>
-          <th>﷐:strong</th>
+          <th>:strong</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1661,7 +1661,7 @@ Columns are:
           <td>Strong emphasis</td>
         </tr>
         <tr>
-          <th>﷐:style</th>
+          <th>:style</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1670,7 +1670,7 @@ Columns are:
           <td>Embedded style sheet</td>
         </tr>
         <tr>
-          <th>﷐:sub</th>
+          <th>:sub</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1679,7 +1679,7 @@ Columns are:
           <td>Subscript</td>
         </tr>
         <tr>
-          <th>﷐:summary</th>
+          <th>:summary</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1688,7 +1688,7 @@ Columns are:
           <td>Defines a visible heading for a &lt;details&gt; element</td>
         </tr>
         <tr>
-          <th>﷐:sup</th>
+          <th>:sup</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1697,7 +1697,7 @@ Columns are:
           <td>Superscript</td>
         </tr>
         <tr>
-          <th>﷐:table</th>
+          <th>:table</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1706,7 +1706,7 @@ Columns are:
           <td>Table</td>
         </tr>
         <tr>
-          <th>﷐:tbody</th>
+          <th>:tbody</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1715,7 +1715,7 @@ Columns are:
           <td>Table body</td>
         </tr>
         <tr>
-          <th>﷐:td</th>
+          <th>:td</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1724,7 +1724,7 @@ Columns are:
           <td>Table data cell</td>
         </tr>
         <tr>
-          <th>﷐:textarea</th>
+          <th>:textarea</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1733,7 +1733,7 @@ Columns are:
           <td>Multi-line text input</td>
         </tr>
         <tr>
-          <th>﷐:tfoot</th>
+          <th>:tfoot</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1742,7 +1742,7 @@ Columns are:
           <td>Table foot</td>
         </tr>
         <tr>
-          <th>﷐:th</th>
+          <th>:th</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1751,7 +1751,7 @@ Columns are:
           <td>Table header cell</td>
         </tr>
         <tr>
-          <th>﷐:thead</th>
+          <th>:thead</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1760,7 +1760,7 @@ Columns are:
           <td>Table head</td>
         </tr>
         <tr>
-          <th>﷐:time</th>
+          <th>:time</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1769,7 +1769,7 @@ Columns are:
           <td>Defines a date/time</td>
         </tr>
         <tr>
-          <th>﷐:title</th>
+          <th>:title</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1778,7 +1778,7 @@ Columns are:
           <td>Document title</td>
         </tr>
         <tr>
-          <th>﷐:tr</th>
+          <th>:tr</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1787,7 +1787,7 @@ Columns are:
           <td>Table row</td>
         </tr>
         <tr>
-          <th>﷐:track</th>
+          <th>:track</th>
           <td>True</td>
           <td>False</td>
           <td>True</td>
@@ -1796,7 +1796,7 @@ Columns are:
           <td>Defines text tracks for media elements (&lt;video...</td>
         </tr>
         <tr>
-          <th>﷐:tt</th>
+          <th>:tt</th>
           <td>False</td>
           <td>True</td>
           <td>False</td>
@@ -1805,7 +1805,7 @@ Columns are:
           <td>Teletype text</td>
         </tr>
         <tr>
-          <th>﷐:u</th>
+          <th>:u</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1814,7 +1814,7 @@ Columns are:
           <td>Underlined text</td>
         </tr>
         <tr>
-          <th>﷐:ul</th>
+          <th>:ul</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1823,7 +1823,7 @@ Columns are:
           <td>Unordered list</td>
         </tr>
         <tr>
-          <th>﷐:var</th>
+          <th>:var</th>
           <td>False</td>
           <td>True</td>
           <td>True</td>
@@ -1832,7 +1832,7 @@ Columns are:
           <td>Variable</td>
         </tr>
         <tr>
-          <th>﷐:video</th>
+          <th>:video</th>
           <td>False</td>
           <td>False</td>
           <td>True</td>
@@ -1841,7 +1841,7 @@ Columns are:
           <td>Defines a video or movie</td>
         </tr>
         <tr>
-          <th>﷐:wbr</th>
+          <th>:wbr</th>
           <td>True</td>
           <td>False</td>
           <td>True</td>
@@ -1852,137 +1852,6 @@ Columns are:
       </tbody>
     </table>
     </div>
-
-
-
-.. code:: python
-
-    ; include notebook custom styles
-    (IPython.display.HTML (.read (open "styles.css" "r")))
-
-
-
-
-.. raw:: html
-
-    <style>
-    
-    /**
-     * Copyright: Marko Manninen, 04/2016 (https://www.github.com/markomanninen)
-     */
-    
-    .rendered_html table.data,
-    .rendered_html table.data tr,
-    .rendered_html table.data th,
-    .rendered_html table.data td {
-        border: 0
-    }
-    
-    table.data {
-        color: black;
-        border: 0;
-    	margin: 1.5em auto;
-    	border-bottom: 1px solid #999;
-    	border-collapse: collapse;
-    	-webkit-border-top-left-radius: 8px;
-    	-webkit-border-top-right-radius: 8px;
-    	-moz-border-radius: 8px 8px 0 0;
-    	border-radius: 8px 8px 0 0;
-    	background: #444;
-    }
-    table.data caption {
-        margin-bottom: .75em;
-        text-align: center;
-    	font-style: italic;
-    }
-    table.data td {
-    	-moz-transition: background 0.2s linear;
-    	-o-transition: background 0.2s linear;
-    	transition: background 0.2s linear;
-    	white-space: nowrap;
-    	border-top: 1px solid #eee;
-    	border-left: 1px solid #eee;
-    	padding: 0.4em 0.8em;
-    	background: #fff;
-    }
-    table.data tfoot,
-    table.data tbody {
-        outline-offset: -1px;
-        outline: 1px solid #ccc;
-    }
-    
-    table.data thead {}
-    table.data thead th {
-    	border: none;
-        border-bottom: 2px solid #eee;
-    	background: transparent;
-    	color: #fff;
-    	text-align: center;
-    	cursor: pointer;
-        padding: 0.4em 0.8em;
-    }
-    
-    table.data tbody {}
-    table.data tbody tr:not(.html5):hover td {
-    	background: #ffe;
-        color: black;
-    }
-    table.data tbody tr:not(.html5) td:not(.html5):hover {
-    	background: #f5f6d2;
-    }
-    table.data tbody tr td:last-child {
-    	text-align: center
-    }
-    
-    table.data tbody tr th {
-    	color: white;
-        padding: 0.4em 0.8em;
-        text-transform: uppercase
-    }
-    
-    
-    table.data tfoot {}
-    table.data tfoot td {
-        padding: 0.4em 0.8em;
-    	text-align: center;
-    	font-style: italic;
-    }
-    
-    table.data .right {
-        text-align: right
-    }
-    
-    table.data tr.ok td {background-color: white;}
-    table.data tr.failed td {background-color: red; color: white}
-    table.data tr.error td {background-color: lightpink}
-    table.data tbody.failures {}
-    table.data tbody.errors {}
-    
-    table.data .html4 {
-    
-    }
-    
-    table.data tr td.html5,
-    table.data tr:hover td.html5,
-    table.data tr td.html5:hover {
-    	height: 50px;
-    	background: 15px 3px #fff no-repeat url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC4AAAAuCAMAAABgZ9sFAAAAsVBMVEX////kTSbxZSnr6+sAAADkVC7nUybzfkzHx8flZkb98+7lakvq3tuzs7M2Nja6urpRUVGUlJTzglFnZ2f0jWHtiG/rWif1vK58fHzpycH87Ojvln/nl4LujXSqqqrxajDlWTXnpZTrfGDqd1jyqZb3zMH52dHe3t4iIiI8PDwUFBTnmob4uZ/5x7L849j2oHz71cXouq7p0sz3q4r0taXqz8j40sji4uLycjvycDj2o4Ba0xTVAAAB9ElEQVRIibXU63KqMBQF4I0E5VKt9kA9At4AL/X0UOm9ff8H697RICS79FfXjM4QPpyQLAOgci1GMBSjhaBMxnjlCjEciwmw0bmYjLq5OAh8xP4r/tgwlk91c0EckAPykTjsO/l+N2nwxd3ijvhhvx9+P/cLt0FyzILhtuviZwfwRl8715ZfOxdj8/P5rbw6P+S1xUvrh5QtHuu3+83gddyejc57zaDXJr/q5iuNB13csgKNZ2Qcr86gzpJ4pvE58cCuc7kzID7XeEp8xfEP4qnGCzljjvd6t5ZVaHwq+RXCKxlfpZR8qvGN5C/IM2NlkG80vpWoQj7n+Fbjcc1Tg/eNDpxbsEa+5riuTy1IbfWu9at+ch0A8IjPzYV8oGX3DC4XJDN5yHUAIGq3oB6XHYgMnsiOBSo3FBp/J54YvDAL/E7jbAdUC6rZbOYpTr/usx1QLXhULSAe4nDJdkC1YIY8UvwBh49sB5otqHKH+DI84vB/vgONFuC+VunT0Zej95L7JneI/9PX/YnvwLkF2WObxyHfAYD8tOBeUr2duH/8HJyOjZzhUb1FTrZ+Ke/DZX3KmB04t4A7lrgO6C24/PP6XAcAnk1OlPLM8DhtnpO9W2WtIGV2ST4xjbSTeBVNv7HnbItc2bwwu8LE3ySel2yYnYcvzuElaKKAbG4AAAAASUVORK5CYII=');
-    }
-    
-    div.output_scroll {height: inherit;}
-    
-    table#data { margin: 1em auto; border-collapse: collapse; border: 0} 
-    table#data caption { font-size: 1.2em; text-align: center; padding: 3px} 
-    table#data th, table#data td { padding: .25em; border: 1px solid #000; font-family: sans-serif; color: white} 
-    table#data th { color: #004900; font-weight: bold; text-align: left; } 
-    table#data thead th { border-bottom: 3px double #000; background-color: #ddd; text-align: center; } 
-    table#data tfoot td { border-top: 3px double #000; color: #fff; font-style: italic; font-size: .8em; text-align: center; background-color: brown} 
-    table#data tbody th { color: #000; }
-    table#data #tbody2 {font-weight: bold;font-size: 1.5em;}
-    
-    </style>
-    
-
 
 
 The `MIT <http://choosealicense.com/licenses/mit/>`__ License
