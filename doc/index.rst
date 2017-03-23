@@ -12,9 +12,9 @@ Motivation
 
 My intention is simple and mundane. Study. Study. Study.
 
-First of all I wanted to study more Lisp. A decade back I tried `Scheme<https://cisco.github.io/ChezScheme/>`__ and `CommonLisp<http://cliki.net/>`__ for form generation and validation purposes. Then `Clojure<https://clojure.org/>`__ for `website session handler<https://github.com/markomanninen/websesstudy>`__. Now, in 2017, I found another nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
+First of all I wanted to study more Lisp. A decade back I tried `Scheme <https://cisco.github.io/ChezScheme/>`__ and `CommonLisp <http://cliki.net/>`__ for form generation and validation purposes. Then `Clojure <https://clojure.org/>`__ for `website session handler <https://github.com/markomanninen/websesstudy>`__. Now, in 2017, I found another nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
 
-This implementation, Pythonic Lisp, is called with a concise two character name, `Hy<http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed and affixed with other words. Compounds like Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: HyML.
+This implementation, Pythonic Lisp, is called with a concise two character name, `Hy <http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed and affixed with other words. Compounds like Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: HyML.
 
 
 Previous similar work
@@ -24,11 +24,11 @@ As a web developer, most of my time, I'm dealing with different kinds of scripti
 
     There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career
 
-    -- `<http://weitz.de/cl-who/>`__
+    -- `CL-WHO <http://weitz.de/cl-who/>`__
 
 **Python**
 
-Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple import clause. And vice versa, any Hy module can be imported to Python with the ordinary import command. I have made such html generator module for Python 4 years ago, namely `tagpy` which is now called `Remarkuple3<https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. I should show somne core parts of it. First the tag class:
+Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple import clause. And vice versa, any Hy module can be imported to Python with the ordinary import command. I have made such html generator module for Python 4 years ago, namely `tagpy` which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. I should show somne core parts of it. First the tag class:
 
 .. code:: python
 
@@ -125,7 +125,7 @@ Then front end usage:
     $a->addContent(new HE_B("Link"));
     echo $a->render();
 
-Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous `jQuery<https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation.
+Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous `jQuery <https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation.
 
 **Javascript**
 
@@ -140,7 +140,7 @@ This will construct tag objects which you can access by jQuery methods that are 
 
 **Template engines**
 
-Then there are plenty of domain specific html template languages for each and every programming language. `Haml<http://haml.info/>`__ for Ruby. `Jinja<http://jinja.pocoo.org/>`__, `Mako<http://www.makotemplates.org/>`__, and `Genchi<https://genshi.edgewall.org/>`__ for Python. `Twig<http://twig.sensiolabs.org/>`__, `Smarty<http://www.smarty.net/>`__ and `Mustache<https://github.com/bobthecow/mustache.php>`__ for PHP. They separate user interace logic from business logic mostly following model-view-controller architecture. I did several similar approaches to create a template engine with PHP, that is a template language itself already.
+Then there are plenty of domain specific html template languages for each and every programming language. `Haml <http://haml.info/>`__ for Ruby. `Jinja <http://jinja.pocoo.org/>`__, `Mako <http://www.makotemplates.org/>`__, and `Genchi <https://genshi.edgewall.org/>`__ for Python. `Twig <http://twig.sensiolabs.org/>`__, `Smarty <http://www.smarty.net/>`__ and `Mustache <https://github.com/bobthecow/mustache.php>`__ for PHP. They separate user interace logic from business logic mostly following model-view-controller architecture. I did several similar approaches to create a template engine with PHP, that is a template language itself already.
 
 
 Benefits
@@ -357,8 +357,6 @@ for generating xml/html/xhtml code:
         (body (div "Page content" :class "container")))
 
 
-
-
 .. parsed-literal::
 
     <html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>
@@ -376,12 +374,9 @@ with the next, maybe more convenient and recommended notation:
         (body (div "Page content" :class "container"))))
 
 
-
-
 .. parsed-literal::
 
     <html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>
-
 
 
 It is not possible to define other ``ML`` macro to be used with the
@@ -405,12 +400,9 @@ notation style anyway:
     (xml (p "Sentence 1") (p "Sentence 2") (p "Sentence 3"))
 
 
-
-
 .. parsed-literal::
 
     <p>Sentence 1</p><p>Sentence 2</p><p>Sentence 3</p>
-
 
 
 Let us then render the code, not just printing it. This can be done via
@@ -421,16 +413,14 @@ Let us then render the code, not just printing it. This can be done via
     (html4> "Content is " (b king) !)
 
 
-
-
 .. raw:: html
 
     Content is <b>king</b>!
 
 
-
 Renderers are available for all ``ML`` macros: ``xml>``, ``xhtml>``,
 ``xhtml5>``, ``html4>``, and ``html5>``.
+
 
 Validation and minimizing
 -------------------------
@@ -465,12 +455,9 @@ is NOT available. Instead all tags are strictly closed and attributes in
     (html4 (title) (table (tr (td "Cell 1") (td "Cell 2") (td "Cell 3"))))
 
 
-
-
 .. parsed-literal::
 
     <title/><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>
-
 
 
 .. code:: python
@@ -479,44 +466,26 @@ is NOT available. Instead all tags are strictly closed and attributes in
     (xhtml (title) (table (tr (td "Cell 1") (td "Cell 2") (td "Cell 3"))))
 
 
-
-
 .. parsed-literal::
 
     <title/><table><tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr></table>
 
 
+    Note that above xhtml code is still not a valid xhtml document even tags
+    and attributes are perfectly output. ``ML`` macros do no validate
+    structure of the document just tag names. For validation one should use
+    official `validator <https://validator.w3.org/>`__ service and follow
+    the html `specifications <https://w3c.github.io/html/>`__ to create a
+    valid document. ``ML`` macros can be used to guide on that process but
+    more importantly it is meant to automatize the generation of the xml
+    code while adding programming capabilities on it.
 
-.. raw:: html
+    ``xml`` on the other hand doesn't give a dime of the used tag names.
+    They can be anything, even processed names. Same applies to keywords,
+    values, and contents. You should use more strict ``xhtml``, ``xhtml5``,
+    ``html4``, and ``html5`` macros to make sure that tag names are
+    corresponding to HTML4 or HTML5 specifications.
 
-   <blockquote>
-
-Note that above xhtml code is still not a valid xhtml document even tags
-and attributes are perfectly output. ``ML`` macros do no validate
-structure of the document just tag names. For validation one should use
-official `validator <https://validator.w3.org/>`__ service and follow
-the html `specifications <https://w3c.github.io/html/>`__ to create a
-valid document. ``ML`` macros can be used to guide on that process but
-more importantly it is meant to automatize the generation of the xml
-code while adding programming capabilities on it.
-
-.. raw:: html
-
-   </blockquote>
-
-.. raw:: html
-
-   <blockquote>
-
-``xml`` on the other hand doesn't give a dime of the used tag names.
-They can be anything, even processed names. Same applies to keywords,
-values, and contents. You should use more strict ``xhtml``, ``xhtml5``,
-``html4``, and ``html5`` macros to make sure that tag names are
-corresponding to HTML4 or HTML5 specifications.
-
-.. raw:: html
-
-   </blockquote>
 
 .. code:: python
 
@@ -524,12 +493,9 @@ corresponding to HTML4 or HTML5 specifications.
     (html4 (input :disabled "disabled"))
 
 
-
-
 .. parsed-literal::
 
     <input disabled>
-
 
 
 Unquoting code
@@ -542,12 +508,9 @@ In all ``ML`` macros you can pass any code in it. See for example:
     (xml (p "Sum: " (b (apply sum [[1 2 3 4]]))))
 
 
-
-
 .. parsed-literal::
 
     <p>Sum: <b><apply>sum<[1, 2, 3, 4]/></apply></b></p>
-
 
 
 But you see, the result was not possibly what you expected. ``ML``
@@ -563,12 +526,9 @@ stopped for a moment:
     (xml (p "Sum: " (b ~(apply sum [[1 2 3 4]])) !))
 
 
-
-
 .. parsed-literal::
 
     <p>Sum: <b>10</b>!</p>
-
 
 
 So the following expression after ``~`` will be evaluated and then
@@ -610,12 +570,9 @@ table head generation snippet:
              [[i label] (enumerate (* ["col"] 3))])))))
 
 
-
-
 .. parsed-literal::
 
     <table><thead><tr><th class="even">col 0</th><th class="odd">col 1</th><th class="even">col 2</th></tr></thead></table>
-
 
 
 `List
@@ -635,12 +592,9 @@ example:
         [uls [[1 2] [1 2]]]))
 
 
-
-
 .. raw:: html
 
     <ul><b>List</b><li>item 1</li><li>item 2</li></ul><ul><b>List</b><li>item 1</li><li>item 2</li></ul>
-
 
 
 But there is another slighly modified macro to use in similar manner:
@@ -664,12 +618,9 @@ be processed. This is perhaps easier to follow for some people:
             `(li item " " ~li)))))
 
 
-
-
 .. parsed-literal::
 
     <ul><b>List</b><li>item 1</li><li>item 2</li></ul><ul><b>List</b><li>item 1</li><li>item 2</li></ul>
-
 
 
 Of cource it is just a matter of the taste which one you like.
@@ -711,12 +662,9 @@ and ``cell``) are referenced by quoting them:
             (td :colspan "3" "Footer")))))
 
 
-
-
 .. raw:: html
 
     <table id=data><caption>Data table<colgroup><col style=background-color:red><col style="background-color: green"><col style="background-color: blue"><thead><tr><th>Column 1</th><th>Column 2</th><th>Column 3</th></thead><tbody id=tbody1><tr><td>1.0<td>1.1<td>1.2</tr><tr><td>2.0<td>2.1<td>2.2</tr></tbody><tbody id=tbody2><tr><td>1.0<td>1.1<td>1.2</tr><tr><td>2.0<td>2.1<td>2.2</tr><tfoot><tr><td colspan=3>Footer</tfoot></table>
-
 
 
 Address book table from CSV file
@@ -741,12 +689,9 @@ try with a short csv file:
                   `(th ~item)))))))
 
 
-
-
 .. raw:: html
 
     <table class="data"><caption>Contacts</caption><thead><th>Title</th><th>Name</th><th>Phone</th></thead><tbody><td>Mr.</td><td>John</td><td>07868785831</td></tbody><tbody><td>Miss</td><td>Linda</td><td>0141-2244-5566</td></tbody><tbody><td>Master</td><td>Jack</td><td>0142-1212-1234</td></tbody><tbody><td>Mr.</td><td>Bush</td><td>911-911-911</td></tbody></table>
-
 
 
 Templates
@@ -780,12 +725,9 @@ Then I use ``include`` macro to read and process the content:
     (xhtml ~@(include "template.hy"))
 
 
-
-
 .. parsed-literal::
 
     <html lang="en"><head><title>Page title</title></head><body><p>Content</p></body></html>
-
 
 
 All globally defined variables are available on ``ML`` macros likewise:
@@ -795,12 +737,9 @@ All globally defined variables are available on ``ML`` macros likewise:
     (xhtml ~lang ", " ~title ", " ~body)
 
 
-
-
 .. parsed-literal::
 
     en, Page title, Content
-
 
 
 HTML4 / 5 specifications
@@ -851,12 +790,9 @@ Columns are:
               (td :class (if ~(get row :html5) "html5" ""))))))))
 
 
-
-
 .. raw:: html
 
     <table class="data"><caption>HTML Element Specifications</caption><thead><tr><th>Tag name</th><th>Tag title</th><th>Forbidden</th><th>Omit</th><th>HTML4</th><th>HTML5</th></tr></thead><tbody><tr><td>A</td><td>a</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>ABBR</td><td>abbr</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>ACRONYM</td><td>acronym</td><td>False</td><td>False</td><td class="html4">✓</td><td class=""/></tr><tr><td>ADDRESS</td><td>address</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>APPLET</td><td>applet</td><td>False</td><td>False</td><td class="html4">✓</td><td class=""/></tr></tbody></table>
-
 
 
 .. code:: python
