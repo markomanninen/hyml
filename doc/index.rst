@@ -2,19 +2,30 @@
 HyML - XML / (X)HTML generator for Hy
 =====================================
 
+
 Introduction
 ------------
 
-HyML (acronym for Hy Markup Language) is a set of macros to generate XML, XHTML and HTML code in Hy.
+HyML (acronym for Hy Markup Language) is a set of macros to generate XML, XHTML, and HTML code in Hy. Main features are:
+
+1. resembling syntax with XML
+2. ability to evaluate Hy program code on macro expansion
+3. processing lists and templates
+4. custom variables
+5. tag validation and attribute minimizing with html4 and html5 macros
+6. custom div, class, and id handlers for html
+
+If you want to skip the nostalgic background rationale part, you can jump straight to the `installation <http://hyml.readthedocs.io/en/latest/#installation>`__ and the `documentation <http://hyml.readthedocs.io/en/latest/#documentation>`__ part.
+
 
 Motivation
 ~~~~~~~~~~
 
-My intention is simple and mundane. Study. Study. Study.
+My primary intention is simple and mundane. Study. Study. Study.
 
-First of all I wanted to study more Lisp. A decade back I tried `Scheme <https://cisco.github.io/ChezScheme/>`__ and `CommonLisp <http://cliki.net/>`__ for form generation and validation purposes. Then `Clojure <https://clojure.org/>`__ for `website session handler <https://github.com/markomanninen/websesstudy>`__. Now, in 2017, I found another nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
+First of all, I wanted to study more Lisp language. Seven years ago, I tried `Scheme <https://cisco.github.io/ChezScheme/>`__ and `CommonLisp <http://cliki.net/>`__ for form generation and validation purposes. Then `Clojure <https://clojure.org/>`__ for `website session handler <https://github.com/markomanninen/websesstudy>`__. Now, in 2017, I found another nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
 
-This implementation, Pythonic Lisp, is called with a concise two character name, `Hy <http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed and affixed with other words. Compounds like Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: HyML.
+This implementation, Pythonic Lisp, is called with a concise two character name, `Hy <http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed, and affixed with other words. Playful compounds can be created such as Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: **HyML**.
 
 
 Previous similar work
@@ -26,9 +37,14 @@ As a web developer, most of my time, I'm dealing with different kinds of scripti
 
     -- `CL-WHO <http://weitz.de/cl-who/>`__
 
+
 **Python**
 
-Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple import clause. And vice versa, any Hy module can be imported to Python with the ordinary import command. I have made such html generator module for Python 4 years ago, namely `tagpy` which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. I should show some core parts of it. First the tag class:
+Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple `import` clause. And vice versa, any Hy module can be imported to Python with the ordinary `(import)` command.
+
+I had made html generator module for Python four years ago, namely `tagpy`, which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. It follows strictly XML specifications. I should show some core parts of it.
+
+First the tag class:
 
 .. code:: python
 
@@ -72,11 +88,11 @@ Then helper initialization:
     # init helper for inclusion on the module
     helper = htmlHelper()
 
-and finally a frontend usage example:
+And finally usage example:
 
 .. code:: python
 
-    # load html helper
+    # load xml helper
     from remarkuple import helper as h
     # create anchor tag
     a = h.a()
@@ -86,9 +102,10 @@ and finally a frontend usage example:
     a += h.b("Link")
     print(a) # <a href="#"><b>Link</b></a>
 
+
 **PHP**
 
-I also made a PHP version of the HTML generator even earlier in 2007. It factored classes for each html4 specified tag, and the rest was quite similar to Python version. Here is some parts of the code for comparison, first the generation of the tag classes:
+I also made a PHP version of the HTML generator even earlier in 2007. That program factored classes for each html4 specified tag, and the rest was quite similar to Python version. Here is some parts of the code for comparison, first the generation of the tag classes:
 
 .. code:: PHP
 
@@ -116,7 +133,7 @@ I also made a PHP version of the HTML generator even earlier in 2007. It factore
         eval($evalstr);
     }
 
-Then front end usage:
+Then usage of the HtmlElement class:
 
 .. code:: PHP
 
@@ -125,25 +142,41 @@ Then front end usage:
     $a->addContent(new HE_B("Link"));
     echo $a->render(); // <a href="#"><b>Link</b></a>
 
+
 **Javascript**
 
-Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous `jQuery <https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation:
+Both Python and PHP versions are object oriented approaches to xml/html generation. Which is quite good after all. You can collect xml elements inside each other, manipulate them anyway you want before rendering output. One could similarly use world-famous `jQuery <https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation:
 
 .. code:: JavaScript
 
     var a = $('<a/>');
     a.attr('href', "#");
     a.html($('<b>Link</b>');
-    console.log(a.html());
+    // there is a small catch here, a -element must be inner element of other
+    // tag to be possible to be rendered as a whole
+    var d = $('<div/>').html(a);
+    console.log(d.html()); //<a href="#"><b>Link</b></a>
 
-This will construct tag objects which you can access by jQuery methods that are too manifold to mention here.
+jQuery will construct tag objects (DOM elements) which you can access by jQuery methods that are too manifold to mention here.
+
 
 **Template engines**
 
-Then there are plenty of domain specific html template languages for each and every programming language. `Haml <http://haml.info/>`__ for Ruby. `Jinja <http://jinja.pocoo.org/>`__, `Mako <http://www.makotemplates.org/>`__, and `Genchi <https://genshi.edgewall.org/>`__ for Python. `Twig <http://twig.sensiolabs.org/>`__, `Smarty <http://www.smarty.net/>`__ and, `Mustache <https://github.com/bobthecow/mustache.php>`__ for PHP. They separate user interace logic from business and database logic mostly following model-view-controller architecture. By using output buffering control one can easily create a template engine with PHP, that is a template language itself already. For example:
+Then there are plenty of domain specific html template languages for each and every programming language. `Haml <http://haml.info/>`__ for Ruby. `Jinja <http://jinja.pocoo.org/>`__, `Mako <http://www.makotemplates.org/>`__, and `Genchi <https://genshi.edgewall.org/>`__ for Python. `Twig <http://twig.sensiolabs.org/>`__, `Smarty <http://www.smarty.net/>`__, and `Mustache <https://github.com/bobthecow/mustache.php>`__ for PHP.
+
+Common to all is that they separate user interface logic from business and database logic to follow model-view-controller architecture.
+
+Actually by using output buffering control one can easily create a template engine with PHP, that, by the way, is a template language itself already. For example this file.php content:
+
+.. parsed-literal::
+
+    <a href="<?=$href?>"><b><?=$link?></b></a>
+
+With this code:
 
 .. code:: PHP
 
+    <?php
     function render($file, $data) {
         $content = file_get_contents($file);
         ob_start() && extract($data);
@@ -152,18 +185,26 @@ Then there are plenty of domain specific html template languages for each and ev
         ob_flush();
         return $content;
     }
+    render('file.php', array('href'=>"#", 'link'=>"Link"));
+    ?>
 
-    render('file.php', array('key' => "Value"));
+Would render:
 
-But now it is time to get on Python, Lisp, and Hy. While Hy didn't have html generators until now, there are many Lisp implementations as previously told. You can find out some from `cliki.net <http://www.cliki.net/html%20generator>`__. Also many Python xml/html generators and processors are available from `Pypi <https://pypi.python.org/pypi?%3Aaction=search&term=html>`__.
+.. parsed-literal::
+
+    <a href="#"><b>Link</b></a>
+
+But now it is time to get back to Python, Lisp, and Hy. While Hy didn't have html generators until now, there are many Lisp implementations as previously told. You can find out some from `cliki.net <http://www.cliki.net/html%20generator>`__. You may also want to compare different implementations and their final DSL syntax to HyML from `@com-informatimago https://gitlab.com/com-informatimago/com-informatimago/blob/master/common-lisp/html-generator/html-generators-in-lisp.txt`__.
+
+Python xml/html generators and processors are available from `Pypi <https://pypi.python.org/pypi?%3Aaction=search&term=html>`__. Some do more or less same than HyML, some are just loosely related to HyML.
 
 
-Benefits
-~~~~~~~~
+Benefits and Implementation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 One thing in the object oriented method is that code itself doesn't resemble much like xhtml and html. So you are kind of approaching one domain language syntax from other syntax. In some cases it looks like ugly, in many small projects and cases it gives overhead in the amoun of code you need to write to output XML.
 
-In Hy (and List generally), language syntax already resembles structured and nested markup langauge. Basic components of the language are tag notation with <, >, and / characters, tag names, tag attributes, and tag content. This behaves exactly with Lisp notation where the first element inside parenthesis is nornmally a function, but now gets interpreted as a tag name. Keywords are usually indicated with a pair notation (:key "value"). And content is wrapped with double quotation characters. Only difference is that when indicator of nested content in XML is done "outside" of the start tag element, for example:
+In Hy (and List generally), language syntax already resembles structured and nested markup langauge. Basic components of the language are tag notation with <, >, and / characters, tag names, tag attributes, and tag content. This behaves exactly with Lisp notation where the first element inside parenthesis is normally a function, but now gets interpreted as a tag name. Keywords are usually indicated with a pair notation (:key "value"). And content is wrapped with double quotation characters. Only difference is that when indicator of nested content in XML is done "outside" of the start tag element, for example:
 
 .. parsed-literal::
 
@@ -177,7 +218,7 @@ now In Hy, content is inside the expression:
 
 This makes parenthesized notation less verbose, it tends to save some space. Drawback is of cource the fact that in a large code block there will be a lot of ending parentheses. This will make the famous LISP acronym expanded: Lots of Irritating Superfluous Parentheses.
 
-Lisp is also known as "a code is data, data is a code" -paradigm. This is perfectly visible on the HyML implementation I'm going to dive next.
+Lisp is also known as "a code is data, data is a code" -paradigm. This is perfectly visible on the HyML implementation I'm going give some sights now.
 
 ;Static file generation
 
@@ -194,15 +235,15 @@ Installation
 
 HyML can be installed effortlessly with `pip <https://pip.pypa.io/en/latest/installing/>`__:
 
-`pip install hyml`
+    `$ pip install hyml`
 
-HyML requires of cource Python and Hy on computer. Hy will be automaticly installed, if it wasn't already.
+HyML requires of cource Python and Hy on a computer. Hy will be automaticly installed, or updated at least to version 0.12.1, if it wasn't already.
 
 
 Environment check
 ~~~~~~~~~~~~~~~~~
 
-You should check that your environment meets the same as mine. My environment for the sake of clarity:
+You should check that your environment meets the same requirements than mine. My environment for the sake of clarity:
 
 .. code:: lisp
 
@@ -217,13 +258,13 @@ You should check that your environment meets the same as mine. My environment fo
     Python 3.5.2 |Anaconda custom (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)]
     
 
-So this module has been run on Hy 0.12.1 and Python 3.5.2 installed by Anaconda package in Windows. If any probles occures, you should report them to: https://github.com/markomanninen/hyml/issues
+So this module has been run on Hy 0.12.1 and Python 3.5.2 installed by Anaconda package in Windows. If any problems occurs, you should report them to: https://github.com/markomanninen/hyml/issues
 
 
 Import main macros
 ~~~~~~~~~~~~~~~~~~
 
-After installation you can import ML macros with the next code snippet in Hy REPL or Jupyter Notebook with calysto_hy kernel:
+After installation you can import ML macros with the next code snippet in Hy REPL or Jupyter Notebook with `calysto_hy <https://github.com/Calysto/calysto_hy>`__ kernel:
 
 .. code:: lisp
 
@@ -234,24 +275,27 @@ Let us just try that everything works with a small test:
 
 .. code:: lisp
 
-    (xml (tag :attr "val" (sub)))
+    #㎖(tag :attr "val" (sub "Content"))
 
 That should output:
 
 .. parsed-literal::
 
-    <tag attr="val"><sub/></tag>
+    <tag attr="val"><sub>Content</sub></tag>
 
-Then we are ready for the show!
+So is this it, the code generation at its best? With 35 characters of code we made 40 characters xml string. Not to mention some 500 lines of code on a module to make it work! Give me one more change and let me convince you with the next `all-in-one <http://hyml.readthedocs.io/en/latest/#all-in-one-example>`__ example.
 
 
 Documentation
 -------------
 
-All-in-one example
-------------------
+This is the core documentation part of the HyML.
 
-First, I’d like to show an example that presents the most of the features included in the HyML module. Then I will go through all the features case by case.
+
+All-in-one example
+~~~~~~~~~~~~~~~~~~
+
+First, I'd like to show an example that presents the most of the features included in the HyML module. Then I will go through all the features case by case.
 
 .. code:: lisp
 
@@ -301,6 +345,7 @@ First, I’d like to show an example that presents the most of the features incl
                              ; and set correct class for even and odd list items
                              `(li :class ~(if (even? idx) "even" "odd") ~num)))))))))
 
+This will output:
 
 .. parsed-literal::
 
@@ -326,7 +371,7 @@ First, I’d like to show an example that presents the most of the features incl
     
 
 XML, HTML4, HTML5, XHTML, and XHTML5
-------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 At the moment HyML module contains ``xml``, ``html4``, ``html5``,
 ``xhtml``, and ``xhtml5`` macros (called as ``ML`` macros in short) to
@@ -348,6 +393,7 @@ without content. For example:
       (xml (node :attribute "value" "")) ; force to use empty content
       (xml (node :attribute "value" "Content")))
 
+Output:
 
 .. parsed-literal::
 
@@ -367,12 +413,11 @@ them is for example the meta tag:
 
     (html4 (meta :name "keywords" :content "HTML,CSS,XML,JavaScript"))
 
-
+Output:
 
 .. parsed-literal::
 
     <meta name=keywords content=HTML,CSS,XML,JavaScript>
-
 
 
 To see and compare the difference in xhtml, let macro print the same:
@@ -381,16 +426,14 @@ To see and compare the difference in xhtml, let macro print the same:
 
     (xhtml (meta :name "keywords" :content "HTML,CSS,XML,JavaScript"))
 
-
+Output:
 
 .. parsed-literal::
 
     <meta name="keywords" content="HTML,CSS,XML,JavaScript"/>
 
 
-
-Shorthand macro
-~~~~~~~~~~~~~~~
+**Shorthand macro**
 
 ``#㎖`` (Square Ml) can be used as a shorthand `reader
 macro <http://docs.hylang.org/en/latest/language/readermacros.html>`__
@@ -402,11 +445,11 @@ for generating xml/html/xhtml code:
         (head (title "Page title"))
         (body (div "Page content" :class "container")))
 
+Output:
 
 .. parsed-literal::
 
     <html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>
-
 
 
 ``#㎖`` actually utilizes ``xml`` macro so same result can be achieved
@@ -419,6 +462,7 @@ with the next, maybe more convenient and recommended notation:
         (head (title "Page title"))
         (body (div "Page content" :class "container"))))
 
+Output:
 
 .. parsed-literal::
 
@@ -445,6 +489,7 @@ notation style anyway:
 
     (xml (p "Sentence 1") (p "Sentence 2") (p "Sentence 3"))
 
+Output:
 
 .. parsed-literal::
 
@@ -458,6 +503,7 @@ Let us then render the code, not just printing it. This can be done via
 
     (html4> "Content is " (b king) !)
 
+Output:
 
 .. raw:: html
 
@@ -469,7 +515,7 @@ Renderers are available for all ``ML`` macros: ``xml>``, ``xhtml>``,
 
 
 Validation and minimizing
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 If validation of the html tag names is a concern, then one should use
 ``html4``, ``html5``, ``xhtml``, and ``xhtml5`` macro family. In the
@@ -500,6 +546,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
     ; valid html4 document
     (html4 (title) (table (tr (td "Cell 1") (td "Cell 2") (td "Cell 3"))))
 
+Output:
 
 .. parsed-literal::
 
@@ -511,26 +558,27 @@ is NOT available. Instead all tags are strictly closed and attributes in
     ; in xhtml tags and attributes will be output in complete format
     (xhtml (title) (table (tr (td "Cell 1") (td "Cell 2") (td "Cell 3"))))
 
+Output:
 
 .. parsed-literal::
 
     <title/><table><tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr></table>
 
 
-    Note that above xhtml code is still not a valid xhtml document even tags
-    and attributes are perfectly output. ``ML`` macros do no validate
-    structure of the document just tag names. For validation one should use
-    official `validator <https://validator.w3.org/>`__ service and follow
-    the html `specifications <https://w3c.github.io/html/>`__ to create a
-    valid document. ``ML`` macros can be used to guide on that process but
-    more importantly it is meant to automatize the generation of the xml
-    code while adding programming capabilities on it.
+Note that above xhtml code is still not a valid xhtml document even tags
+and attributes are perfectly output. ``ML`` macros do no validate
+structure of the document just tag names. For validation one should use
+official `validator <https://validator.w3.org/>`__ service and follow
+the html `specifications <https://w3c.github.io/html/>`__ to create a
+valid document. ``ML`` macros can be used to guide on that process but
+more importantly it is meant to automatize the generation of the xml
+code while adding programming capabilities on it.
 
-    ``xml`` on the other hand doesn't give a dime of the used tag names.
-    They can be anything, even processed names. Same applies to keywords,
-    values, and contents. You should use more strict ``xhtml``, ``xhtml5``,
-    ``html4``, and ``html5`` macros to make sure that tag names are
-    corresponding to HTML4 or HTML5 specifications.
+``xml`` on the other hand doesn't give a dime of the used tag names.
+They can be anything, even processed names. Same applies to keywords,
+values, and contents. You should use more strict ``xhtml``, ``xhtml5``,
+``html4``, and ``html5`` macros to make sure that tag names are
+corresponding to HTML4 or HTML5 specifications.
 
 
 .. code:: lisp
@@ -538,6 +586,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
     ; see how boolean attribute minimizing works
     (html4 (input :disabled "disabled"))
 
+Output:
 
 .. parsed-literal::
 
@@ -545,7 +594,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
 
 
 Unquoting code
---------------
+~~~~~~~~~~~~~~
 
 In all ``ML`` macros you can pass any code in it. See for example:
 
@@ -553,6 +602,7 @@ In all ``ML`` macros you can pass any code in it. See for example:
 
     (xml (p "Sum: " (b (apply sum [[1 2 3 4]]))))
 
+Output:
 
 .. parsed-literal::
 
@@ -571,6 +621,7 @@ stopped for a moment:
 
     (xml (p "Sum: " (b ~(apply sum [[1 2 3 4]])) !))
 
+Output:
 
 .. parsed-literal::
 
@@ -591,8 +642,9 @@ possibility to use HyML as a templating engine. Of cource there is also
 a risk to evaluate code that breaks the code execution. Plus
 uncontrolled template engine code may be a security consern.
 
+
 Unquote splice
---------------
+~~~~~~~~~~~~~~
 
 In addition to unquote, one can handle lists and iterators with ``~@``
 (unquote-splice) symbol. This is particularly useful when a list of html
@@ -607,6 +659,7 @@ table head generation snippet:
              `(th :class (if (even? ~i) "even" "odd") ~label " " ~i)
              [[i label] (enumerate (* ["col"] 3))])))))
 
+Output:
 
 .. parsed-literal::
 
@@ -629,6 +682,7 @@ example:
               [li uls]))
         [uls [[1 2] [1 2]]]))
 
+Output:
 
 .. raw:: html
 
@@ -637,8 +691,9 @@ example:
 
 But there is another slighly modified macro to use in similar manner:
 
+
 ``list-comp*``
---------------
+~~~~~~~~~~~~~~
 
 Let's do again above example but this time with a dedicated
 ``list-comp*`` macro. Now the lists to be processed is passed as the
@@ -655,6 +710,7 @@ be processed. This is perhaps easier to follow for some people:
           ~@(list-comp* [li uls]
             `(li item " " ~li)))))
 
+Output:
 
 .. parsed-literal::
 
@@ -699,14 +755,14 @@ and ``cell``) are referenced by quoting them:
           (tr
             (td :colspan "3" "Footer")))))
 
+Output:
 
 .. raw:: html
 
     <table id=data><caption>Data table<colgroup><col style=background-color:red><col style="background-color: green"><col style="background-color: blue"><thead><tr><th>Column 1</th><th>Column 2</th><th>Column 3</th></thead><tbody id=tbody1><tr><td>1.0<td>1.1<td>1.2</tr><tr><td>2.0<td>2.1<td>2.2</tr></tbody><tbody id=tbody2><tr><td>1.0<td>1.1<td>1.2</tr><tr><td>2.0<td>2.1<td>2.2</tr><tfoot><tr><td colspan=3>Footer</tfoot></table>
 
 
-Address book table from CSV file
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Address book table from CSV file**
 
 We should of course be able to use external source for the html. Let's
 try with a short csv file:
@@ -726,6 +782,7 @@ try with a short csv file:
                 ~@(list-comp* [item (.split row ",")]
                   `(th ~item)))))))
 
+Output:
 
 .. raw:: html
 
@@ -733,7 +790,7 @@ try with a short csv file:
 
 
 Templates
----------
+~~~~~~~~~
 
 It is possible to load code from an external file too. This feature has
 not been deeply implemented yet, but you get the feeling by the next
@@ -743,6 +800,7 @@ example. Firt I'm just going to show external template file content:
 
     (with [f (open "template.hy")] (print (f.read)))
 
+Output:
 
 .. parsed-literal::
 
@@ -762,6 +820,7 @@ Then I use ``include`` macro to read and process the content:
     
     (xhtml ~@(include "template.hy"))
 
+Output:
 
 .. parsed-literal::
 
@@ -774,6 +833,7 @@ All globally defined variables are available on ``ML`` macros likewise:
 
     (xhtml ~lang ", " ~title ", " ~body)
 
+Output:
 
 .. parsed-literal::
 
@@ -827,6 +887,7 @@ Columns are:
               (td ~(get row :html4) :class (if ~(get row :html4) "html4" ""))
               (td :class (if ~(get row :html5) "html5" ""))))))))
 
+Output:
 
 .. raw:: html
 
