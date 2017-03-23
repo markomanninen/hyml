@@ -15,6 +15,14 @@ HyML (acronym for Hy Markup Language) is a set of macros to generate XML, XHTML,
 5. tag validation and attribute minimizing with html4 and html5 macros
 6. custom div, class, and id handlers for html
 
+You can use HyML for:
+
+* static xml/xhtml/html content and file generation
+* generating html code for Jupyter Notebook for example
+* attached it to the server for dynamic html output generation
+* practice and study
+* challenge your imagination
+
 If you want to skip the nostalgic background rationale part, you can jump straight to the `installation <http://hyml.readthedocs.io/en/latest/#installation>`__ and the `documentation <http://hyml.readthedocs.io/en/latest/#documentation>`__ part.
 
 
@@ -35,7 +43,7 @@ As a web developer, most of my time, I'm dealing with different kinds of scripti
 
     "There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career...""
 
-    -- `CL-WHO <http://weitz.de/cl-who/>`__
+    -- `cl-who <http://weitz.de/cl-who/>`__
 
 
 **Python**
@@ -65,7 +73,7 @@ First the tag class:
             return self.__dict__['attributes'].get(key.lower(), None)
         def __str__(self):
             """
-            Represent tag in string format. This is also a nice and short way to ouput the actual
+            Represent tag in string format. This is also a nice and short way to output the actual
             xml content. Concat content retrieves all nested tags recursively.
             """
             if self.__dict__['content']:
@@ -194,7 +202,7 @@ Would render:
 
     <a href="#"><b>Link</b></a>
 
-But now it is time to get back to Python, Lisp, and Hy. While Hy didn't have html generators until now, there are many Lisp implementations as previously told. You can find out some from `cliki.net <http://www.cliki.net/html%20generator>`__. You may also want to compare different implementations and their final DSL syntax to HyML from `@com-informatimago https://gitlab.com/com-informatimago/com-informatimago/blob/master/common-lisp/html-generator/html-generators-in-lisp.txt`__.
+But now it is time to get back to Python, Lisp, and Hy. While Hy didn't have html generators until now, there are many Lisp implementations as previously told. You can find out some from `cliki.net <http://www.cliki.net/html%20generator>`__. You may also want to compare different implementations and their final DSL syntax to HyML from `@com-informatimago <https://gitlab.com/com-informatimago/com-informatimago/blob/master/common-lisp/html-generator/html-generators-in-lisp.txt>`__.
 
 Python xml/html generators and processors are available from `Pypi <https://pypi.python.org/pypi?%3Aaction=search&term=html>`__. Some do more or less same than HyML, some are just loosely related to HyML.
 
@@ -216,19 +224,84 @@ now In Hy, content is inside the expression:
 
     (tag "Content")
 
-This makes parenthesized notation less verbose, it tends to save some space. Drawback is of cource the fact that in a large code block there will be a lot of ending parentheses. This will make the famous LISP acronym expanded: Lots of Irritating Superfluous Parentheses.
+This makes parenthesized notation less verbose, so it tends to save some space. Drawback is of cource the fact that in a large code block there will be a lot of ending parentheses,a s you will find later. This will make the famous LISP acronym expanded to "**L**ots of **I**rritating **S**uperfluous **P**arentheses". But don't let it scare you, like it did me at first.
 
 Lisp is also known as "a code is data, data is a code" -paradigm. This is perfectly visible on the HyML implementation I'm going give some sights now.
 
-;Static file generation
+Data, was it just data as data or code, in the information techonology it has always to do with three different aspects, namely:
 
-;Attached to the server html output generation
+1. processing lists (did I mention this somewhere earlier?!)
+2. hierarchic structures
+3. data types
+
+In HyML the third part is pretty simple. In the output everything is just a plain text. There are no datatypes. Same applies to JSON document too, except that when parsing it, by semantic rules, we can find out few basic datatypes. But again, in HyML, even more in the output ie. xml, data types has a minimal meaning. You should only give attention keywords that starts with colon (:) punctuation mark.
+
+Hierachical structure is defined by nested parentheses. Simple as that. Processing list can be thought as a core Hy / Lisp language syntax utility, but there is also a specific syntactic feature called `unquote-splice <http://hyml.readthedocs.io/en/latest/#unquote-splice>`__, that can delegate a list of elements to the parent element in HyML.
+
+**Catch tag if you can**
+
+We are talking about internal implementation of the HyML module now, especially the `macros.hy <https://github.com/markomanninen/hyml/blob/master/hyml/macros.hy>`__ file.
+
+Let us take a moment to think of this expression in HyML:
+
+.. code:: lisp
+
+    (tag :attr "value" (sub "Content"))
+
+One of the core parts of the HyML implementation is where to catch a tag name. Because the first element after opening parentheses in Hy is normally referring to a function, in HyML we need to change that functionality so that it refers to a tag name. Thus we need to catch tag name with the following code:
+
+.. code:: lisp
+
+    (defn catch-tag [code]
+      (try
+        ; code can be a symbol or a sub program
+        ; thats why try to evaluate it. internal symbols like "input"
+        ; for example are handled here too. just about anything can be 
+        ; a tag name 
+        (name (eval code))
+        ; because evaluation most probably fails when code contains
+        ; a symbol name that has not been specified on the global namespace,
+        ; thats why return quoted code which should work every time.
+        ; tag will be tag and evaluation of the code can go on without failing
+        ; in the catch-tag part
+        (except (e Exception) (eval 'code))))
+
+Then the rest of the HyML expression gets interpreted. It can contain basicly just key-value pairs or content. Content can be a string or yet another similar HyML expression. `get-content-attributes` in `macros.hy <https://github.com/markomanninen/hyml/blob/master/hyml/macros.hy>`__ will find out all keyword pairs first and then rest of the expression in regarded as content, which is a string or a nested HyML expression.
+
+Then some tag names are specially handled like: `unquote`, `unquote_splice`, , `!__`, `<?xml`, `!DOCTYPE`, and in `html4/5` mode tag names starting with . or # (`dispatch_reader_macro`).
+
+Finally when tags are created some rules from specs.hy `<https://github.com/markomanninen/hyml/blob/master/hyml/specs.hy>`__ are used to create either long or short tags and to minimize attributes.
+
+This is basicly it. Without html4/5 functionality code base would be maybe one third of the current code base. Tag validation and minimizing did add a lot of extra code to the module. Being a plain xml generator it would have been comparative to `Remarkuple <https://github.com/markomanninen/remarkuple3/blob/master/remarkuple/main.py>`__ code base.
+
+Templating feature requires using globals variable dictionary as a registry for variables. Macro to expand and evaluate templates is pretty simple:
+
+.. code:: lisp
+
+    (defmacro include [template]
+      `(do
+        ; tokenize is needed to parse external file
+        (import [hy.importer [tokenize]])
+        (with [f (open ~template)]
+          ; funky ~@` part is needed as a prefix to the template code
+          ; so that code on template wont get directly expanded but only 
+          ; after everything had been collected by the macro for final evaluation
+          (tokenize (+ "~@`(" (f.read) ")")))))
+
+One more catch is to use variables from globals dictionary when evaluating code on parser:
+
+.. code:: lisp
+
+    (.join "" (map ~name (eval (second code) **variables**)))
+
+This makes it possible to use custom variables at the moment in HyML module and maybe custom functions on templates later in future.
 
 
 Quick start
 -----------
 
 Project is hosted in GitHub: https://github.com/markomanninen/hyml/
+
 
 Installation
 ~~~~~~~~~~~~
