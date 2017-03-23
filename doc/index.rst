@@ -35,6 +35,9 @@ First of all, I wanted to study more Lisp language. Seven years ago, I tried `Sc
 
 This implementation, Pythonic Lisp, is called with a concise two character name, `Hy <http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed, and affixed with other words. Playful compounds can be created such as Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: **HyML**.
 
+For other Lisp interpreters written in Python should be mentioned. One is from iconic Peter Norvig: `Lispy2 <http://norvig.com/lispy2.html>`__ and McCarthy's original Lisps by Fogus `lithp.py <http://fogus.me/fun/lithp/>`__, and Kjetil Valle, `Root Lisp <https://github.com/kvalle/root-lisp>`__.
+
+But none of these interact with Python `AST <https://docs.python.org/3/library/ast.html>`__ so that both Lisp and Python modules can be called from each sides, which is why I think Hy is an exceptionally interesting implementation.
 
 Previous similar work
 ~~~~~~~~~~~~~~~~~~~~~
@@ -150,6 +153,7 @@ Then usage of the HtmlElement class:
     $a->addContent(new HE_B("Link"));
     echo $a->render(); // <a href="#"><b>Link</b></a>
 
+Doesn't this feel quite Lispy? I mean generating and modifying code is same what macros do. Here it is done with PHP, and can be done with any language. But the thing is that EVAL in other languages is regarded as EVIL, but for Lisp users it is a "principia primaria".
 
 **Javascript**
 
@@ -212,23 +216,25 @@ Benefits and Implementation
 
 One thing in the object oriented method is that code itself doesn't resemble much like xhtml and html. So you are kind of approaching one domain language syntax from other syntax. In some cases it looks like ugly, in many small projects and cases it gives overhead in the amoun of code you need to write to output XML.
 
-In Hy (and List generally), language syntax already resembles structured and nested markup langauge. Basic components of the language are tag notation with <, >, and / characters, tag names, tag attributes, and tag content. This behaves exactly with Lisp notation where the first element inside parenthesis is normally a function, but now gets interpreted as a tag name. Keywords are usually indicated with a pair notation (:key "value"). And content is wrapped with double quotation characters. Only difference is that when indicator of nested content in XML is done "outside" of the start tag element, for example:
+In Hy (and List generally), language syntax already resembles structured and nested markup langauge. Basic components of the language are tag notation with <, >, and / characters, tag names, tag attributes, and tag content. This behaves exactly with Lisp notation where the first element inside parentheses is normally a function, but now gets interpreted as a tag name. Keywords are usually indicated with a pair notation (:key "value"). And content is wrapped with double quotation characters. Only difference is that when indicator of nested content in XML is done "outside" of the start tag element, for example:
 
 .. parsed-literal::
 
     <tag>content</tag>
 
-now In Hy, content is inside the expression:
+In Hy, the content is inside the expression:
 
 .. code:: lisp
 
     (tag "Content")
 
-This makes parenthesized notation less verbose, so it tends to save some space. Drawback is of cource the fact that in a large code block there will be a lot of ending parentheses,a s you will find later. This will make the famous LISP acronym expanded to "**L**ots of **I**rritating **S**uperfluous **P**arentheses". But don't let it scare you, like it did me at first.
+This makes parenthesized notation less verbose, so it tends to save some space. Drawback is of cource the fact that in a large code block there will be a lot of ending parentheses,a s you will find later. This will make the famous LISP acronym expanded to "(L)ots of (I)rritating (S)uperfluous (P)arentheses". But don't let it scare you, like it did me at first. After all, it is like with playing guitars; more different types you play, less it matters what you get on your hands. Soon you find you can't get it enought!
 
-Lisp is also known as "a code is data, data is a code" -paradigm. This is perfectly visible on the HyML implementation I'm going give some sights now.
+Lisp is also known as "code is data, data is code" -paradigm. This is perfectly visible on the HyML implementation I'm going give some sights now.
 
-Data, was it just data as data or code, in the information techonology it has always to do with three different aspects, namely:
+**Three aspects**
+
+Data, was it just data as data or code, in the information technology it has always to do with three different aspects, namely:
 
 1. processing lists (did I mention this somewhere earlier?!)
 2. hierarchic structures
@@ -268,7 +274,11 @@ One of the core parts of the HyML implementation is where to catch a tag name. B
 
 Then the rest of the HyML expression gets interpreted. It can contain basicly just key-value pairs or content. Content can be a string or yet another similar HyML expression. `get-content-attributes` in `macros.hy <https://github.com/markomanninen/hyml/blob/master/hyml/macros.hy>`__ will find out all keyword pairs first and then rest of the expression in regarded as content, which is a string or a nested HyML expression.
 
+**Semantic sugar**
+
 Then some tag names are specially handled like: `unquote`, `unquote_splice`, , `!__`, `<?xml`, `!DOCTYPE`, and in `html4/5` mode tag names starting with . or # (`dispatch_reader_macro`).
+
+For example ~ (unquote) symbol is used to switch the following expression from macro mode to Hy program mode. Other are mroe closely discussed in the `documentation <http://hyml.readthedocs.io/en/latest/#documentation>`__.
 
 Finally when tags are created some rules from specs.hy `<https://github.com/markomanninen/hyml/blob/master/hyml/specs.hy>`__ are used to create either long or short tags and to minimize attributes.
 
@@ -292,9 +302,18 @@ One more catch is to use variables from globals dictionary when evaluating code 
 
 .. code:: lisp
 
-    (.join "" (map ~name (eval (second code) **variables**)))
+    (.join "" (map ~name (eval (second code) variables)))
 
 This makes it possible to use custom variables at the moment in HyML module and maybe custom functions on templates later in future.
+
+Now, with these simple language semantic modifications to Hy, I have managed to do a new programable markup language, HyML, that produces XML / XHTML, and HTML code as an output.
+
+Future work
+~~~~~~~~~~~
+
+There is a nice feature set on arclanguage html generator, that still could optimize the size of the codebase of HyML: http://arclanguage.github.io/ref/html.html
+
+Downside of this is that implementation like that adds more functionas to call and maintain, while HyML at this point is a pretty minimal implementation for its purposes.
 
 
 Quick start
@@ -614,6 +633,8 @@ Contrary in ``xhtml`` and ``xhtml5`` macros attribute and tag minimizing
 is NOT available. Instead all tags are strictly closed and attributes in
 ``key="value"`` format.
 
+**HTML4**
+
 .. code:: lisp
 
     ; valid html4 document
@@ -625,6 +646,7 @@ Output:
 
     <title/><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>
 
+**XHTML**
 
 .. code:: lisp
 
