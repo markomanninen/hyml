@@ -2,18 +2,71 @@
 HyML - XML / (X)HTML generator for Hy
 =====================================
 
+
 Motivation
 ----------
 
+My intention is simple and mundane. Study. Study. Study.
+
+First of all I wanted to study more Lisp. A decade back I tried Scheme and CommonLisp for form generation and validation purposes. Then Clojure for `website session handler<https://github.com/markomanninen/websesstudy>`. Now, in 2017, I found a nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
+
+This implementation, Pythonic Lisp, is called with a concise two character name, `Hy<http://docs.hylang.org/en/latest/>`. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed and affixed with other words. Compounds like Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: HyML.
+
+
 Previous similar work
 ---------------------
+
+As a web developer, most of my time, I'm dealing with different kinds of scripting and markup languages. Code generation and following the specifications is the foremost concern. Lisp itself is famous of code generation and domain language oriented macro behaviours. I thought it would be nice to make a generator that creates html code, simplifies creation of it and produces standard well defined code. It turned out I'm was not so unique on that endeavour after all:
+
+.. quote::
+
+    There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career - `<http://weitz.de/cl-who/>`
+
+Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it yet. Or at least I didn't find them. One could easily use Python libraries, because any Python library can be imported to Hy with a simple import clause. I have made one of such 7 years ago, namely `tagpy` which is now called <Remarkuple3<https://github.com/markomanninen/remarkuple3>`. It is a general purpose class with automatic tag object creation on the fly. I should show core parts of it and usage example:
+
+.. code:: python
+
+
+
+I also made a PHP version even earlier in 2007. It factored classes for each html4 specified tag, and the rest was quite similar to Python version. Here is some part of the code for comparison:
+
+.. code:: php
+
+
+
+Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous JQuery javascript library, which has become a standard for DOM manipulation.
+
+.. code:: javascript
+
+
+
+Then there are plenty of domain specific html template languages for each and every programming language. Haml for Ruby, Genchi for Python, x for PHP. They separate user interace logic from business logic mostly following model-view-controller architecture. I did several similar approaches to create a template engine with PHP, that is a template language itself already.
+
+
+Benefits
+--------
+
+One thing in object oriented method is that code itself ...
+
+Static file generation
+
+Attached to the server html output generation
+
+http://www.cliki.net/html%20generator
+https://pypi.python.org/pypi?%3Aaction=search&term=html
+
+
+Quick start
+-----------
+
+...
 
 Installation
 ------------
 
 My environment for the sake of clarity:
 
-.. code:: python
+.. code:: clojure
 
     (import hy sys)
     (print "Hy version: " hy.__version__)
@@ -41,9 +94,7 @@ Then we are ready for the show!
 Almost all-in-one example
 -------------------------
 
-First I'd like to show an example that uses most features included in
-the HyML module. Then I will go thru all presented features case by
-case.
+First, I’d like to show an example that presents the most of the features included in the HyML module. Then I will go through all the features case by case.
 
 .. code:: python
 
@@ -164,7 +215,7 @@ them is for example the meta tag:
 
 .. parsed-literal::
 
-    '<meta name=keywords content=HTML,CSS,XML,JavaScript>'
+    <meta name=keywords content=HTML,CSS,XML,JavaScript>
 
 
 
@@ -179,7 +230,7 @@ To see and compare the difference in xhtml, let macro print the same:
 
 .. parsed-literal::
 
-    '<meta name="keywords" content="HTML,CSS,XML,JavaScript"/>'
+    <meta name="keywords" content="HTML,CSS,XML,JavaScript"/>
 
 
 
@@ -201,7 +252,7 @@ for generating xml/html/xhtml code:
 
 .. parsed-literal::
 
-    '<html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>'
+    <html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>
 
 
 
@@ -220,7 +271,7 @@ with the next, maybe more convenient and recommended notation:
 
 .. parsed-literal::
 
-    '<html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>'
+    <html><head><title>Page title</title></head><body><div class="container">Page content</div></body></html>
 
 
 
@@ -249,7 +300,7 @@ notation style anyway:
 
 .. parsed-literal::
 
-    '<p>Sentence 1</p><p>Sentence 2</p><p>Sentence 3</p>'
+    <p>Sentence 1</p><p>Sentence 2</p><p>Sentence 3</p>
 
 
 
@@ -309,7 +360,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
 
 .. parsed-literal::
 
-    '<title/><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>'
+    <title/><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>
 
 
 
@@ -323,7 +374,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
 
 .. parsed-literal::
 
-    '<title/><table><tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr></table>'
+    <title/><table><tr><td>Cell 1</td><td>Cell 2</td><td>Cell 3</td></tr></table>
 
 
 
@@ -368,7 +419,7 @@ corresponding to HTML4 or HTML5 specifications.
 
 .. parsed-literal::
 
-    '<input disabled>'
+    <input disabled>
 
 
 
@@ -386,7 +437,7 @@ In all ``ML`` macros you can pass any code in it. See for example:
 
 .. parsed-literal::
 
-    '<p>Sum: <b><apply>sum<[1, 2, 3, 4]/></apply></b></p>'
+    <p>Sum: <b><apply>sum<[1, 2, 3, 4]/></apply></b></p>
 
 
 
@@ -407,7 +458,7 @@ stopped for a moment:
 
 .. parsed-literal::
 
-    '<p>Sum: <b>10</b>!</p>'
+    <p>Sum: <b>10</b>!</p>
 
 
 
@@ -454,7 +505,7 @@ table head generation snippet:
 
 .. parsed-literal::
 
-    '<table><thead><tr><th class="even">col 0</th><th class="odd">col 1</th><th class="even">col 2</th></tr></thead></table>'
+    <table><thead><tr><th class="even">col 0</th><th class="odd">col 1</th><th class="even">col 2</th></tr></thead></table>
 
 
 
@@ -508,7 +559,7 @@ be processed. This is perhaps easier to follow for some people:
 
 .. parsed-literal::
 
-    '<ul><b>List</b><li>item 1</li><li>item 2</li></ul><ul><b>List</b><li>item 1</li><li>item 2</li></ul>'
+    <ul><b>List</b><li>item 1</li><li>item 2</li></ul><ul><b>List</b><li>item 1</li><li>item 2</li></ul>
 
 
 
@@ -624,7 +675,7 @@ Then I use ``include`` macro to read and process the content:
 
 .. parsed-literal::
 
-    '<html lang="en"><head><title>Page title</title></head><body><p>Content</p></body></html>'
+    <html lang="en"><head><title>Page title</title></head><body><p>Content</p></body></html>
 
 
 
@@ -639,7 +690,7 @@ All globally defined variables are available on ``ML`` macros likewise:
 
 .. parsed-literal::
 
-    'en, Page title, Content'
+    en, Page title, Content
 
 
 
@@ -711,20 +762,10 @@ Columns are:
 
     %javascript IPython.OutputArea.prototype._should_scroll = function(lines) {return false}
 
-
-
-.. parsed-literal::
-
-    <IPython.core.display.Javascript object>
-
-
 .. code:: python
 
     ; show all specs
     (pandas.DataFrame.transpose (pandas.DataFrame specs))
-
-
-
 
 .. raw:: html
 
