@@ -2,49 +2,149 @@
 HyML - XML / (X)HTML generator for Hy
 =====================================
 
+Introduction
+------------
+
+HyML (acronym for Hy Markup Language) is a set of macros to generate XML, XHTML and HTML code in Hy.
 
 Motivation
-----------
+~~~~~~~~~~
 
 My intention is simple and mundane. Study. Study. Study.
 
-First of all I wanted to study more Lisp. A decade back I tried Scheme and CommonLisp for form generation and validation purposes. Then Clojure for `website session handler<https://github.com/markomanninen/websesstudy>`. Now, in 2017, I found a nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
+First of all I wanted to study more Lisp. A decade back I tried `Scheme<https://cisco.github.io/ChezScheme/>`__ and `CommonLisp<http://cliki.net/>`__ for form generation and validation purposes. Then `Clojure<https://clojure.org/>`__ for `website session handler<https://github.com/markomanninen/websesstudy>`__. Now, in 2017, I found another nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
 
-This implementation, Pythonic Lisp, is called with a concise two character name, `Hy<http://docs.hylang.org/en/latest/>`. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed and affixed with other words. Compounds like Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: HyML.
+This implementation, Pythonic Lisp, is called with a concise two character name, `Hy<http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed and affixed with other words. Compounds like Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: HyML.
 
 
 Previous similar work
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
-As a web developer, most of my time, I'm dealing with different kinds of scripting and markup languages. Code generation and following the specifications is the foremost concern. Lisp itself is famous of code generation and domain language oriented macro behaviours. I thought it would be nice to make a generator that creates html code, simplifies creation of it and produces standard well defined code. It turned out I'm was not so unique on that endeavour after all:
+As a web developer, most of my time, I'm dealing with different kinds of scripting and markup languages. Code generation and following specifications is the foremost concern. Lisp itself is famous for code generation and domain language oriented macro behaviours. I thought it would be nice to make a generator that creates html code, simplifies creation of it and produces standard well defined code. It turned out that I was not so unique on that endeavour after all:
 
-.. quote::
+    There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career
 
-    There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career - `<http://weitz.de/cl-who/>`
+    -- `<http://weitz.de/cl-who/>`__
 
-Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it yet. Or at least I didn't find them. One could easily use Python libraries, because any Python library can be imported to Hy with a simple import clause. I have made one of such 7 years ago, namely `tagpy` which is now called <Remarkuple3<https://github.com/markomanninen/remarkuple3>`. It is a general purpose class with automatic tag object creation on the fly. I should show core parts of it and usage example:
+**Python**
+
+Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple import clause. And vice versa, any Hy module can be imported to Python with the ordinary import command. I have made such html generator module for Python 4 years ago, namely `tagpy` which is now called `Remarkuple3<https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. I should show somne core parts of it. First the tag class:
 
 .. code:: python
 
+    class TAG(object):
+        def __init__(self, *args, **kw):
+            """ Construct object, args are content and keywords are attributes """
+            for arg in args:
+                self.__dict__['content'].append(arg)
+            for key, val in kw.items():
+                self.__dict__['attributes'][key.lower()] = val
+        def __getattr__(self, key):
+            """ 
+            Get attribute by key by dot notation: tag.attr. This is a short and nice way, but
+            drawback is that Python has some reserved words, that can't be used this way. Method 
+            is also not-case-sensitive, because key is transformed to lower letters. Returning 
+            None if attribute is not found. 
+            """
+            return self.__dict__['attributes'].get(key.lower(), None)
+        def __str__(self):
+            """
+            Represent tag in string format. This is also a nice and short way to ouput the actual
+            xml content. Concat content retrieves all nested tags recursively.
+            """
+            if self.__dict__['content']:
+                return '<%s%s>%s</%s>' % (self.__class__.__name__, strattr(self.__dict__['attributes']),
+                                          concat(*self.__dict__['content']), self.__class__.__name__)
+            else:
+                return '<%s%s/>' % (self.__class__.__name__, strattr(self.__dict__['attributes']))
 
+Then helper initialization:
 
-I also made a PHP version even earlier in 2007. It factored classes for each html4 specified tag, and the rest was quite similar to Python version. Here is some part of the code for comparison:
+.. code:: python
+
+    # create helper class to automaticly create tags based on helper class attribute / method overloading
+    class htmlHelper(object):
+        def create(self, tag):
+            return type(tag, (TAG,), {})()
+        def __getattr__(self, tag):
+    return type(tag.lower(), (TAG,), {})
+
+    # init helper fpr inclusion on the module
+    helper = htmlHelper()
+
+and finally a frontend usage example:
+
+.. code:: python
+
+    # load html helper
+    from remarkuple import helper as h
+    # create anchor tag
+    a = h.a()
+    # create attribute for anchor
+    a.href = "#"
+    # add bolded tag text to anchor
+    a += h.b("Link")
+    print(a)
+
+**PHP**
+
+I also made a PHP version of the HTML generator even earlier in 2007. It factored classes for each html4 specified tag, and the rest was quite similar to Python version. Here is some parts of the code for comparison, first the generation of the tag classes:
 
 .. code:: php
 
+    $evalstr = '';
+    // Factorize elements to classes
+    foreach ($elements as $abbreviation => $element) {
+        $abbreviation = strtoupper($abbreviation);
+        $arg0 = strtolower($abbreviation);
+        $arg1 = $element['name'];
+        $arg2 = $element['omitted'] ? 'true' : 'false';
+        $arg3 = $element['nocontent'] ? 'true' : 'false';
+        $arg4 = $element['strict'] ? 'true' : 'false';
+       
+        $evalstr .= <<<EOF
+    class HE_$abbreviation extends HtmlElement
+    {
+        function HE_$abbreviation(\$Attributes = null, \$Content = null, \$Index = null) {
+            parent::Mm_HtmlElement('$arg0', '$arg1', $arg2, $arg3, $arg4);
+            if (isset(\$Attributes) && is_array(\$Attributes)) \$this->attributes->container(\$Attributes);
+            if (isset(\$Content)) \$this->add_content(\$Content, \$Index);
+        }
+    }
+    EOF;
+        }
+        eval($evalstr);
+    }
 
+Then front end usage:
 
-Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous JQuery javascript library, which has become a standard for DOM manipulation.
+.. code:: php
+
+    include 'HtmlElement.php';
+    $a = new HE_A(array('href' => '#'));
+    $a->addContent(new HE_B("Link"));
+    echo $a->render();
+
+Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous `jQuery<https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation.
+
+**Javascript**
 
 .. code:: javascript
 
+    var a = $('<a/>');
+    a.attr('href', "#");
+    a.html($('<b>Link</b>');
+    console.log(a.html());
 
+This will construct tag objects which you can access by jQuery methods that are too manifold to mention here.
 
-Then there are plenty of domain specific html template languages for each and every programming language. Haml for Ruby, Genchi for Python, x for PHP. They separate user interace logic from business logic mostly following model-view-controller architecture. I did several similar approaches to create a template engine with PHP, that is a template language itself already.
+**Template engines**
+
+Then there are plenty of domain specific html template languages for each and every programming language. `Haml<http://haml.info/>`__ for Ruby. `Jinja<http://jinja.pocoo.org/>`__, `Mako<http://www.makotemplates.org/>`__, and `Genchi<https://genshi.edgewall.org/>`__ for Python. `Twig<http://twig.sensiolabs.org/>`__, `Smarty<http://www.smarty.net/>`__ and `Mustache<https://github.com/bobthecow/mustache.php>`__ for PHP. They separate user interace logic from business logic mostly following model-view-controller architecture. I did several similar approaches to create a template engine with PHP, that is a template language itself already.
 
 
 Benefits
---------
+~~~~~~~~
 
 One thing in object oriented method is that code itself ...
 
@@ -53,6 +153,7 @@ Static file generation
 Attached to the server html output generation
 
 http://www.cliki.net/html%20generator
+
 https://pypi.python.org/pypi?%3Aaction=search&term=html
 
 
@@ -62,11 +163,16 @@ Quick start
 ...
 
 Installation
-------------
+~~~~~~~~~~~~
+
+
+
+Environment check
+~~~~~~~~~~~~~~~~~
 
 My environment for the sake of clarity:
 
-.. code:: clojure
+.. code:: lisp
 
     (import hy sys)
     (print "Hy version: " hy.__version__)
@@ -80,9 +186,9 @@ My environment for the sake of clarity:
     
 
 Import main macros
-------------------
+~~~~~~~~~~~~~~~~~~
 
-.. code:: python
+.. code:: lisp
 
     (require [hyml.macros [*]]
              [hyml.helpers [*]])
@@ -91,12 +197,15 @@ Import main macros
 
 Then we are ready for the show!
 
-Almost all-in-one example
--------------------------
+Documentation
+-------------
+
+All-in-one example
+------------------
 
 First, I’d like to show an example that presents the most of the features included in the HyML module. Then I will go through all the features case by case.
 
-.. code:: python
+.. code:: lisp
 
     ; by default there is no indentation, thus for pretty print we use indent
     (print (indent 
