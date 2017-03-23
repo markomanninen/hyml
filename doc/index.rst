@@ -22,7 +22,7 @@ Previous similar work
 
 As a web developer, most of my time, I'm dealing with different kinds of scripting and markup languages. Code generation and following specifications is the foremost concern. Lisp itself is famous for code generation and domain language oriented macro behaviours. I thought it would be nice to make a generator that creates html code, simplifies creation of it and produces standard well defined code. It turned out that I was not so unique on that endeavour after all:
 
-    There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career
+    "There are plenty of Lisp Markup Languages out there - every Lisp programmer seems to write at least one during his career...""
 
     -- `CL-WHO <http://weitz.de/cl-who/>`__
 
@@ -67,9 +67,9 @@ Then helper initialization:
         def create(self, tag):
             return type(tag, (TAG,), {})()
         def __getattr__(self, tag):
-    return type(tag.lower(), (TAG,), {})
+            return type(tag.lower(), (TAG,), {})
 
-    # init helper fpr inclusion on the module
+    # init helper for inclusion on the module
     helper = htmlHelper()
 
 and finally a frontend usage example:
@@ -90,7 +90,7 @@ and finally a frontend usage example:
 
 I also made a PHP version of the HTML generator even earlier in 2007. It factored classes for each html4 specified tag, and the rest was quite similar to Python version. Here is some parts of the code for comparison, first the generation of the tag classes:
 
-.. code:: php
+.. code:: PHP
 
     $evalstr = '';
     // Factorize elements to classes
@@ -118,7 +118,7 @@ I also made a PHP version of the HTML generator even earlier in 2007. It factore
 
 Then front end usage:
 
-.. code:: php
+.. code:: PHP
 
     include 'HtmlElement.php';
     $a = new HE_A(array('href' => '#'));
@@ -129,7 +129,7 @@ Both Python and PHP versions are object oriented approaches to html generation. 
 
 **Javascript**
 
-.. code:: javascript
+.. code:: JavaScript
 
     var a = $('<a/>');
     a.attr('href', "#");
@@ -291,7 +291,7 @@ listed at the end of the document.
 Tags can be created with or without attributes, as well as with or
 without content. For example:
 
-.. code:: python
+.. code:: lisp
 
     (println
       (xml (node))
@@ -315,10 +315,9 @@ have endings so they will be rendered in correct form by the parser.
 "Forbidden" labeled tags are listed at the end of the document. One of
 them is for example the meta tag:
 
-.. code:: python
+.. code:: lisp
 
     (html4 (meta :name "keywords" :content "HTML,CSS,XML,JavaScript"))
-
 
 
 
@@ -330,10 +329,9 @@ them is for example the meta tag:
 
 To see and compare the difference in xhtml, let macro print the same:
 
-.. code:: python
+.. code:: lisp
 
     (xhtml (meta :name "keywords" :content "HTML,CSS,XML,JavaScript"))
-
 
 
 
@@ -350,7 +348,7 @@ Shorthand macro
 macro <http://docs.hylang.org/en/latest/language/readermacros.html>`__
 for generating xml/html/xhtml code:
 
-.. code:: python
+.. code:: lisp
 
     #㎖(html
         (head (title "Page title"))
@@ -366,7 +364,7 @@ for generating xml/html/xhtml code:
 ``#㎖`` actually utilizes ``xml`` macro so same result can be achieved
 with the next, maybe more convenient and recommended notation:
 
-.. code:: python
+.. code:: lisp
 
     (xml
       (html
@@ -383,7 +381,7 @@ It is not possible to define other ``ML`` macro to be used with the
 ``#㎖`` shorthand reader macro. You could however define your own
 shorthands following next quidelines:
 
-(defreader {unicode-char} [code] (parse-{parser} code))
+    (defreader {unicode-char} [code] (parse-{parser} code))
 
 ``{unicode-char}`` can be any `unicode
 char <https://unicode-table.com/en/>`__ you want. ``{parser}`` must be
@@ -395,7 +393,7 @@ generating code. Directry using ``ML`` macros makes it possible to
 generate multiple instances of code, and might be more informative
 notation style anyway:
 
-.. code:: python
+.. code:: lisp
 
     (xml (p "Sentence 1") (p "Sentence 2") (p "Sentence 3"))
 
@@ -408,7 +406,7 @@ notation style anyway:
 Let us then render the code, not just printing it. This can be done via
 ``html5>`` macro imported earlier from helpers:
 
-.. code:: python
+.. code:: lisp
 
     (html4> "Content is " (b king) !)
 
@@ -431,7 +429,7 @@ example below if we try to use ``time`` element in ``html4``, which is
 specifically available in ``html5`` only, we will get an ``HyTMLError``
 exception:
 
-.. code:: python
+.. code:: lisp
 
     ;(try
     ; (html4 (time))
@@ -449,7 +447,7 @@ Contrary in ``xhtml`` and ``xhtml5`` macros attribute and tag minimizing
 is NOT available. Instead all tags are strictly closed and attributes in
 ``key="value"`` format.
 
-.. code:: python
+.. code:: lisp
 
     ; valid html4 document
     (html4 (title) (table (tr (td "Cell 1") (td "Cell 2") (td "Cell 3"))))
@@ -460,7 +458,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
     <title/><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>
 
 
-.. code:: python
+.. code:: lisp
 
     ; in xhtml tags and attributes will be output in complete format
     (xhtml (title) (table (tr (td "Cell 1") (td "Cell 2") (td "Cell 3"))))
@@ -487,7 +485,7 @@ is NOT available. Instead all tags are strictly closed and attributes in
     corresponding to HTML4 or HTML5 specifications.
 
 
-.. code:: python
+.. code:: lisp
 
     ; see how boolean attribute minimizing works
     (html4 (input :disabled "disabled"))
@@ -503,7 +501,7 @@ Unquoting code
 
 In all ``ML`` macros you can pass any code in it. See for example:
 
-.. code:: python
+.. code:: lisp
 
     (xml (p "Sum: " (b (apply sum [[1 2 3 4]]))))
 
@@ -521,7 +519,7 @@ everything else is interpreted either as a content or a keyword.
 However using ``~`` (unquote) symbol, ``ML`` macro behaviour can be
 stopped for a moment:
 
-.. code:: python
+.. code:: lisp
 
     (xml (p "Sum: " (b ~(apply sum [[1 2 3 4]])) !))
 
@@ -536,17 +534,9 @@ result is returned back to the original parser. And the rest of the code
 will be interpreted via macro. In this case it was just an exclamation
 mark.
 
-.. raw:: html
-
-   <blockquote>
-
-Note that it is not mandatory to wrap strings with ``""`` if given input
-doesn't contain any spaces. You could also single quote simple
-non-spaced letter sequences. So ``!`` is same as ``"!"`` in this case.
-
-.. raw:: html
-
-   </blockquote>
+    Note that it is not mandatory to wrap strings with ``""`` if given input
+    doesn't contain any spaces. You could also single quote simple
+    non-spaced letter sequences. So ``!`` is same as ``"!"`` in this case.
 
 Quoting and executing normal Hy code inside html gives almost unlimited
 possibility to use HyML as a templating engine. Of cource there is also
@@ -561,7 +551,7 @@ In addition to unquote, one can handle lists and iterators with ``~@``
 elements needs to be passed to the parent element. Take for example this
 table head generation snippet:
 
-.. code:: python
+.. code:: lisp
 
     (xhtml 
      (table (thead
@@ -583,7 +573,7 @@ to be processed as the second argument. On a nested code this will move
 lists to be processed in first hand to the end of the notation. For
 example:
 
-.. code:: python
+.. code:: lisp
 
     (xml> 
       ~@(list-comp `(ul (b "List")
@@ -609,7 +599,7 @@ processing list items is the second argument. Yet the second argument
 itself contains a new list processing loop until final list item is to
 be processed. This is perhaps easier to follow for some people:
 
-.. code:: python
+.. code:: lisp
 
     (xhtml
       ~@(list-comp* [uls [[1 2] [1 2]]]
@@ -634,7 +624,7 @@ Here is a more complex table generation example from the
 Python module docs. One should notice how variables (``col``, ``row``,
 and ``cell``) are referenced by quoting them:
 
-.. code:: python
+.. code:: lisp
 
     (html4>
       (table#data
@@ -673,7 +663,7 @@ Address book table from CSV file
 We should of course be able to use external source for the html. Let's
 try with a short csv file:
 
-.. code:: python
+.. code:: lisp
 
     (xhtml> 
      (table.data
@@ -701,7 +691,7 @@ It is possible to load code from an external file too. This feature has
 not been deeply implemented yet, but you get the feeling by the next
 example. Firt I'm just going to show external template file content:
 
-.. code:: python
+.. code:: lisp
 
     (with [f (open "template.hy")] (print (f.read)))
 
@@ -716,7 +706,7 @@ example. Firt I'm just going to show external template file content:
 
 Then I use ``include`` macro to read and process the content:
 
-.. code:: python
+.. code:: lisp
 
     (defvar lang "en"
             title "Page title"
@@ -732,7 +722,7 @@ Then I use ``include`` macro to read and process the content:
 
 All globally defined variables are available on ``ML`` macros likewise:
 
-.. code:: python
+.. code:: lisp
 
     (xhtml ~lang ", " ~title ", " ~body)
 
@@ -769,7 +759,7 @@ Columns are:
 -  HTML4 (is html4 compatible?)
 -  HTML5 (is html5 compatible?)
 
-.. code:: python
+.. code:: lisp
 
     (xhtml>
       (table.data
@@ -795,7 +785,7 @@ Columns are:
     <table class="data"><caption>HTML Element Specifications</caption><thead><tr><th>Tag name</th><th>Tag title</th><th>Forbidden</th><th>Omit</th><th>HTML4</th><th>HTML5</th></tr></thead><tbody><tr><td>A</td><td>a</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>ABBR</td><td>abbr</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>ACRONYM</td><td>acronym</td><td>False</td><td>False</td><td class="html4">✓</td><td class=""/></tr><tr><td>ADDRESS</td><td>address</td><td>False</td><td>False</td><td class="html4">✓</td><td class="html5"/>✓</tr><tr><td>APPLET</td><td>applet</td><td>False</td><td>False</td><td class="html4">✓</td><td class=""/></tr></tbody></table>
 
 
-.. code:: python
+.. code:: lisp
 
     ; lets import pandas dataframe for easy table view
     (import [pandas])
@@ -807,7 +797,7 @@ Columns are:
 
     %javascript IPython.OutputArea.prototype._should_scroll = function(lines) {return false}
 
-.. code:: python
+.. code:: lisp
 
     ; show all specs
     (pandas.DataFrame.transpose (pandas.DataFrame specs))
