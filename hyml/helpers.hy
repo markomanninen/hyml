@@ -13,26 +13,32 @@
 (defn create-symbol [&rest args]
   (hy.HySymbol (.join "" (map str args))))
 
-;-------------------------------------------
-; Render html for Jupyter Notebook document
-;-------------------------------------------
+;----------------------------------------------
+; render html for the Jupyter Notebook document
+; this is not mandatory for HyML other macros
+; this is just for the html render in NB
+;----------------------------------------------
 
-(import IPython)
+(try 
+  (do
+    (import IPython)
+    (if (in 'display (.__dir__ IPython))
+        (do
+          (defmacro xml> [&rest code]
+            `(IPython.display.HTML (xml ~@code)))
 
-(defmacro xml> [&rest code]
-  `(IPython.display.HTML (xml ~@code)))
+          (defmacro xhtml> [&rest code]
+            `(IPython.display.HTML (xhtml ~@code)))
 
-(defmacro xhtml> [&rest code]
-  `(IPython.display.HTML (xhtml ~@code)))
+          (defmacro xhtml5> [&rest code]
+            `(IPython.display.HTML (xhtml5 ~@code)))
 
-(defmacro xhtml5> [&rest code]
-  `(IPython.display.HTML (xhtml5 ~@code)))
+          (defmacro html4> [&rest code]
+            `(IPython.display.HTML (html4 ~@code)))
 
-(defmacro html4> [&rest code]
-  `(IPython.display.HTML (html4 ~@code)))
-
-(defmacro html5> [&rest code]
-  `(IPython.display.HTML (html5 ~@code)))
+          (defmacro html5> [&rest code]
+            `(IPython.display.HTML (html5 ~@code))))))
+  (except (e Exception) (print e)))
 
 ;-----------------
 ; Indent xml code

@@ -17,13 +17,13 @@ setup(
     'hyml': ['*.hy']
   },
   
-  version = 'v0.1.2',
+  version = 'v0.1.3',
   description = 'HyML - XML / (X)HTML generator for Hy',
   author = 'Marko Manninen',
   author_email = 'elonmedia@gmail.com',
 
   url = 'https://github.com/markomanninen/hyml', # use the URL to the github repo
-  download_url = 'https://github.com/markomanninen/hyml/archive/v0.1.2.tar.gz', # I'll explain this in a second
+  download_url = 'https://github.com/markomanninen/hyml/archive/v0.1.3.tar.gz', # I'll explain this in a second
   keywords = ['hylang', 'python', 'markup language', 'dsl', 'xml', 'html', 'xhtml'], # arbitrary keywords
   platforms = ['any'],
   
