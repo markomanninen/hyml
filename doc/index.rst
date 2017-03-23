@@ -28,7 +28,7 @@ As a web developer, most of my time, I'm dealing with different kinds of scripti
 
 **Python**
 
-Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple import clause. And vice versa, any Hy module can be imported to Python with the ordinary import command. I have made such html generator module for Python 4 years ago, namely `tagpy` which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. I should show somne core parts of it. First the tag class:
+Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple import clause. And vice versa, any Hy module can be imported to Python with the ordinary import command. I have made such html generator module for Python 4 years ago, namely `tagpy` which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. I should show some core parts of it. First the tag class:
 
 .. code:: python
 
@@ -84,7 +84,7 @@ and finally a frontend usage example:
     a.href = "#"
     # add bolded tag text to anchor
     a += h.b("Link")
-    print(a)
+    print(a) # <a href="#"><b>Link</b></a>
 
 **PHP**
 
@@ -123,11 +123,11 @@ Then front end usage:
     include 'HtmlElement.php';
     $a = new HE_A(array('href' => '#'));
     $a->addContent(new HE_B("Link"));
-    echo $a->render();
-
-Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous `jQuery <https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation.
+    echo $a->render(); // <a href="#"><b>Link</b></a>
 
 **Javascript**
+
+Both Python and PHP versions are object oriented approaches to html generation. Which is quite good after all. You can collect html elements inside each other, manipulate them anyway you want before rendering ouput. One could similarly use world-famous `jQuery <https://jquery.com/>`__ javascript library, which has become a standard for DOM manipulation:
 
 .. code:: JavaScript
 
@@ -140,37 +140,69 @@ This will construct tag objects which you can access by jQuery methods that are 
 
 **Template engines**
 
-Then there are plenty of domain specific html template languages for each and every programming language. `Haml <http://haml.info/>`__ for Ruby. `Jinja <http://jinja.pocoo.org/>`__, `Mako <http://www.makotemplates.org/>`__, and `Genchi <https://genshi.edgewall.org/>`__ for Python. `Twig <http://twig.sensiolabs.org/>`__, `Smarty <http://www.smarty.net/>`__ and `Mustache <https://github.com/bobthecow/mustache.php>`__ for PHP. They separate user interace logic from business logic mostly following model-view-controller architecture. I did several similar approaches to create a template engine with PHP, that is a template language itself already.
+Then there are plenty of domain specific html template languages for each and every programming language. `Haml <http://haml.info/>`__ for Ruby. `Jinja <http://jinja.pocoo.org/>`__, `Mako <http://www.makotemplates.org/>`__, and `Genchi <https://genshi.edgewall.org/>`__ for Python. `Twig <http://twig.sensiolabs.org/>`__, `Smarty <http://www.smarty.net/>`__ and, `Mustache <https://github.com/bobthecow/mustache.php>`__ for PHP. They separate user interace logic from business and database logic mostly following model-view-controller architecture. By using output buffering control one can easily create a template engine with PHP, that is a template language itself already. For example:
+
+.. code:: PHP
+
+    function render($file, $data) {
+        $content = file_get_contents($file);
+        ob_start() && extract($data);
+        eval('?>'.$content);
+        $content = ob_get_clean();
+        ob_flush();
+        return $content;
+    }
+
+    render('file.php', array('key' => "Value"));
+
+But now it is time to get on Python, Lisp, and Hy. While Hy didn't have html generators until now, there are many Lisp implementations as previously told. You can find out some from `cliki.net <http://www.cliki.net/html%20generator>`__. Also many Python xml/html generators and processors are available from `Pypi <https://pypi.python.org/pypi?%3Aaction=search&term=html>`__.
 
 
 Benefits
 ~~~~~~~~
 
-One thing in object oriented method is that code itself ...
+One thing in the object oriented method is that code itself doesn't resemble much like xhtml and html. So you are kind of approaching one domain language syntax from other syntax. In some cases it looks like ugly, in many small projects and cases it gives overhead in the amoun of code you need to write to output XML.
 
-Static file generation
+In Hy (and List generally), language syntax already resembles structured and nested markup langauge. Basic components of the language are tag notation with <, >, and / characters, tag names, tag attributes, and tag content. This behaves exactly with Lisp notation where the first element inside parenthesis is nornmally a function, but now gets interpreted as a tag name. Keywords are usually indicated with a pair notation (:key "value"). And content is wrapped with double quotation characters. Only difference is that when indicator of nested content in XML is done "outside" of the start tag element, for example:
 
-Attached to the server html output generation
+.. parsed-literal::
 
-http://www.cliki.net/html%20generator
+    <tag>content</tag>
 
-https://pypi.python.org/pypi?%3Aaction=search&term=html
+now In Hy, content is inside the expression:
+
+.. code:: lisp
+
+    (tag "Content")
+
+This makes parenthesized notation less verbose, it tends to save some space. Drawback is of cource the fact that in a large code block there will be a lot of ending parentheses. This will make the famous LISP acronym expanded: Lots of Irritating Superfluous Parentheses.
+
+Lisp is also known as "a code is data, data is a code" -paradigm. This is perfectly visible on the HyML implementation I'm going to dive next.
+
+;Static file generation
+
+;Attached to the server html output generation
 
 
 Quick start
 -----------
 
-...
+Project is hosted in GitHub: https://github.com/markomanninen/hyml/
 
 Installation
 ~~~~~~~~~~~~
 
+HyML can be installed effortlessly with `pip <https://pip.pypa.io/en/latest/installing/>`__:
+
+`pip install hyml`
+
+HyML requires of cource Python and Hy on computer. Hy will be automaticly installed, if it wasn't already.
 
 
 Environment check
 ~~~~~~~~~~~~~~~~~
 
-My environment for the sake of clarity:
+You should check that your environment meets the same as mine. My environment for the sake of clarity:
 
 .. code:: lisp
 
@@ -185,17 +217,33 @@ My environment for the sake of clarity:
     Python 3.5.2 |Anaconda custom (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)]
     
 
+So this module has been run on Hy 0.12.1 and Python 3.5.2 installed by Anaconda package in Windows. If any probles occures, you should report them to: https://github.com/markomanninen/hyml/issues
+
+
 Import main macros
 ~~~~~~~~~~~~~~~~~~
 
+After installation you can import ML macros with the next code snippet in Hy REPL or Jupyter Notebook with calysto_hy kernel:
+
 .. code:: lisp
 
-    (require [hyml.macros [*]]
-             [hyml.helpers [*]])
+    (require [hyml.macros [*]])
     (import (hyml.macros (*)))
-    (import (hyml.helpers (indent)))
+
+Let us just try that everything works with a small test:
+
+.. code:: lisp
+
+    (xml (tag :attr "val" (sub)))
+
+That should output:
+
+.. parsed-literal::
+
+    <tag attr="val"><sub/></tag>
 
 Then we are ready for the show!
+
 
 Documentation
 -------------
@@ -426,15 +474,15 @@ Validation and minimizing
 If validation of the html tag names is a concern, then one should use
 ``html4``, ``html5``, ``xhtml``, and ``xhtml5`` macro family. In the
 example below if we try to use ``time`` element in ``html4``, which is
-specifically available in ``html5`` only, we will get an ``HyTMLError``
+specifically available in ``html5`` only, we will get an ``HyMLError``
 exception:
 
 .. code:: lisp
 
     ;(try
     ; (html4 (time))
-    ; (catch [e [HyTMLError]]))
-    ;hytml.macros.HyTMLError: Tag 'time' not meeting html4 specs
+    ; (catch [e [HyMLError]]))
+    ;hytml.macros.HyMLError: Tag 'time' not meeting html4 specs
 
 Other features in ``html4`` and ``html5`` macros are attribute and tag
 minimizing. Under the `certain
