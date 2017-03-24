@@ -45,8 +45,10 @@
 (import (hyml.specs (specs4 specs5 specs boolean-attributes 
                      optional-start-tags optional-end-tags)))
 
-; needed for xml render helpers
-(import IPython)
+(try
+  ; needed for xml render helpers
+  (import IPython)
+  (except (e Exception) (print e)))
 
 (eval-and-compile
   
