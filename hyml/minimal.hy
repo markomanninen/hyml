@@ -18,13 +18,17 @@
 ; Licence: MIT
 ;----------------------------------------------
 
+; global registry for variables and functions
+(require (hyml.variables (defvar deffun)))
+(import (hyml.variables (variables-and-functions)))
+
 ; eval and compile variables, constants and functions for mnml, defvar, deffun, and include macros
 (eval-and-compile
-  ; global registry for variables and functions
-  (setv variables-and-functions {})
   ; internal constants
-  (def **keyword** "keyword") (def **unquote** "unquote")
-  (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
+  (def **keyword** "keyword")
+  (def **unquote** "unquote")
+  (def **splice** "unquote_splice")
+  (def **unquote-splice** (, **unquote** **splice**))
   ; dettach keywords and content from code expression
   (defn get-content-attributes [code]
     (setv content [] attributes [] kwd None)
@@ -66,16 +70,6 @@
   ; create start tag
   (defn tag-start [tag-name attr short]
     (+ "<" tag-name (tag-attributes attr) (if short "/>" ">"))))
-; global variable handler
-(defmacro defvar [&rest args]
-  (setv l (len args) i 0)
-  (while (< i l)
-    (do
-      (assoc variables-and-functions (get args i) (get args (inc i)))
-      (setv i (+ 2 i)))))
-; global function handler
-(defmacro deffun [name func]
-  (assoc variables-and-functions name (eval func)))
 ; include functionality for template engine
 (defmacro include [template]
   `(do
