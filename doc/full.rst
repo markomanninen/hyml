@@ -6,9 +6,9 @@ HyML - Markup Language generator for Hy
 Language) is a set of macros to generate XML, XHTML, and HTML code in
 Hy.
 
-`HyML ``MiNiMaL`` <http://hyml.readthedocs.io/en/latest/minimal.html>`__ macro 
+`HyML MiNiMaL <http://hyml.readthedocs.io/en/latest/minimal.html>`__ macro 
 is departed from the more extensive document and validation oriented "full" 
-version of HyML. HyML ``MiNiMaL`` is meant to be used as a minimal codebase to 
+version of HyML. HyML MiNiMaL is meant to be used as a minimal codebase to 
 generate XML (Extensible Markup Language).
 
 Introduction
@@ -251,7 +251,7 @@ Data, was it just data as data or code, in the information technology it has alw
 2. hierarchic structures
 3. data types
 
-In HyML the third part is pretty simple. On the output everything is just a plain text. There are no datatypes. In HyML data types has a minimal meaning. You should only give attention keywords that starts with colon (:) punctuation mark and literals that start with " and ends to the counterpart ".
+In HyML the third part is pretty simple. On the output everything is just a plain text. There are no datatypes. In HyML data types has a negligible meaning. You should only give attention keywords that starts with colon (:) punctuation mark and literals that start with " and ends to the counterpart ".
 
 Hierachical structure is defined by nested parentheses. Simple as that.
 
