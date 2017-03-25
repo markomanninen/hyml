@@ -46,7 +46,7 @@ For easy install, use
 `pip <https://pip.pypa.io/en/stable/installing/>`__ Python repository
 installer:
 
-.. code-block:: shll
+.. code-block:: shell
 
     $ pip install hyml
 
@@ -92,20 +92,26 @@ Hy ``MiNiMaL`` code (all)
 -------------------------
 
 Because codebase for HyML ``MiNiMaL`` implementation is roughly 50 lines
-only, it is provided here with structural comments for
-introspection. More detailed comment are available in the
+only (without comments), it is provided here with structural comments and 
+linebreaks for introspection. More detailed comment are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
 source file.
 
 .. code-block:: hylang
+   :linenos:
 
     ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
+
       ; global registry for variables and functions
       (setv variables-and-functions {})
+
       ; internal constants
-      (def **keyword** "keyword") (def **unquote** "unquote")
-      (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
+      (def **keyword** "keyword")
+      (def **unquote** "unquote")
+      (def **splice** "unquote_splice")
+      (def **unquote-splice** (, **unquote** **splice**))
+
       ; detach keywords and content from code expression
       (defn get-content-attributes [code]
         (setv content [] attributes [] kwd None)
@@ -119,6 +125,7 @@ source file.
                        (.append attributes (, kwd (parse-mnml item)))))
                  (if (keyword? item) (setv kwd item) (setv kwd None))))
         (, content attributes))
+
       ; recursively parse expression
       (defn parse-mnml [code] 
         (if (coll? code)
@@ -132,34 +139,41 @@ source file.
                            (if (empty? content) ""
                                (+ (.join "" (map str content)) (+ "</" tag ">")))))))
             (if (none? code) "" (str code))))
+
       ; detach tag from expression
       (defn catch-tag [code]
         (if (and (iterable? code) (= (first code) **unquote**))
             (eval (second code))
             (try (name (eval code))
                  (except (e Exception) (str code)))))
+
       ; concat attributes
       (defn tag-attributes [attr]
         (if (empty? attr) ""
             (+ " " (.join " " (list-comp
               (% "%s=\"%s\"" (, (name kwd) (name value))) [[kwd value] attr])))))
+
       ; create start tag
       (defn tag-start [tag-name attr short]
         (+ "<" tag-name (tag-attributes attr) (if short "/>" ">"))))
+
     ; global variable registry handler
     (defmacro defvar [&rest args]
       (setv l (len args) i 0)
       (while (< i l) (do
         (assoc variables-and-functions (get args i) (get args (inc i)))
         (setv i (+ 2 i)))))
+
     ; global function registry handler
     (defmacro deffun [name func]
       (assoc variables-and-functions name (eval func)))
+
     ; include functionality for template engine
     (defmacro include [template]
       `(do (import [hy.importer [tokenize]])
            (with [f (open ~template)]
              (tokenize (+ "~@`(" (f.read) ")")))))
+
     ; main MiNiMaL macro to be used. passes code to parse-mnml
     (defmacro ml [&rest code]
       (.join "" (map parse-mnml code)))
@@ -231,7 +245,7 @@ Simple example
 
 The simple example utilizing above features is:
 
-.. code:: hylang
+.. code-block:: hylang
 
     (tag :attr "value" (sub "Content"))
 
@@ -243,7 +257,7 @@ keywords) in the tag. Sub node instead has titlecase content
 
 Output would be:
 
-.. code:: xml
+.. code-block:: xml
 
     <tag attr="value"><sub>Content</sub></tag>
 
@@ -257,14 +271,14 @@ Tag name
 
 You can generate a tag name with Hy code by using ~ symbol:
 
-.. code:: python
+.. code-block:: hylang
 
     (ml (~(+ "t" "a" "g")))
 
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag/>
 
@@ -281,27 +295,27 @@ Attribute name and value
 You can generate an attribute name or a value with Hy by using ~ symbol.
 Generated attribute name must be a keyword however:
 
-.. code:: python
+.. code-block:: hylang
 
     (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value"))
 
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag attr="value"/>
 
 
 
-.. code:: python
+.. code-block:: hylang
 
     (ml (tag :attr ~(+ "v" "a" "l" "u" "e")))
 
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag attr="value"/>
 
@@ -312,14 +326,14 @@ Content
 
 You can generate content with Hy by using ~ symbol:
 
-.. code:: python
+.. code-block:: hylang
 
     (ml (tag ~(.upper "content")))
 
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag>CONTENT</tag>
 
@@ -333,20 +347,22 @@ Variables and functions are stored on the common registry and availble
 on the macro expansion. You can access predefined symbols when quoting
 (~) the expression.
 
-.. code:: python
+.. code-block:: hylang
 
     ; define variables with defvar macro
     (defvar firstname "Dennis"
             lastname "McDonald")
+
     ; define functions with deffun macro
     (deffun wholename (fn [x y] (+ y ", " x)))
+
     ; use variables and functions with unquote / unquote splice
     (ml (tag ~(wholename firstname lastname)))
 
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag>McDonald, Dennis</tag>
 
@@ -367,7 +383,7 @@ elements. Hy code, sub expressions, and variables / functions work
 inside unquote spliced expression. You need to quote a line, if it
 contains a sub ``MiNiMaL`` expression.
 
-.. code:: python
+.. code-block:: hylang
 
     ; generate 5 sub tags and use enumerated numeric value as a content
     (ml (tag ~@(list-comp `(sub ~(str item)) [item (range 5)])))
@@ -375,7 +391,7 @@ contains a sub ``MiNiMaL`` expression.
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>
 
@@ -386,12 +402,12 @@ Using templates
 
 Let us first show the template content existing in the external file:
 
-.. code:: python
+.. code-block:: hylang
 
     (with [f (open "note.hy")] (print (f.read)))
 
 
-.. parsed-literal::
+.. code-block:: hylang
 
     (note :src "https://www.w3schools.com/xml/note.xml"
       (to ~to)
@@ -403,7 +419,7 @@ Let us first show the template content existing in the external file:
 Then we will define variables and a function to be used inside
 ``MiNiMaL`` macro:
 
-.. code:: python
+.. code-block:: hylang
 
     (defvar to "Tove"
             from "Jani"
@@ -412,13 +428,13 @@ Then we will define variables and a function to be used inside
 
 And finally include and render the template:
 
-.. code:: python
+.. code-block:: hylang
 
     (import (hyml.helpers (indent)))
     (print (indent (ml ~@(include "note.hy"))))
 
 
-.. code:: xml
+.. code-block:: xml
 
     <note src="https://www.w3schools.com/xml/note.xml">
     	<to>Tove</to>
@@ -439,14 +455,14 @@ Nested ``MiNiMaL`` macros
 
 It is possible to call ``MiNiMaL`` macro again inside unquoted code:
 
-.. code:: python
+.. code-block:: hylang
 
     (ml (tag ~(+ "Generator inside: " (ml (sub "content")))))
 
 
 
 
-.. code:: xml
+.. code-block:: xml
 
     <tag>Generator inside: <sub>content</sub></tag>
 
@@ -458,7 +474,7 @@ Test main features
 Assert tests for all main features presented above. There should be no
 output after running these. If there is, then there is a problem!
 
-.. code:: python
+.. code-block:: hylang
 
     (assert (= (ml ("")) "</>"))
     (assert (= (ml (tag)) "<tag/>"))
