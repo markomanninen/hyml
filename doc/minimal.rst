@@ -9,8 +9,8 @@ Minimal markup language generator in Hy
 Language) is a set of macros to generate XML, XHTML, and HTML code in
 Hy.
 
-HyML ``MiNiMaL`` is derived from the more extensive document and
-validation oriented "big brother" HyML. HyML ``MiNiMaL`` is meant to be
+HyML ``MiNiMaL`` macro is departed from the more extensive document and
+validation oriented "full" version of HyML. HyML ``MiNiMaL`` is meant to be
 used as a minimal codebase to generate XML (Extensible Markup Language)
 with the next features:
 
@@ -46,7 +46,7 @@ For easy install, use
 `pip <https://pip.pypa.io/en/stable/installing/>`__ Python repository
 installer:
 
-.. code:: shell
+.. code-block:: shll
 
     $ pip install hyml
 
@@ -58,7 +58,7 @@ Import
 
 Then import ``MiNiMaL`` macros:
 
-.. code:: clojure
+.. code-block:: hylang
 
     (require (hyml.minimal (*)))
 
@@ -67,13 +67,13 @@ Run
 
 And run the simple example:
 
-.. code:: clojure
+.. code-block:: hylang
 
     (ml (tag :attr "value" (sub "Content")))
 
 That should output:
 
-.. code:: xml
+.. code-block:: xml
 
     <tag attr="value"><sub>Content</sub></tag>
 
@@ -97,7 +97,7 @@ introspection. More detailed comment are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
 source file.
 
-.. code:: lisp
+.. code-block:: hylang
 
     ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
