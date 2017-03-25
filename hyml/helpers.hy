@@ -38,7 +38,7 @@
 
           (defmacro html5> [&rest code]
             `(IPython.display.HTML (html5 ~@code))))))
-  (except (e Exception) (print e)))
+  (except (e Exception)))
 
 ;----------------------------------------------------
 ; Indent xml code
