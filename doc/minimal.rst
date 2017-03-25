@@ -99,10 +99,9 @@ source file.
 
 .. code-block:: hylang
    :linenos:
-  
-  ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
-    (eval-and-compile
 
+    ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
+    (eval-and-compile
 
       ; global registry for variables and functions
       (setv variables-and-functions {})
