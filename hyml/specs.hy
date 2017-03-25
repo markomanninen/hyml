@@ -275,7 +275,7 @@
                            (not (in (get context :parent) (, :a :audio :del :ins :map :noscript :video))))))
 
 ; An rt element's end tag may be omitted if the rt element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
-:rt (fn [context] (or (in (get context :followed-by) (, :rt tp))
+:rt (fn [context] (or (in (get context :followed-by) (, :rt :tp))
                       (get context :is-last-child)))
 
 ; An rp element's end tag may be omitted if the rp element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
