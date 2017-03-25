@@ -14,17 +14,17 @@ raise an error. Attributes are not validated however. One should use
 official `validator <http://validator.w3.org/>`__ for a proper
 validation.
 
-Below is also the last example of using ``ML`` macros.
+This is also the last example of using ``ML`` macros.
 
 Columns in the table are:
 
 -  Tag name
 -  Tag code when using empty content
--  Is optional end tag?
--  Is forbidden (if there should be no content or end tag)?
--  Can omit (forbidden plus omit short tag like ``<col>``)?
--  Is in HTML4 specifications?
--  Is in HTML5 specifications?
+-  Has optional end tag?
+-  Has forbidden content and end tag?
+-  Can omit short tag (``<col>``)?
+-  Is tag in HTML4 specifications?
+-  Is tag in HTML5 specifications?
 
 .. code-block:: hylang
 
@@ -51,10 +51,999 @@ Columns in the table are:
               (td ~(if (get row :html4) "✓" ""))
               (td ~(if (get row :html5) "✓" ""))))))))
 
+.. list-table::
+   :header-rows: 1
 
+   *  -  Tag name
+      -  Code
+      -  Optional
+      -  Forbidden
+      -  Omit
+      -  HTML4
+      -  HTML5
 
+   *  -  A
+      -  &lt;a&gt;&lt;/a&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
 
-.. raw:: html
+   *  -  ABBR
+      -  &lt;abbr&gt;&lt;/abbr&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
 
-    <table class="data"><caption>HTML Element Specifications</caption><thead><tr><th>Tag name</th><th>Code</th><th>Optional</th><th>Forbidden</th><th>Omit</th><th>HTML4</th><th>HTML5</th></tr></thead><tbody><tr><td>A</td><td>&lt;a&gt;&lt;/a&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>ABBR</td><td>&lt;abbr&gt;&lt;/abbr&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>ACRONYM</td><td>&lt;acronym&gt;&lt;/acronym&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>ADDRESS</td><td>&lt;address&gt;&lt;/address&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>APPLET</td><td>&lt;applet&gt;&lt;/applet&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>AREA</td><td>&lt;area&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>ARTICLE</td><td>&lt;article&gt;&lt;/article&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>ASIDE</td><td>&lt;aside&gt;&lt;/aside&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>AUDIO</td><td>&lt;audio&gt;&lt;/audio&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>B</td><td>&lt;b&gt;&lt;/b&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>BASE</td><td>&lt;base&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>BASEFONT</td><td>&lt;basefont&gt;</td><td></td><td>✓</td><td></td><td>✓</td><td></td></tr><tr><td>BDI</td><td>&lt;bdi&gt;&lt;/bdi&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>BDO</td><td>&lt;bdo&gt;&lt;/bdo&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>BIG</td><td>&lt;big&gt;&lt;/big&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>BLOCKQUOTE</td><td>&lt;blockquote&gt;&lt;/blockquote&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>BODY</td><td>&lt;body&gt;</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>BR</td><td>&lt;br&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>BUTTON</td><td>&lt;button&gt;&lt;/button&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>CANVAS</td><td>&lt;canvas&gt;&lt;/canvas&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>CAPTION</td><td>&lt;caption&gt;</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>CENTER</td><td>&lt;center&gt;&lt;/center&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>CITE</td><td>&lt;cite&gt;&lt;/cite&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>CODE</td><td>&lt;code&gt;&lt;/code&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>COL</td><td>&lt;col&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>COLGROUP</td><td>&lt;colgroup&gt;</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>DATALIST</td><td>&lt;datalist&gt;&lt;/datalist&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>DD</td><td>&lt;dd&gt;&lt;/dd&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>DEL</td><td>&lt;del&gt;&lt;/del&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>DETAILS</td><td>&lt;details&gt;&lt;/details&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>DFN</td><td>&lt;dfn&gt;&lt;/dfn&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>DIALOG</td><td>&lt;dialog&gt;&lt;/dialog&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>DIR</td><td>&lt;dir&gt;&lt;/dir&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>DIV</td><td>&lt;div&gt;&lt;/div&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>DL</td><td>&lt;dl&gt;&lt;/dl&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>DT</td><td>&lt;dt&gt;&lt;/dt&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>EM</td><td>&lt;em&gt;&lt;/em&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>EMBED</td><td>&lt;embed&gt;&lt;/embed&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>FIELDSET</td><td>&lt;fieldset&gt;&lt;/fieldset&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>FIGCAPTION</td><td>&lt;figcaption&gt;&lt;/figcaption&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>FIGURE</td><td>&lt;figure&gt;&lt;/figure&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>FONT</td><td>&lt;font&gt;&lt;/font&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>FOOTER</td><td>&lt;footer&gt;&lt;/footer&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>FORM</td><td>&lt;form&gt;&lt;/form&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>FRAME</td><td>&lt;frame&gt;</td><td></td><td>✓</td><td></td><td>✓</td><td></td></tr><tr><td>FRAMESET</td><td>&lt;frameset&gt;&lt;/frameset&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>H1</td><td>&lt;h1&gt;&lt;/h1&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>H2</td><td>&lt;h2&gt;&lt;/h2&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>H3</td><td>&lt;h3&gt;&lt;/h3&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>H4</td><td>&lt;h4&gt;&lt;/h4&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>H5</td><td>&lt;h5&gt;&lt;/h5&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>H6</td><td>&lt;h6&gt;&lt;/h6&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>HEAD</td><td>&lt;head&gt;</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>HEADER</td><td>&lt;header&gt;&lt;/header&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>HR</td><td>&lt;hr&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>HTML</td><td>&lt;html&gt;</td><td>✓</td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>I</td><td>&lt;i&gt;&lt;/i&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>IFRAME</td><td>&lt;iframe&gt;&lt;/iframe&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>IMG</td><td>&lt;img&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>INPUT</td><td>&lt;input&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>INS</td><td>&lt;ins&gt;&lt;/ins&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>ISINDEX</td><td>&lt;isindex&gt;</td><td></td><td>✓</td><td></td><td>✓</td><td>✓</td></tr><tr><td>KBD</td><td>&lt;kbd&gt;&lt;/kbd&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>KEYGEN</td><td>&lt;keygen&gt;&lt;/keygen&gt;</td><td></td><td></td><td>✓</td><td></td><td>✓</td></tr><tr><td>LABEL</td><td>&lt;label&gt;&lt;/label&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>LEGEND</td><td>&lt;legend&gt;&lt;/legend&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>LI</td><td>&lt;li&gt;&lt;/li&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>LINK</td><td>&lt;link&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>MAIN</td><td>&lt;main&gt;&lt;/main&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>MAP</td><td>&lt;map&gt;&lt;/map&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>MARK</td><td>&lt;mark&gt;&lt;/mark&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>MENU</td><td>&lt;menu&gt;&lt;/menu&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>MENUITEM</td><td>&lt;menuitem&gt;&lt;/menuitem&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>META</td><td>&lt;meta&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>METER</td><td>&lt;meter&gt;&lt;/meter&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>NAV</td><td>&lt;nav&gt;&lt;/nav&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>NOFRAMES</td><td>&lt;noframes&gt;&lt;/noframes&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>NOSCRIPT</td><td>&lt;noscript&gt;&lt;/noscript&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>OBJECT</td><td>&lt;object&gt;&lt;/object&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>OL</td><td>&lt;ol&gt;&lt;/ol&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>OPTGROUP</td><td>&lt;optgroup&gt;&lt;/optgroup&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>OPTION</td><td>&lt;option&gt;&lt;/option&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>OUTPUT</td><td>&lt;output&gt;&lt;/output&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>P</td><td>&lt;p&gt;&lt;/p&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>PARAM</td><td>&lt;param&gt;</td><td></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>PICTURE</td><td>&lt;picture&gt;&lt;/picture&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>PRE</td><td>&lt;pre&gt;&lt;/pre&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>PROGRESS</td><td>&lt;progress&gt;&lt;/progress&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>Q</td><td>&lt;q&gt;&lt;/q&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>RP</td><td>&lt;rp&gt;&lt;/rp&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>RT</td><td>&lt;rt&gt;&lt;/rt&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>RUBY</td><td>&lt;ruby&gt;&lt;/ruby&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>S</td><td>&lt;s&gt;&lt;/s&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SAMP</td><td>&lt;samp&gt;&lt;/samp&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SCRIPT</td><td>&lt;script&gt;&lt;/script&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SECTION</td><td>&lt;section&gt;&lt;/section&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>SELECT</td><td>&lt;select&gt;&lt;/select&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SMALL</td><td>&lt;small&gt;&lt;/small&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SOURCE</td><td>&lt;source&gt;</td><td></td><td>✓</td><td>✓</td><td></td><td>✓</td></tr><tr><td>SPAN</td><td>&lt;span&gt;&lt;/span&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>STRIKE</td><td>&lt;strike&gt;&lt;/strike&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>STRONG</td><td>&lt;strong&gt;&lt;/strong&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>STYLE</td><td>&lt;style&gt;&lt;/style&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SUB</td><td>&lt;sub&gt;&lt;/sub&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>SUMMARY</td><td>&lt;summary&gt;&lt;/summary&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>SUP</td><td>&lt;sup&gt;&lt;/sup&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TABLE</td><td>&lt;table&gt;&lt;/table&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TBODY</td><td>&lt;tbody&gt;&lt;/tbody&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TD</td><td>&lt;td&gt;&lt;/td&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TEXTAREA</td><td>&lt;textarea&gt;&lt;/textarea&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TFOOT</td><td>&lt;tfoot&gt;&lt;/tfoot&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TH</td><td>&lt;th&gt;&lt;/th&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>THEAD</td><td>&lt;thead&gt;&lt;/thead&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TIME</td><td>&lt;time&gt;&lt;/time&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>TITLE</td><td>&lt;title&gt;&lt;/title&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TR</td><td>&lt;tr&gt;&lt;/tr&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>TRACK</td><td>&lt;track&gt;</td><td></td><td>✓</td><td>✓</td><td></td><td>✓</td></tr><tr><td>TT</td><td>&lt;tt&gt;&lt;/tt&gt;</td><td></td><td></td><td></td><td>✓</td><td></td></tr><tr><td>U</td><td>&lt;u&gt;&lt;/u&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>UL</td><td>&lt;ul&gt;&lt;/ul&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>VAR</td><td>&lt;var&gt;&lt;/var&gt;</td><td></td><td></td><td></td><td>✓</td><td>✓</td></tr><tr><td>VIDEO</td><td>&lt;video&gt;&lt;/video&gt;</td><td></td><td></td><td></td><td></td><td>✓</td></tr><tr><td>WBR</td><td>&lt;wbr&gt;</td><td></td><td>✓</td><td>✓</td><td></td><td>✓</td></tr></tbody></table>
+   *  -  ACRONYM
+      -  &lt;acronym&gt;&lt;/acronym&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  ADDRESS
+      -  &lt;address&gt;&lt;/address&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  APPLET
+      -  &lt;applet&gt;&lt;/applet&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  AREA
+      -  &lt;area&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  ARTICLE
+      -  &lt;article&gt;&lt;/article&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  ASIDE
+      -  &lt;aside&gt;&lt;/aside&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  AUDIO
+      -  &lt;audio&gt;&lt;/audio&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  B
+      -  &lt;b&gt;&lt;/b&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  BASE
+      -  &lt;base&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  BASEFONT
+      -  &lt;basefont&gt;
+      -  
+      -  ✓
+      -  
+      -  ✓
+      -  
+
+   *  -  BDI
+      -  &lt;bdi&gt;&lt;/bdi&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  BDO
+      -  &lt;bdo&gt;&lt;/bdo&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  BIG
+      -  &lt;big&gt;&lt;/big&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  BLOCKQUOTE
+      -  &lt;blockquote&gt;&lt;/blockquote&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  BODY
+      -  &lt;body&gt;
+      -  ✓
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  BR
+      -  &lt;br&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  BUTTON
+      -  &lt;button&gt;&lt;/button&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  CANVAS
+      -  &lt;canvas&gt;&lt;/canvas&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  CAPTION
+      -  &lt;caption&gt;
+      -  ✓
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  CENTER
+      -  &lt;center&gt;&lt;/center&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  CITE
+      -  &lt;cite&gt;&lt;/cite&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  CODE
+      -  &lt;code&gt;&lt;/code&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  COL
+      -  &lt;col&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  COLGROUP
+      -  &lt;colgroup&gt;
+      -  ✓
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  DATALIST
+      -  &lt;datalist&gt;&lt;/datalist&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  DD
+      -  &lt;dd&gt;&lt;/dd&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  DEL
+      -  &lt;del&gt;&lt;/del&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  DETAILS
+      -  &lt;details&gt;&lt;/details&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  DFN
+      -  &lt;dfn&gt;&lt;/dfn&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  DIALOG
+      -  &lt;dialog&gt;&lt;/dialog&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  DIR
+      -  &lt;dir&gt;&lt;/dir&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  DIV
+      -  &lt;div&gt;&lt;/div&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  DL
+      -  &lt;dl&gt;&lt;/dl&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  DT
+      -  &lt;dt&gt;&lt;/dt&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  EM
+      -  &lt;em&gt;&lt;/em&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  EMBED
+      -  &lt;embed&gt;&lt;/embed&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  FIELDSET
+      -  &lt;fieldset&gt;&lt;/fieldset&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  FIGCAPTION
+      -  &lt;figcaption&gt;&lt;/figcaption&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  FIGURE
+      -  &lt;figure&gt;&lt;/figure&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  FONT
+      -  &lt;font&gt;&lt;/font&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  FOOTER
+      -  &lt;footer&gt;&lt;/footer&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  FORM
+      -  &lt;form&gt;&lt;/form&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  FRAME
+      -  &lt;frame&gt;
+      -  
+      -  ✓
+      -  
+      -  ✓
+      -  
+
+   *  -  FRAMESET
+      -  &lt;frameset&gt;&lt;/frameset&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  H1
+      -  &lt;h1&gt;&lt;/h1&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  H2
+      -  &lt;h2&gt;&lt;/h2&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  H3
+      -  &lt;h3&gt;&lt;/h3&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  H4
+      -  &lt;h4&gt;&lt;/h4&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  H5
+      -  &lt;h5&gt;&lt;/h5&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  H6
+      -  &lt;h6&gt;&lt;/h6&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  HEAD
+      -  &lt;head&gt;
+      -  ✓
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  HEADER
+      -  &lt;header&gt;&lt;/header&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  HR
+      -  &lt;hr&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  HTML
+      -  &lt;html&gt;
+      -  ✓
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  I
+      -  &lt;i&gt;&lt;/i&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  IFRAME
+      -  &lt;iframe&gt;&lt;/iframe&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  IMG
+      -  &lt;img&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  INPUT
+      -  &lt;input&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  INS
+      -  &lt;ins&gt;&lt;/ins&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  ISINDEX
+      -  &lt;isindex&gt;
+      -  
+      -  ✓
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  KBD
+      -  &lt;kbd&gt;&lt;/kbd&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  KEYGEN
+      -  &lt;keygen&gt;&lt;/keygen&gt;
+      -  
+      -  
+      -  ✓
+      -  
+      -  ✓
+
+   *  -  LABEL
+      -  &lt;label&gt;&lt;/label&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  LEGEND
+      -  &lt;legend&gt;&lt;/legend&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  LI
+      -  &lt;li&gt;&lt;/li&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  LINK
+      -  &lt;link&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  MAIN
+      -  &lt;main&gt;&lt;/main&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  MAP
+      -  &lt;map&gt;&lt;/map&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  MARK
+      -  &lt;mark&gt;&lt;/mark&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  MENU
+      -  &lt;menu&gt;&lt;/menu&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  MENUITEM
+      -  &lt;menuitem&gt;&lt;/menuitem&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  META
+      -  &lt;meta&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  METER
+      -  &lt;meter&gt;&lt;/meter&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  NAV
+      -  &lt;nav&gt;&lt;/nav&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  NOFRAMES
+      -  &lt;noframes&gt;&lt;/noframes&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  NOSCRIPT
+      -  &lt;noscript&gt;&lt;/noscript&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  OBJECT
+      -  &lt;object&gt;&lt;/object&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  OL
+      -  &lt;ol&gt;&lt;/ol&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  OPTGROUP
+      -  &lt;optgroup&gt;&lt;/optgroup&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  OPTION
+      -  &lt;option&gt;&lt;/option&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  OUTPUT
+      -  &lt;output&gt;&lt;/output&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  P
+      -  &lt;p&gt;&lt;/p&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  PARAM
+      -  &lt;param&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  ✓
+      -  ✓
+
+   *  -  PICTURE
+      -  &lt;picture&gt;&lt;/picture&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  PRE
+      -  &lt;pre&gt;&lt;/pre&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  PROGRESS
+      -  &lt;progress&gt;&lt;/progress&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  Q
+      -  &lt;q&gt;&lt;/q&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  RP
+      -  &lt;rp&gt;&lt;/rp&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  RT
+      -  &lt;rt&gt;&lt;/rt&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  RUBY
+      -  &lt;ruby&gt;&lt;/ruby&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  S
+      -  &lt;s&gt;&lt;/s&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SAMP
+      -  &lt;samp&gt;&lt;/samp&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SCRIPT
+      -  &lt;script&gt;&lt;/script&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SECTION
+      -  &lt;section&gt;&lt;/section&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  SELECT
+      -  &lt;select&gt;&lt;/select&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SMALL
+      -  &lt;small&gt;&lt;/small&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SOURCE
+      -  &lt;source&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  
+      -  ✓
+
+   *  -  SPAN
+      -  &lt;span&gt;&lt;/span&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  STRIKE
+      -  &lt;strike&gt;&lt;/strike&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  STRONG
+      -  &lt;strong&gt;&lt;/strong&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  STYLE
+      -  &lt;style&gt;&lt;/style&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SUB
+      -  &lt;sub&gt;&lt;/sub&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  SUMMARY
+      -  &lt;summary&gt;&lt;/summary&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  SUP
+      -  &lt;sup&gt;&lt;/sup&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TABLE
+      -  &lt;table&gt;&lt;/table&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TBODY
+      -  &lt;tbody&gt;&lt;/tbody&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TD
+      -  &lt;td&gt;&lt;/td&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TEXTAREA
+      -  &lt;textarea&gt;&lt;/textarea&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TFOOT
+      -  &lt;tfoot&gt;&lt;/tfoot&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TH
+      -  &lt;th&gt;&lt;/th&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  THEAD
+      -  &lt;thead&gt;&lt;/thead&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TIME
+      -  &lt;time&gt;&lt;/time&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  TITLE
+      -  &lt;title&gt;&lt;/title&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TR
+      -  &lt;tr&gt;&lt;/tr&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  TRACK
+      -  &lt;track&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  
+      -  ✓
+
+   *  -  TT
+      -  &lt;tt&gt;&lt;/tt&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  
+
+   *  -  U
+      -  &lt;u&gt;&lt;/u&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  UL
+      -  &lt;ul&gt;&lt;/ul&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  VAR
+      -  &lt;var&gt;&lt;/var&gt;
+      -  
+      -  
+      -  
+      -  ✓
+      -  ✓
+
+   *  -  VIDEO
+      -  &lt;video&gt;&lt;/video&gt;
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
+   *  -  WBR
+      -  &lt;wbr&gt;
+      -  
+      -  ✓
+      -  ✓
+      -  
+      -  ✓
+
 
