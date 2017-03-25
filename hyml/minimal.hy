@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 ;----------------------------------------------
-; HyML minimal
+; HyML MiNiMaL
 ; 
 ; Minimal Markup Language generator in Hy
+; 
+; Source:
+; https://github.com/markomanninen/hyml/
 ; 
 ; Install:
 ; $ pip install hyml
@@ -11,54 +14,61 @@
 ; (require (hyml.minimal (*)))
 ; 
 ; Usage:
-; (mnml (tag :attr "value" (sub "Content"))) ->
+; (ml (tag :attr "value" (sub "Content"))) ->
 ; <tag attr="value"><sub>Content</sub></tag>
 ; 
 ; Author: Marko Manninen <elonmedia@gmail.com>
+; Copyright: Marko Manninen (c) 2017
 ; Licence: MIT
 ;----------------------------------------------
 
 ; global registry for variables and functions
 (require (hyml.variables (defvar deffun)))
 (import (hyml.variables (variables-and-functions)))
+; some helpers
+(require (hyml.helpers (println ml> list-comp*)))
+(import (hyml.helpers (indent)))
 
-; eval and compile variables, constants and functions for mnml, defvar, deffun, and include macros
+(try
+  ; needed for Jupyter Notebook ml> render helper
+  ; but it is optional only for main codebase
+  (import IPython)
+  (except (e Exception)))
+
+; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
 (eval-and-compile
   ; internal constants
-  (def **keyword** "keyword")
-  (def **unquote** "unquote")
-  (def **splice** "unquote_splice")
-  (def **unquote-splice** (, **unquote** **splice**))
-  ; dettach keywords and content from code expression
+  (def **keyword** "keyword") (def **unquote** "unquote")
+  (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
+  ; detach keywords and content from code expression
   (defn get-content-attributes [code]
     (setv content [] attributes [] kwd None)
     (for [item code]
-         (do 
-           (if (and (= (first item) **unquote**)
-                    (= (first (second item)) **keyword**))
-               (setv item (eval (second item))))
-           (if-not (keyword? item)
-             (if (none? kwd)
-                 (.append content (parse-mnml item))
-                 (.append attributes (, (.lower kwd) (parse-mnml item)))))
-           (if (keyword? item) (setv kwd item) (setv kwd None))))
+         (do (if (and (= (first item) **unquote**)
+                      (= (first (second item)) **keyword**))
+                 (setv item (eval (second item))))
+             (if-not (keyword? item)
+               (if (none? kwd)
+                   (.append content (parse-mnml item))
+                   (.append attributes (, kwd (parse-mnml item)))))
+             (if (keyword? item) (setv kwd item) (setv kwd None))))
     (, content attributes))
   ; recursively parse expression
   (defn parse-mnml [code] 
     (if (coll? code)
-        (do
-          (setv tag (.lower (catch-tag (first code))))
-          (if (in tag **unquote-splice**)
-              (.join "" (map parse-mnml (eval (second code) variables-and-functions)))
-              (do
-                (setv (, content attributes) (get-content-attributes (drop 1 code)))
-                (+ (tag-start tag attributes (empty? content))
-                   (if (empty? content) ""
-                       (+ (.join "" (map str content)) (+ "</" tag ">")))))))
+        (do (setv tag (catch-tag (first code)))
+            (if (in tag **unquote-splice**)
+                (if (= tag **unquote**)
+                    (str (eval (second code) variables-and-functions))
+                    (.join "" (map parse-mnml (eval (second code) variables-and-functions))))
+                (do (setv (, content attributes) (get-content-attributes (drop 1 code)))
+                    (+ (tag-start tag attributes (empty? content))
+                       (if (empty? content) ""
+                           (+ (.join "" (map str content)) (+ "</" tag ">")))))))
         (if (none? code) "" (str code))))
-  ; dettach tag from expression
+  ; detach tag from expression
   (defn catch-tag [code]
-    (if (= (first code) **unquote**)
+    (if (and (iterable? code) (= (first code) **unquote**))
         (eval (second code))
         (try (name (eval code))
              (except (e Exception) (str code)))))
@@ -72,31 +82,9 @@
     (+ "<" tag-name (tag-attributes attr) (if short "/>" ">"))))
 ; include functionality for template engine
 (defmacro include [template]
-  `(do
-    (import [hy.importer [tokenize]])
-    (with [f (open ~template)]
-      (tokenize (+ "~@`(" (f.read) ")")))))
+  `(do (import [hy.importer [tokenize]])
+       (with [f (open ~template)]
+         (tokenize (+ "~@`(" (f.read) ")")))))
 ; main MiNiMaL macro to be used. passes code to parse-mnml
-(defmacro mnml [&rest code]
+(defmacro ml [&rest code]
   (.join "" (map parse-mnml code)))
-
-;----------------------------------------------
-; Indent xml code
-;----------------------------------------------
-
-(import xml.dom.minidom)
-
-(setv dom xml.dom.minidom)
-
-(defn indent [xmldoc]
-  (try
-    (do
-      (setv pretty-lines (-> xmldoc dom.parseString .toprettyxml .splitlines))
-      (try
-        (do
-          (setv pretty-lines (.join "\n" (drop 1 pretty-lines)))
-        (if (= (.index xmldoc "<?xml") 0)
-            (+ (.join "" (take (+ (.index xmldoc "?>") 2) xmldoc)) "\n" pretty-lines)
-            pretty-lines))
-      (except (e Exception) pretty-lines)))
-     (except (e Exception) e)))
