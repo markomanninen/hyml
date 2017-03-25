@@ -46,7 +46,7 @@ For easy install, use
 `pip <https://pip.pypa.io/en/stable/installing/>`__ Python repository
 installer:
 
-.. code-block:: shell
+.. code-block:: bash
 
     $ pip install hyml
 
@@ -213,9 +213,9 @@ similarly in the given order.
 
 Main differences to XML syntax are:
 
--  instead of wrapper ``<`` and ``>`` parentheses ``(`` and ``)`` are
+-  instead of wrappers ``<`` and ``>``, parentheses ``(`` and ``)`` are
    used
--  there is no need to have a separate end tag
+-  there can't be a separate end tag
 -  given expression does not need to have a single root node
 -  see other possible differences comparing to
    `wiki/XML <https://en.wikipedia.org/wiki/XML#Well-formedness_and_error-handling>`__
@@ -226,9 +226,9 @@ Special chars
 In addition to basic syntax there are three other symbols for advanced
 code generation. They are:
 
--  quasiquote (\`)
--  unquote (``~``)
--  unquote splice (``~@``)
+-  quasiquote ``\```
+-  unquote ``~``
+-  unquote splice ``~@``
 
 These all are symbols used in Hy `macro
 notation <http://docs.hylang.org/en/latest/language/api.html#quasiquote>`__,
@@ -236,7 +236,7 @@ so they should be self explanatory. But to make everything clear, in the
 MiNiMaL macro they work other way around.
 
 Unquote (``~``) and unquote-splice (``~@``) gets you back to the Hy code
-evaluation mode. And quasiquote (\`) sets you back to MiNiMaL macro
+evaluation mode. And quasiquote (``\```) sets you back to MiNiMaL macro
 mode. This is natural when you think that MiNiMaL macro is a quoted
 code in the first place. So if you want to evaluate Hy code inside it,
 you need to do it inside unquote.
@@ -255,7 +255,7 @@ The simple example utilizing above features is:
 ``tag`` is the first element of the expression, so it regarded as a tag
 name. ``:attr "value"`` is the keyword-value (attribute-value) -pair.
 ``(sub`` starts a new expression. So there is no other content (or
-keywords) in the tag. Sub node instead has titlecase content
+keywords) in the ``tag``. Sub node instead has content
 ``"Content"`` given.
 
 Output would be:
@@ -276,15 +276,7 @@ You can generate a tag name with Hy code by using ~ symbol:
 
 .. code-block:: hylang
 
-    (ml (~(+ "t" "a" "g")))
-
-
-
-
-.. code-block:: xml
-
-    <tag/>
-
+    (ml (~(+ "t" "a" "g"))) ; <tag/>
 
 
 This is useful if tag names collide with Hy internal symbols and
@@ -300,28 +292,14 @@ Generated attribute name must be a keyword however:
 
 .. code-block:: hylang
 
-    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value"))
+    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; <tag attr="value"/>
 
 
-
-
-.. code-block:: xml
-
-    <tag attr="value"/>
-
-
+And ssame for value:
 
 .. code-block:: hylang
 
-    (ml (tag :attr ~(+ "v" "a" "l" "u" "e")))
-
-
-
-
-.. code-block:: xml
-
-    <tag attr="value"/>
-
+    (ml (tag :attr ~(+ "v" "a" "l" "u" "e"))) ; <tag attr="value"/>
 
 
 Content
@@ -331,14 +309,7 @@ You can generate content with Hy by using ~ symbol:
 
 .. code-block:: hylang
 
-    (ml (tag ~(.upper "content")))
-
-
-
-
-.. code-block:: xml
-
-    <tag>CONTENT</tag>
+    (ml (tag ~(.upper "content"))) ; <tag>CONTENT</tag>
 
 
 
@@ -363,7 +334,7 @@ on the macro expansion. You can access predefined symbols when quoting
     (ml (tag ~(wholename firstname lastname)))
 
 
-
+Output:
 
 .. code-block:: xml
 
@@ -391,8 +362,7 @@ contains a sub MiNiMaL expression.
     ; generate 5 sub tags and use enumerated numeric value as a content
     (ml (tag ~@(list-comp `(sub ~(str item)) [item (range 5)])))
 
-
-
+Output:
 
 .. code-block:: xml
 
@@ -436,6 +406,7 @@ And finally include and render the template:
     (import (hyml.helpers (indent)))
     (print (indent (ml ~@(include "note.hy"))))
 
+Output:
 
 .. code-block:: xml
 
@@ -463,7 +434,7 @@ It is possible to call MiNiMaL macro again inside unquoted code:
     (ml (tag ~(+ "Generator inside: " (ml (sub "content")))))
 
 
-
+Output:
 
 .. code-block:: xml
 
@@ -510,6 +481,7 @@ output after running these. If there is, then there is a problem!
     
     ; special
     (assert (= (ml (J)) "<1j/>"))
+
 
 The `MIT <http://choosealicense.com/licenses/mit/>`__ License
 -------------------------------------------------------------
