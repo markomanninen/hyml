@@ -48,7 +48,7 @@
 (try
   ; needed for xml render helpers
   (import IPython)
-  (except (e Exception) (print e)))
+  (except (e Exception)))
 
 (eval-and-compile
   
