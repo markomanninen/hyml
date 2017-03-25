@@ -192,10 +192,10 @@ code. Syntax of the expression consists of:
 -  all opened parentheses must have closing parentheses pair
 -  the first item of the expression is the tag name
 -  next items in the expression are either:
--  attribute-value pairs (:attribute "value") or
--  content wrapped with double quotes ("content") or
--  sub expression or
--  nothing
+   -  attribute-value pairs (:attribute "value") or
+   -  content wrapped with double quotes ("content") or
+   -  sub expression or
+   -  nothing
 -  between keywords, keyword values, and content there must a whitespace
    separator
 -  whitespace is not needed when a new expression starts or ends
