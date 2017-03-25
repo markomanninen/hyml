@@ -226,7 +226,7 @@ Special chars
 In addition to basic syntax there are three other symbols for advanced
 code generation. They are:
 
--  quasiquote ``\```
+-  quasiquote `````
 -  unquote ``~``
 -  unquote splice ``~@``
 
@@ -236,7 +236,7 @@ so they should be self explanatory. But to make everything clear, in the
 MiNiMaL macro they work other way around.
 
 Unquote (``~``) and unquote-splice (``~@``) gets you back to the Hy code
-evaluation mode. And quasiquote (``\```) sets you back to MiNiMaL macro
+evaluation mode. And quasiquote (`````) sets you back to MiNiMaL macro
 mode. This is natural when you think that MiNiMaL macro is a quoted
 code in the first place. So if you want to evaluate Hy code inside it,
 you need to do it inside unquote.
