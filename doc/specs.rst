@@ -22,7 +22,7 @@ Columns in the table are:
 -  Tag code when using empty content
 -  Has optional end tag?
 -  Has forbidden content and end tag?
--  Can omit short tag (``<col>``)?
+-  Can omit short tag? For example: ``<col>``
 -  Is tag in HTML4 specifications?
 -  Is tag in HTML5 specifications?
 
@@ -63,7 +63,7 @@ Columns in the table are:
       -  HTML5
 
    *  -  A
-      -  &lt;a&gt;&lt;/a&gt;
+      -  <a></a>
       -  
       -  
       -  
@@ -71,7 +71,7 @@ Columns in the table are:
       -  ✓
 
    *  -  ABBR
-      -  &lt;abbr&gt;&lt;/abbr&gt;
+      -  <abbr></abbr>
       -  
       -  
       -  
@@ -79,7 +79,7 @@ Columns in the table are:
       -  ✓
 
    *  -  ACRONYM
-      -  &lt;acronym&gt;&lt;/acronym&gt;
+      -  <acronym></acronym>
       -  
       -  
       -  
@@ -87,7 +87,7 @@ Columns in the table are:
       -  
 
    *  -  ADDRESS
-      -  &lt;address&gt;&lt;/address&gt;
+      -  <address></address>
       -  
       -  
       -  
@@ -95,7 +95,7 @@ Columns in the table are:
       -  ✓
 
    *  -  APPLET
-      -  &lt;applet&gt;&lt;/applet&gt;
+      -  <applet></applet>
       -  
       -  
       -  
@@ -103,7 +103,7 @@ Columns in the table are:
       -  
 
    *  -  AREA
-      -  &lt;area&gt;
+      -  <area>
       -  
       -  ✓
       -  ✓
@@ -111,7 +111,7 @@ Columns in the table are:
       -  ✓
 
    *  -  ARTICLE
-      -  &lt;article&gt;&lt;/article&gt;
+      -  <article></article>
       -  
       -  
       -  
@@ -119,7 +119,7 @@ Columns in the table are:
       -  ✓
 
    *  -  ASIDE
-      -  &lt;aside&gt;&lt;/aside&gt;
+      -  <aside></aside>
       -  
       -  
       -  
@@ -127,7 +127,7 @@ Columns in the table are:
       -  ✓
 
    *  -  AUDIO
-      -  &lt;audio&gt;&lt;/audio&gt;
+      -  <audio></audio>
       -  
       -  
       -  
@@ -135,7 +135,7 @@ Columns in the table are:
       -  ✓
 
    *  -  B
-      -  &lt;b&gt;&lt;/b&gt;
+      -  <b></b>
       -  
       -  
       -  
@@ -143,7 +143,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BASE
-      -  &lt;base&gt;
+      -  <base>
       -  
       -  ✓
       -  ✓
@@ -151,7 +151,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BASEFONT
-      -  &lt;basefont&gt;
+      -  <basefont>
       -  
       -  ✓
       -  
@@ -159,7 +159,7 @@ Columns in the table are:
       -  
 
    *  -  BDI
-      -  &lt;bdi&gt;&lt;/bdi&gt;
+      -  <bdi></bdi>
       -  
       -  
       -  
@@ -167,7 +167,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BDO
-      -  &lt;bdo&gt;&lt;/bdo&gt;
+      -  <bdo></bdo>
       -  
       -  
       -  
@@ -175,7 +175,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BIG
-      -  &lt;big&gt;&lt;/big&gt;
+      -  <big></big>
       -  
       -  
       -  
@@ -183,7 +183,7 @@ Columns in the table are:
       -  
 
    *  -  BLOCKQUOTE
-      -  &lt;blockquote&gt;&lt;/blockquote&gt;
+      -  <blockquote></blockquote>
       -  
       -  
       -  
@@ -191,7 +191,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BODY
-      -  &lt;body&gt;
+      -  <body>
       -  ✓
       -  
       -  
@@ -199,7 +199,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BR
-      -  &lt;br&gt;
+      -  <br>
       -  
       -  ✓
       -  ✓
@@ -207,7 +207,7 @@ Columns in the table are:
       -  ✓
 
    *  -  BUTTON
-      -  &lt;button&gt;&lt;/button&gt;
+      -  <button></button>
       -  
       -  
       -  
@@ -215,7 +215,7 @@ Columns in the table are:
       -  ✓
 
    *  -  CANVAS
-      -  &lt;canvas&gt;&lt;/canvas&gt;
+      -  <canvas></canvas>
       -  
       -  
       -  
@@ -223,7 +223,7 @@ Columns in the table are:
       -  ✓
 
    *  -  CAPTION
-      -  &lt;caption&gt;
+      -  <caption>
       -  ✓
       -  
       -  
@@ -231,7 +231,7 @@ Columns in the table are:
       -  ✓
 
    *  -  CENTER
-      -  &lt;center&gt;&lt;/center&gt;
+      -  <center></center>
       -  
       -  
       -  
@@ -239,7 +239,7 @@ Columns in the table are:
       -  
 
    *  -  CITE
-      -  &lt;cite&gt;&lt;/cite&gt;
+      -  <cite></cite>
       -  
       -  
       -  
@@ -247,7 +247,7 @@ Columns in the table are:
       -  ✓
 
    *  -  CODE
-      -  &lt;code&gt;&lt;/code&gt;
+      -  <code></code>
       -  
       -  
       -  
@@ -255,7 +255,7 @@ Columns in the table are:
       -  ✓
 
    *  -  COL
-      -  &lt;col&gt;
+      -  <col>
       -  
       -  ✓
       -  ✓
@@ -263,7 +263,7 @@ Columns in the table are:
       -  ✓
 
    *  -  COLGROUP
-      -  &lt;colgroup&gt;
+      -  <colgroup>
       -  ✓
       -  
       -  
@@ -271,7 +271,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DATALIST
-      -  &lt;datalist&gt;&lt;/datalist&gt;
+      -  <datalist></datalist>
       -  
       -  
       -  
@@ -279,7 +279,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DD
-      -  &lt;dd&gt;&lt;/dd&gt;
+      -  <dd></dd>
       -  
       -  
       -  
@@ -287,7 +287,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DEL
-      -  &lt;del&gt;&lt;/del&gt;
+      -  <del></del>
       -  
       -  
       -  
@@ -295,7 +295,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DETAILS
-      -  &lt;details&gt;&lt;/details&gt;
+      -  <details></details>
       -  
       -  
       -  
@@ -303,7 +303,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DFN
-      -  &lt;dfn&gt;&lt;/dfn&gt;
+      -  <dfn></dfn>
       -  
       -  
       -  
@@ -311,7 +311,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DIALOG
-      -  &lt;dialog&gt;&lt;/dialog&gt;
+      -  <dialog></dialog>
       -  
       -  
       -  
@@ -319,7 +319,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DIR
-      -  &lt;dir&gt;&lt;/dir&gt;
+      -  <dir></dir>
       -  
       -  
       -  
@@ -327,7 +327,7 @@ Columns in the table are:
       -  
 
    *  -  DIV
-      -  &lt;div&gt;&lt;/div&gt;
+      -  <div></div>
       -  
       -  
       -  
@@ -335,7 +335,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DL
-      -  &lt;dl&gt;&lt;/dl&gt;
+      -  <dl></dl>
       -  
       -  
       -  
@@ -343,7 +343,7 @@ Columns in the table are:
       -  ✓
 
    *  -  DT
-      -  &lt;dt&gt;&lt;/dt&gt;
+      -  <dt></dt>
       -  
       -  
       -  
@@ -351,7 +351,7 @@ Columns in the table are:
       -  ✓
 
    *  -  EM
-      -  &lt;em&gt;&lt;/em&gt;
+      -  <em></em>
       -  
       -  
       -  
@@ -359,7 +359,7 @@ Columns in the table are:
       -  ✓
 
    *  -  EMBED
-      -  &lt;embed&gt;&lt;/embed&gt;
+      -  <embed></embed>
       -  
       -  
       -  
@@ -367,7 +367,7 @@ Columns in the table are:
       -  ✓
 
    *  -  FIELDSET
-      -  &lt;fieldset&gt;&lt;/fieldset&gt;
+      -  <fieldset></fieldset>
       -  
       -  
       -  
@@ -375,7 +375,7 @@ Columns in the table are:
       -  ✓
 
    *  -  FIGCAPTION
-      -  &lt;figcaption&gt;&lt;/figcaption&gt;
+      -  <figcaption></figcaption>
       -  
       -  
       -  
@@ -383,7 +383,7 @@ Columns in the table are:
       -  ✓
 
    *  -  FIGURE
-      -  &lt;figure&gt;&lt;/figure&gt;
+      -  <figure></figure>
       -  
       -  
       -  
@@ -391,7 +391,7 @@ Columns in the table are:
       -  ✓
 
    *  -  FONT
-      -  &lt;font&gt;&lt;/font&gt;
+      -  <font></font>
       -  
       -  
       -  
@@ -399,7 +399,7 @@ Columns in the table are:
       -  
 
    *  -  FOOTER
-      -  &lt;footer&gt;&lt;/footer&gt;
+      -  <footer></footer>
       -  
       -  
       -  
@@ -407,7 +407,7 @@ Columns in the table are:
       -  ✓
 
    *  -  FORM
-      -  &lt;form&gt;&lt;/form&gt;
+      -  <form></form>
       -  
       -  
       -  
@@ -415,7 +415,7 @@ Columns in the table are:
       -  ✓
 
    *  -  FRAME
-      -  &lt;frame&gt;
+      -  <frame>
       -  
       -  ✓
       -  
@@ -423,7 +423,7 @@ Columns in the table are:
       -  
 
    *  -  FRAMESET
-      -  &lt;frameset&gt;&lt;/frameset&gt;
+      -  <frameset></frameset>
       -  
       -  
       -  
@@ -431,7 +431,7 @@ Columns in the table are:
       -  
 
    *  -  H1
-      -  &lt;h1&gt;&lt;/h1&gt;
+      -  <h1></h1>
       -  
       -  
       -  
@@ -439,7 +439,7 @@ Columns in the table are:
       -  ✓
 
    *  -  H2
-      -  &lt;h2&gt;&lt;/h2&gt;
+      -  <h2></h2>
       -  
       -  
       -  
@@ -447,7 +447,7 @@ Columns in the table are:
       -  ✓
 
    *  -  H3
-      -  &lt;h3&gt;&lt;/h3&gt;
+      -  <h3></h3>
       -  
       -  
       -  
@@ -455,7 +455,7 @@ Columns in the table are:
       -  ✓
 
    *  -  H4
-      -  &lt;h4&gt;&lt;/h4&gt;
+      -  <h4></h4>
       -  
       -  
       -  
@@ -463,7 +463,7 @@ Columns in the table are:
       -  ✓
 
    *  -  H5
-      -  &lt;h5&gt;&lt;/h5&gt;
+      -  <h5></h5>
       -  
       -  
       -  
@@ -471,7 +471,7 @@ Columns in the table are:
       -  ✓
 
    *  -  H6
-      -  &lt;h6&gt;&lt;/h6&gt;
+      -  <h6></h6>
       -  
       -  
       -  
@@ -479,7 +479,7 @@ Columns in the table are:
       -  ✓
 
    *  -  HEAD
-      -  &lt;head&gt;
+      -  <head>
       -  ✓
       -  
       -  
@@ -487,7 +487,7 @@ Columns in the table are:
       -  ✓
 
    *  -  HEADER
-      -  &lt;header&gt;&lt;/header&gt;
+      -  <header></header>
       -  
       -  
       -  
@@ -495,7 +495,7 @@ Columns in the table are:
       -  ✓
 
    *  -  HR
-      -  &lt;hr&gt;
+      -  <hr>
       -  
       -  ✓
       -  ✓
@@ -503,7 +503,7 @@ Columns in the table are:
       -  ✓
 
    *  -  HTML
-      -  &lt;html&gt;
+      -  <html>
       -  ✓
       -  
       -  
@@ -511,7 +511,7 @@ Columns in the table are:
       -  ✓
 
    *  -  I
-      -  &lt;i&gt;&lt;/i&gt;
+      -  <i></i>
       -  
       -  
       -  
@@ -519,7 +519,7 @@ Columns in the table are:
       -  ✓
 
    *  -  IFRAME
-      -  &lt;iframe&gt;&lt;/iframe&gt;
+      -  <iframe></iframe>
       -  
       -  
       -  
@@ -527,7 +527,7 @@ Columns in the table are:
       -  ✓
 
    *  -  IMG
-      -  &lt;img&gt;
+      -  <img>
       -  
       -  ✓
       -  ✓
@@ -535,7 +535,7 @@ Columns in the table are:
       -  ✓
 
    *  -  INPUT
-      -  &lt;input&gt;
+      -  <input>
       -  
       -  ✓
       -  ✓
@@ -543,7 +543,7 @@ Columns in the table are:
       -  ✓
 
    *  -  INS
-      -  &lt;ins&gt;&lt;/ins&gt;
+      -  <ins></ins>
       -  
       -  
       -  
@@ -551,7 +551,7 @@ Columns in the table are:
       -  ✓
 
    *  -  ISINDEX
-      -  &lt;isindex&gt;
+      -  <isindex>
       -  
       -  ✓
       -  
@@ -559,7 +559,7 @@ Columns in the table are:
       -  ✓
 
    *  -  KBD
-      -  &lt;kbd&gt;&lt;/kbd&gt;
+      -  <kbd></kbd>
       -  
       -  
       -  
@@ -567,7 +567,7 @@ Columns in the table are:
       -  ✓
 
    *  -  KEYGEN
-      -  &lt;keygen&gt;&lt;/keygen&gt;
+      -  <keygen></keygen>
       -  
       -  
       -  ✓
@@ -575,7 +575,7 @@ Columns in the table are:
       -  ✓
 
    *  -  LABEL
-      -  &lt;label&gt;&lt;/label&gt;
+      -  <label></label>
       -  
       -  
       -  
@@ -583,7 +583,7 @@ Columns in the table are:
       -  ✓
 
    *  -  LEGEND
-      -  &lt;legend&gt;&lt;/legend&gt;
+      -  <legend></legend>
       -  
       -  
       -  
@@ -591,7 +591,7 @@ Columns in the table are:
       -  ✓
 
    *  -  LI
-      -  &lt;li&gt;&lt;/li&gt;
+      -  <li></li>
       -  
       -  
       -  
@@ -599,7 +599,7 @@ Columns in the table are:
       -  ✓
 
    *  -  LINK
-      -  &lt;link&gt;
+      -  <link>
       -  
       -  ✓
       -  ✓
@@ -607,7 +607,7 @@ Columns in the table are:
       -  ✓
 
    *  -  MAIN
-      -  &lt;main&gt;&lt;/main&gt;
+      -  <main></main>
       -  
       -  
       -  
@@ -615,7 +615,7 @@ Columns in the table are:
       -  ✓
 
    *  -  MAP
-      -  &lt;map&gt;&lt;/map&gt;
+      -  <map></map>
       -  
       -  
       -  
@@ -623,7 +623,7 @@ Columns in the table are:
       -  ✓
 
    *  -  MARK
-      -  &lt;mark&gt;&lt;/mark&gt;
+      -  <mark></mark>
       -  
       -  
       -  
@@ -631,7 +631,7 @@ Columns in the table are:
       -  ✓
 
    *  -  MENU
-      -  &lt;menu&gt;&lt;/menu&gt;
+      -  <menu></menu>
       -  
       -  
       -  
@@ -639,7 +639,7 @@ Columns in the table are:
       -  ✓
 
    *  -  MENUITEM
-      -  &lt;menuitem&gt;&lt;/menuitem&gt;
+      -  <menuitem></menuitem>
       -  
       -  
       -  
@@ -647,7 +647,7 @@ Columns in the table are:
       -  ✓
 
    *  -  META
-      -  &lt;meta&gt;
+      -  <meta>
       -  
       -  ✓
       -  ✓
@@ -655,7 +655,7 @@ Columns in the table are:
       -  ✓
 
    *  -  METER
-      -  &lt;meter&gt;&lt;/meter&gt;
+      -  <meter></meter>
       -  
       -  
       -  
@@ -663,7 +663,7 @@ Columns in the table are:
       -  ✓
 
    *  -  NAV
-      -  &lt;nav&gt;&lt;/nav&gt;
+      -  <nav></nav>
       -  
       -  
       -  
@@ -671,7 +671,7 @@ Columns in the table are:
       -  ✓
 
    *  -  NOFRAMES
-      -  &lt;noframes&gt;&lt;/noframes&gt;
+      -  <noframes></noframes>
       -  
       -  
       -  
@@ -679,7 +679,7 @@ Columns in the table are:
       -  
 
    *  -  NOSCRIPT
-      -  &lt;noscript&gt;&lt;/noscript&gt;
+      -  <noscript></noscript>
       -  
       -  
       -  
@@ -687,7 +687,7 @@ Columns in the table are:
       -  ✓
 
    *  -  OBJECT
-      -  &lt;object&gt;&lt;/object&gt;
+      -  <object></object>
       -  
       -  
       -  
@@ -695,7 +695,7 @@ Columns in the table are:
       -  ✓
 
    *  -  OL
-      -  &lt;ol&gt;&lt;/ol&gt;
+      -  <ol></ol>
       -  
       -  
       -  
@@ -703,7 +703,7 @@ Columns in the table are:
       -  ✓
 
    *  -  OPTGROUP
-      -  &lt;optgroup&gt;&lt;/optgroup&gt;
+      -  <optgroup></optgroup>
       -  
       -  
       -  
@@ -711,7 +711,7 @@ Columns in the table are:
       -  ✓
 
    *  -  OPTION
-      -  &lt;option&gt;&lt;/option&gt;
+      -  <option></option>
       -  
       -  
       -  
@@ -719,7 +719,7 @@ Columns in the table are:
       -  ✓
 
    *  -  OUTPUT
-      -  &lt;output&gt;&lt;/output&gt;
+      -  <output></output>
       -  
       -  
       -  
@@ -727,7 +727,7 @@ Columns in the table are:
       -  ✓
 
    *  -  P
-      -  &lt;p&gt;&lt;/p&gt;
+      -  <p></p>
       -  
       -  
       -  
@@ -735,7 +735,7 @@ Columns in the table are:
       -  ✓
 
    *  -  PARAM
-      -  &lt;param&gt;
+      -  <param>
       -  
       -  ✓
       -  ✓
@@ -743,7 +743,7 @@ Columns in the table are:
       -  ✓
 
    *  -  PICTURE
-      -  &lt;picture&gt;&lt;/picture&gt;
+      -  <picture></picture>
       -  
       -  
       -  
@@ -751,7 +751,7 @@ Columns in the table are:
       -  ✓
 
    *  -  PRE
-      -  &lt;pre&gt;&lt;/pre&gt;
+      -  <pre></pre>
       -  
       -  
       -  
@@ -759,7 +759,7 @@ Columns in the table are:
       -  ✓
 
    *  -  PROGRESS
-      -  &lt;progress&gt;&lt;/progress&gt;
+      -  <progress></progress>
       -  
       -  
       -  
@@ -767,7 +767,7 @@ Columns in the table are:
       -  ✓
 
    *  -  Q
-      -  &lt;q&gt;&lt;/q&gt;
+      -  <q></q>
       -  
       -  
       -  
@@ -775,7 +775,7 @@ Columns in the table are:
       -  ✓
 
    *  -  RP
-      -  &lt;rp&gt;&lt;/rp&gt;
+      -  <rp></rp>
       -  
       -  
       -  
@@ -783,7 +783,7 @@ Columns in the table are:
       -  ✓
 
    *  -  RT
-      -  &lt;rt&gt;&lt;/rt&gt;
+      -  <rt></rt>
       -  
       -  
       -  
@@ -791,7 +791,7 @@ Columns in the table are:
       -  ✓
 
    *  -  RUBY
-      -  &lt;ruby&gt;&lt;/ruby&gt;
+      -  <ruby></ruby>
       -  
       -  
       -  
@@ -799,7 +799,7 @@ Columns in the table are:
       -  ✓
 
    *  -  S
-      -  &lt;s&gt;&lt;/s&gt;
+      -  <s></s>
       -  
       -  
       -  
@@ -807,7 +807,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SAMP
-      -  &lt;samp&gt;&lt;/samp&gt;
+      -  <samp></samp>
       -  
       -  
       -  
@@ -815,7 +815,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SCRIPT
-      -  &lt;script&gt;&lt;/script&gt;
+      -  <script></script>
       -  
       -  
       -  
@@ -823,7 +823,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SECTION
-      -  &lt;section&gt;&lt;/section&gt;
+      -  <section></section>
       -  
       -  
       -  
@@ -831,7 +831,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SELECT
-      -  &lt;select&gt;&lt;/select&gt;
+      -  <select></select>
       -  
       -  
       -  
@@ -839,7 +839,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SMALL
-      -  &lt;small&gt;&lt;/small&gt;
+      -  <small></small>
       -  
       -  
       -  
@@ -847,7 +847,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SOURCE
-      -  &lt;source&gt;
+      -  <source>
       -  
       -  ✓
       -  ✓
@@ -855,7 +855,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SPAN
-      -  &lt;span&gt;&lt;/span&gt;
+      -  <span></span>
       -  
       -  
       -  
@@ -863,7 +863,7 @@ Columns in the table are:
       -  ✓
 
    *  -  STRIKE
-      -  &lt;strike&gt;&lt;/strike&gt;
+      -  <strike></strike>
       -  
       -  
       -  
@@ -871,7 +871,7 @@ Columns in the table are:
       -  
 
    *  -  STRONG
-      -  &lt;strong&gt;&lt;/strong&gt;
+      -  <strong></strong>
       -  
       -  
       -  
@@ -879,7 +879,7 @@ Columns in the table are:
       -  ✓
 
    *  -  STYLE
-      -  &lt;style&gt;&lt;/style&gt;
+      -  <style></style>
       -  
       -  
       -  
@@ -887,7 +887,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SUB
-      -  &lt;sub&gt;&lt;/sub&gt;
+      -  <sub></sub>
       -  
       -  
       -  
@@ -895,7 +895,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SUMMARY
-      -  &lt;summary&gt;&lt;/summary&gt;
+      -  <summary></summary>
       -  
       -  
       -  
@@ -903,7 +903,7 @@ Columns in the table are:
       -  ✓
 
    *  -  SUP
-      -  &lt;sup&gt;&lt;/sup&gt;
+      -  <sup></sup>
       -  
       -  
       -  
@@ -911,7 +911,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TABLE
-      -  &lt;table&gt;&lt;/table&gt;
+      -  <table></table>
       -  
       -  
       -  
@@ -919,7 +919,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TBODY
-      -  &lt;tbody&gt;&lt;/tbody&gt;
+      -  <tbody></tbody>
       -  
       -  
       -  
@@ -927,7 +927,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TD
-      -  &lt;td&gt;&lt;/td&gt;
+      -  <td></td>
       -  
       -  
       -  
@@ -935,7 +935,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TEXTAREA
-      -  &lt;textarea&gt;&lt;/textarea&gt;
+      -  <textarea></textarea>
       -  
       -  
       -  
@@ -943,7 +943,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TFOOT
-      -  &lt;tfoot&gt;&lt;/tfoot&gt;
+      -  <tfoot></tfoot>
       -  
       -  
       -  
@@ -951,7 +951,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TH
-      -  &lt;th&gt;&lt;/th&gt;
+      -  <th></th>
       -  
       -  
       -  
@@ -959,7 +959,7 @@ Columns in the table are:
       -  ✓
 
    *  -  THEAD
-      -  &lt;thead&gt;&lt;/thead&gt;
+      -  <thead></thead>
       -  
       -  
       -  
@@ -967,7 +967,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TIME
-      -  &lt;time&gt;&lt;/time&gt;
+      -  <time></time>
       -  
       -  
       -  
@@ -975,7 +975,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TITLE
-      -  &lt;title&gt;&lt;/title&gt;
+      -  <title></title>
       -  
       -  
       -  
@@ -983,7 +983,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TR
-      -  &lt;tr&gt;&lt;/tr&gt;
+      -  <tr></tr>
       -  
       -  
       -  
@@ -991,7 +991,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TRACK
-      -  &lt;track&gt;
+      -  <track>
       -  
       -  ✓
       -  ✓
@@ -999,7 +999,7 @@ Columns in the table are:
       -  ✓
 
    *  -  TT
-      -  &lt;tt&gt;&lt;/tt&gt;
+      -  <tt></tt>
       -  
       -  
       -  
@@ -1007,7 +1007,7 @@ Columns in the table are:
       -  
 
    *  -  U
-      -  &lt;u&gt;&lt;/u&gt;
+      -  <u></u>
       -  
       -  
       -  
@@ -1015,7 +1015,7 @@ Columns in the table are:
       -  ✓
 
    *  -  UL
-      -  &lt;ul&gt;&lt;/ul&gt;
+      -  <ul></ul>
       -  
       -  
       -  
@@ -1023,7 +1023,7 @@ Columns in the table are:
       -  ✓
 
    *  -  VAR
-      -  &lt;var&gt;&lt;/var&gt;
+      -  <var></var>
       -  
       -  
       -  
@@ -1031,7 +1031,7 @@ Columns in the table are:
       -  ✓
 
    *  -  VIDEO
-      -  &lt;video&gt;&lt;/video&gt;
+      -  <video></video>
       -  
       -  
       -  
@@ -1039,7 +1039,7 @@ Columns in the table are:
       -  ✓
 
    *  -  WBR
-      -  &lt;wbr&gt;
+      -  <wbr>
       -  
       -  ✓
       -  ✓
