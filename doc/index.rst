@@ -17,9 +17,3 @@ used as a minimal codebase to generate XML (Extensible Markup Language).
    minimal
    specs
    tests
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`search`
