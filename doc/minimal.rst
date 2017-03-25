@@ -34,10 +34,12 @@ no tag name validation and no tag and attribute minimize techniques
 utilized. If you need them, you should see `full HyML
 documentation <http://hyml.readthedocs.io/en/latest/#>`__.
 
+
 Ready, steady, go!
 ------------------
 
 Project is hosted at: https://github.com/markomanninen/hyml
+
 
 Install
 ~~~~~~~
@@ -53,6 +55,7 @@ installer:
 This will install only the necessary source files for HyML, no example
 templates or Jupyter Notebook files that are for presentation only.
 
+
 Import
 ~~~~~~
 
@@ -61,6 +64,7 @@ Then import MiNiMaL macros:
 .. code-block:: hylang
 
     (require (hyml.minimal (*)))
+
 
 Run
 ~~~
@@ -77,6 +81,7 @@ That should output:
 
     <tag attr="value"><sub>Content</sub></tag>
 
+
 Jupyter Notebook
 ~~~~~~~~~~~~~~~~
 
@@ -88,12 +93,13 @@ repository <https://github.com/markomanninen/hyml/archive/master.zip>`__
 computer. It contains all necessary templates to get everything running
 as presented in the HyML MiNiMaL `Notebook document <http://nbviewer.jupyter.org/github/markomanninen/hyml/blob/master/HyML%20-%20Minimal.ipynb>`__.
 
-Hy MiNiMaL code (all)
----------------------
+
+HyML MiNiMaL codebase
+----------------------
 
 Because codebase for HyML MiNiMaL implementation is roughly 50 lines
 only (without comments), it is provided here with structural comments and 
-linebreaks for introspection. More detailed comments are available in the
+linebreaks for the inspection. More detailed comments are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
 source file.
 
@@ -220,6 +226,7 @@ Main differences to XML syntax are:
 -  see other possible differences comparing to
    `wiki/XML <https://en.wikipedia.org/wiki/XML#Well-formedness_and_error-handling>`__
 
+
 Special chars
 ~~~~~~~~~~~~~
 
@@ -243,6 +250,7 @@ you need to do it inside unquote.
 
 But let us start from the simple example first.
 
+
 Simple example
 ~~~~~~~~~~~~~~
 
@@ -264,6 +272,7 @@ Output would be:
 
     <tag attr="value"><sub>Content</sub></tag>
 
+
 Process components with unquote syntax (~)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -277,7 +286,6 @@ You can generate a tag name with Hy code by using ~ symbol:
 .. code-block:: hylang
 
     (ml (~(+ "t" "a" "g"))) ; <tag/>
-
 
 This is useful if tag names collide with Hy internal symbols and
 datatypes. For example, the symbol ``J`` is reserved for complex number
@@ -294,13 +302,11 @@ Generated attribute name must be a keyword however:
 
     (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; <tag attr="value"/>
 
-
-And ssame for value:
+And same for value:
 
 .. code-block:: hylang
 
     (ml (tag :attr ~(+ "v" "a" "l" "u" "e"))) ; <tag attr="value"/>
-
 
 Content
 ^^^^^^^
@@ -310,7 +316,6 @@ You can generate content with Hy by using ~ symbol:
 .. code-block:: hylang
 
     (ml (tag ~(.upper "content"))) ; <tag>CONTENT</tag>
-
 
 
 Using custom variables and functions
@@ -333,13 +338,11 @@ on the macro expansion. You can access predefined symbols when quoting
     ; use variables and functions with unquote / unquote splice
     (ml (tag ~(wholename firstname lastname)))
 
-
 Output:
 
 .. code-block:: xml
 
     <tag>McDonald, Dennis</tag>
-
 
 
 Process lists with unquote splice syntax (~@)
@@ -368,8 +371,6 @@ Output:
 
     <tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>
 
-
-
 Using templates
 ~~~~~~~~~~~~~~~
 
@@ -379,7 +380,6 @@ Let us first show the template content existing in the external file:
 
     (with [f (open "note.hy")] (print (f.read)))
 
-
 .. code-block:: hylang
 
     (note :src "https://www.w3schools.com/xml/note.xml"
@@ -387,7 +387,7 @@ Let us first show the template content existing in the external file:
       (from ~from)
       (heading ~heading)
       (body ~body))
-    
+
 
 Then we will define variables and a function to be used inside
 MiNiMaL macro:
@@ -424,6 +424,7 @@ Special features
 These are not deliberately implemented features, but a conequence of the
 HyML MiNiMaL implementation and how Hy works.
 
+
 Nested MiNiMaL macros
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -433,13 +434,11 @@ It is possible to call MiNiMaL macro again inside unquoted code:
 
     (ml (tag ~(+ "Generator inside: " (ml (sub "content")))))
 
-
 Output:
 
 .. code-block:: xml
 
     <tag>Generator inside: <sub>content</sub></tag>
-
 
 
 Test main features
@@ -481,6 +480,7 @@ output after running these. If there is, then there is a problem!
     
     ; special
     (assert (= (ml (J)) "<1j/>"))
+    (assert (= (ml (~"J")) "<J/>"))
 
 
 The `MIT <http://choosealicense.com/licenses/mit/>`__ License
