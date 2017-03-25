@@ -102,16 +102,16 @@ source file.
 
     ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
-
+    
       ; global registry for variables and functions
       (setv variables-and-functions {})
-
+    
       ; internal constants
       (def **keyword** "keyword")
       (def **unquote** "unquote")
       (def **splice** "unquote_splice")
       (def **unquote-splice** (, **unquote** **splice**))
-
+    
       ; detach keywords and content from code expression
       (defn get-content-attributes [code]
         (setv content [] attributes [] kwd None)
@@ -125,7 +125,7 @@ source file.
                        (.append attributes (, kwd (parse-mnml item)))))
                  (if (keyword? item) (setv kwd item) (setv kwd None))))
         (, content attributes))
-
+    
       ; recursively parse expression
       (defn parse-mnml [code] 
         (if (coll? code)
@@ -139,41 +139,41 @@ source file.
                            (if (empty? content) ""
                                (+ (.join "" (map str content)) (+ "</" tag ">")))))))
             (if (none? code) "" (str code))))
-
+    
       ; detach tag from expression
       (defn catch-tag [code]
         (if (and (iterable? code) (= (first code) **unquote**))
             (eval (second code))
             (try (name (eval code))
                  (except (e Exception) (str code)))))
-
+    
       ; concat attributes
       (defn tag-attributes [attr]
         (if (empty? attr) ""
             (+ " " (.join " " (list-comp
               (% "%s=\"%s\"" (, (name kwd) (name value))) [[kwd value] attr])))))
-
+    
       ; create start tag
       (defn tag-start [tag-name attr short]
         (+ "<" tag-name (tag-attributes attr) (if short "/>" ">"))))
-
+    
     ; global variable registry handler
     (defmacro defvar [&rest args]
       (setv l (len args) i 0)
       (while (< i l) (do
         (assoc variables-and-functions (get args i) (get args (inc i)))
         (setv i (+ 2 i)))))
-
+    
     ; global function registry handler
     (defmacro deffun [name func]
       (assoc variables-and-functions name (eval func)))
-
+    
     ; include functionality for template engine
     (defmacro include [template]
       `(do (import [hy.importer [tokenize]])
            (with [f (open ~template)]
              (tokenize (+ "~@`(" (f.read) ")")))))
-
+    
     ; main MiNiMaL macro to be used. passes code to parse-mnml
     (defmacro ml [&rest code]
       (.join "" (map parse-mnml code)))
