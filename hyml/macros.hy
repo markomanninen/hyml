@@ -222,7 +222,7 @@
   ; forbidden end tag
   (defn forbidden? [tag specs] (get (tag-specs tag specs) :forbidden))
   ; optional end tag
-  (defn optional? [tag idx parent parent-tag]
+  (defn optional? [tag &optional [idx 0] [parent None] [parent-tag None]]
     (if (in (keyword tag) optional-end-tags)
         ((get optional-end-tags (keyword tag)) {
               :followed-by (if (and (not (none? parent)) (< (inc idx) (len parent)))
