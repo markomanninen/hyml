@@ -8,23 +8,25 @@ conventions of the tags or their relation to each other or global
 structure of the markup document. It is all on the responsibility of the
 user to make it correct.
 
-``html4`` and ``html5`` macros will render tags as specified below.
-These macros will minimize code when possible. Using undefined tag will
-raise an error. Attributes are not validated however. One should use
-official `validator <http://validator.w3.org/>`__ for a proper
+``html4`` and ``html5`` as well as ``xhtml4`` and ``xhtml5`` macros will render 
+tags as specified below. These macros will minimize code when possible. Using 
+undefined tag will raise an error. Attributes are not validated however. One 
+should use official `validator <http://validator.w3.org/>`__ for a proper
 validation.
 
-This is also the last example of using ``ML`` macros.
+This is also the last example of using ``ML`` macros. xhtml> will delegate 
+xhtml content to IPython.display method so that content is rendered on
+Jupyter Notebook cell rather than just output as a raw xml string.
 
 Columns in the table are:
 
 -  Tag name
 -  Tag code when using empty content
--  Has optional end tag?
--  Has forbidden content and end tag?
--  Can omit short tag? For example: ``<col>``
--  Is tag in HTML4 specifications?
--  Is tag in HTML5 specifications?
+-  Has the optional end tag?
+-  Has a forbidden content and the end tag?
+-  Can omit the short tag? For example: ``<col>``
+-  Is the tag in HTML4 specifications?
+-  Is the tag in HTML5 specifications?
 
 .. code-block:: hylang
 
@@ -36,20 +38,20 @@ Columns in the table are:
             ~@(list-comp* [col ["Tag name" "Code" "Optional" "Forbidden" "Omit" "HTML4" "HTML5"]]
               `(th ~col))))
         (tbody 
-         ~@(list-comp* [[id row] (.items (do (import (hyml.macros (specs))) specs))]
-           (do
-            `(tr
-              (td ~(.upper (get row :name)))
-              (td ~(do (import html) 
-                       (import (hyml.macros (parse-html4 parse-html5))) 
-                       (html.escape (if (get row :html4) (parse-html4 `(~(get row :name) ""))
-                                        (parse-html5 `(~(get row :name) ""))))))
-              (td ~(do (import (hyml.macros (optional?)))
-                       (if (optional? (get row :name)) "✓" "")))
-              (td ~(if (get row :forbidden) "✓" ""))
-              (td ~(if (get row :omit) "✓" ""))
-              (td ~(if (get row :html4) "✓" ""))
-              (td ~(if (get row :html5) "✓" ""))))))))
+          ~@(do (import html)
+                (import (hyml.macros (specs optional? parse-html4 parse-html5)))
+            (list-comp* [[id row] (.items specs)]
+             `(tr
+               (td ~(.upper (get row :name)))
+               (td ~(html.escape
+                     (if (get row :html4)
+                         (parse-html4 `(~(get row :name) ""))
+                         (parse-html5 `(~(get row :name) "")))))
+               (td ~(if (optional? (get row :name)) "✓" ""))
+               (td ~(if (get row :forbidden) "✓" ""))
+               (td ~(if (get row :omit) "✓" ""))
+               (td ~(if (get row :html4) "✓" ""))
+               (td ~(if (get row :html5) "✓" ""))))))))
 
 .. list-table::
    :header-rows: 1
