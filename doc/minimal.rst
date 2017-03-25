@@ -188,18 +188,20 @@ Basic syntax
 MiNiMaL macro syntax is simple and mostly follows the rules of Hy
 code. Syntax of the expression consists of:
 
--  parentheses to define hierarchical (nested) structure of the document
--  all opened parentheses must have closing parentheses pair
--  the first item of the expression is the tag name
--  next items in the expression are either:
-   -  attribute-value pairs (:attribute "value") or
-   -  content wrapped with double quotes ("content") or
-   -  sub expression or
-   -  nothing
--  between keywords, keyword values, and content there must a whitespace
-   separator
--  whitespace is not needed when a new expression starts or ends
-   (opening and closing parentheses).
+* parentheses to define hierarchical (nested) structure of the document
+* all opened parentheses must have closing parentheses pair
+* the first item of the expression is the tag name
+* next items in the expression are either:
+
+  * attribute-value pairs (:attribute "value")
+  * content wrapped with double quotes ("content")
+  * sub expression
+  * nothing
+
+* between keywords, keyword values, and content there must a whitespace
+  separator
+* whitespace is not needed when a new expression starts or ends
+  (opening and closing parentheses).
 
 There is no limit on nested levels. There is no limit on how many
 attribute-value pairs you want to use. Also it doesn't matter in what
