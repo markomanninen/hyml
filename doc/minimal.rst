@@ -98,7 +98,7 @@ linebreaks for introspection. More detailed comments are available in the
 source file.
 
 .. code-block:: hylang
-   :linenos:
+    :linenos:
 
     ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
@@ -172,7 +172,7 @@ source file.
     (defmacro include [template]
       `(do (import [hy.importer [tokenize]])
            (with [f (open ~template)]
-             (tokenize (+ "~@`(" (f.read) ")")))))
+             (tokenize (+ "~@`(" (f.read) ")")))))
     
     ; main MiNiMaL macro to be used. passes code to parse-mnml
     (defmacro ml [&rest code]
@@ -411,10 +411,10 @@ Output:
 .. code-block:: xml
 
     <note src="https://www.w3schools.com/xml/note.xml">
-    	<to>Tove</to>
-    	<from>Jani</from>
-    	<heading>Reminder</heading>
-    	<body>Don't forget me this weekend!</body>
+      <to>Tove</to>
+      <from>Jani</from>
+      <heading>Reminder</heading>
+      <body>Don't forget me this weekend!</body>
     </note>
     
 
