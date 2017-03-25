@@ -299,8 +299,8 @@ Templating feature requires using globals variable dictionary as a registry for 
     (defmacro include [template]
       `(do
         ; tokenize is needed to parse external file
-        (import [hy.importer [tokenize]])
-        (with [f (open ~template)]
+        (import [hy.importer [tokenize]])
+        (with [f (open ~template)]
           ; funky ~@` part is needed as a prefix to the template code
           ; so that code on template wont get directly expanded but only 
           ; after everything had been collected by the macro for final evaluation
@@ -448,11 +448,6 @@ This will output:
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>2</td>
-                            <td>3</td>
-                        </tr>
                         <tr>
                             <td>1</td>
                             <td>2</td>
