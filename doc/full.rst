@@ -6,11 +6,6 @@ HyML - Markup Language generator for Hy
 Language) is a set of macros to generate XML, XHTML, and HTML code in
 Hy.
 
-`HyML MiNiMaL <http://hyml.readthedocs.io/en/latest/minimal.html>`__ macro 
-is departed from the more extensive document and validation oriented "full" 
-version of HyML. HyML MiNiMaL is meant to be used as a minimal codebase to 
-generate XML (Extensible Markup Language).
-
 Introduction
 ------------
 
@@ -22,8 +17,8 @@ Main features
 3. processing lists and templates
 4. custom variables (and functions)
 5. tag name validation and attribute with html4 and html5 macros
-5. start and end tag omission for html4 and html5
-6. custom div tag, class and id attribute handlers for (x)html
+6. start and end tag omission for html4 and html5
+7. custom div tag, class and id attribute handlers for (x)html
 
 You can use HyML for:
 
