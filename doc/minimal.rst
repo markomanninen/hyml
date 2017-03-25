@@ -1,6 +1,6 @@
 
-HyML ``MiNiMaL``
-================
+HyML MiNiMaL
+============
 
 Minimal markup language generator in Hy
 ---------------------------------------
@@ -9,8 +9,8 @@ Minimal markup language generator in Hy
 Language) is a set of macros to generate XML, XHTML, and HTML code in
 Hy.
 
-HyML ``MiNiMaL`` macro is departed from the more extensive document and
-validation oriented "full" version of HyML. HyML ``MiNiMaL`` is meant to be
+HyML MiNiMaL macro is departed from the more extensive document and
+validation oriented "full" version of HyML. HyML MiNiMaL is meant to be
 used as a minimal codebase to generate XML (Extensible Markup Language)
 with the next features:
 
@@ -19,7 +19,7 @@ with the next features:
 3. processing lists and external templates
 4. using custom variables and functions
 
-You can use HyML ``MiNiMaL`` for:
+You can use HyML MiNiMaL for:
 
 -  static XML / XHTML / HTML content and file generation
 -  render html code for the Jupyter Notebook for example
@@ -29,7 +29,7 @@ You can use HyML ``MiNiMaL`` for:
    macro (Lisp) programming
 -  challenge your imagination
 
-To compare with HyML XML / HTML macros, ``MiNiMaL`` means that there is
+To compare with HyML XML / HTML macros, MiNiMaL means that there is
 no tag name validation and no tag and attribute minimize techniques
 utilized. If you need them, you should see `full HyML
 documentation <http://hyml.readthedocs.io/en/latest/#>`__.
@@ -56,7 +56,7 @@ templates or Jupyter Notebook files that are for presentation only.
 Import
 ~~~~~~
 
-Then import ``MiNiMaL`` macros:
+Then import MiNiMaL macros:
 
 .. code-block:: hylang
 
@@ -86,22 +86,22 @@ repository <https://github.com/markomanninen/hyml/archive/master.zip>`__
 (or clone it with
 ``$ git clone https://github.com/markomanninen/hyml.git``) to your
 computer. It contains all necessary templates to get everything running
-as presented in the HyML ``MiNiMaL`` `Notebook document <http://nbviewer.jupyter.org/github/markomanninen/hyml/blob/master/HyML%20-%20Minimal.ipynb>`__.
+as presented in the HyML MiNiMaL `Notebook document <http://nbviewer.jupyter.org/github/markomanninen/hyml/blob/master/HyML%20-%20Minimal.ipynb>`__.
 
-Hy ``MiNiMaL`` code (all)
--------------------------
+Hy MiNiMaL code (all)
+---------------------
 
-Because codebase for HyML ``MiNiMaL`` implementation is roughly 50 lines
+Because codebase for HyML MiNiMaL implementation is roughly 50 lines
 only (without comments), it is provided here with structural comments and 
-linebreaks for introspection. More detailed comment are available in the
+linebreaks for introspection. More detailed comments are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
 source file.
 
 .. code-block:: hylang
    :linenos:
 
-    ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
+      ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
 
       ; global registry for variables and functions
       (setv variables-and-functions {})
@@ -178,13 +178,14 @@ source file.
     (defmacro ml [&rest code]
       (.join "" (map parse-mnml code)))
 
+
 Features
 --------
 
 Basic syntax
 ~~~~~~~~~~~~
 
-``MiNiMaL`` macro syntax is simple and mostly follows the rules of Hy
+MiNiMaL macro syntax is simple and mostly follows the rules of Hy
 code. Syntax of the expression consists of:
 
 -  parentheses to define hierarchical (nested) structure of the document
@@ -230,11 +231,11 @@ code generation. They are:
 These all are symbols used in Hy `macro
 notation <http://docs.hylang.org/en/latest/language/api.html#quasiquote>`__,
 so they should be self explanatory. But to make everything clear, in the
-``MiNiMaL`` macro they work other way around.
+MiNiMaL macro they work other way around.
 
 Unquote (``~``) and unquote-splice (``~@``) gets you back to the Hy code
-evaluation mode. And quasiquote (\`) sets you back to ``MiNiMaL`` macro
-mode. This is natural when you think that ``MiNiMaL`` macro is a quoted
+evaluation mode. And quasiquote (\`) sets you back to MiNiMaL macro
+mode. This is natural when you think that MiNiMaL macro is a quoted
 code in the first place. So if you want to evaluate Hy code inside it,
 you need to do it inside unquote.
 
@@ -342,7 +343,7 @@ You can generate content with Hy by using ~ symbol:
 Using custom variables and functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can define custom variables and functions for the ``MiNiMaL`` macro.
+You can define custom variables and functions for the MiNiMaL macro.
 Variables and functions are stored on the common registry and availble
 on the macro expansion. You can access predefined symbols when quoting
 (~) the expression.
@@ -381,7 +382,7 @@ Generate list of items
 You can use list comprehension function to generate a list of xml
 elements. Hy code, sub expressions, and variables / functions work
 inside unquote spliced expression. You need to quote a line, if it
-contains a sub ``MiNiMaL`` expression.
+contains a sub MiNiMaL expression.
 
 .. code-block:: hylang
 
@@ -417,7 +418,7 @@ Let us first show the template content existing in the external file:
     
 
 Then we will define variables and a function to be used inside
-``MiNiMaL`` macro:
+MiNiMaL macro:
 
 .. code-block:: hylang
 
@@ -448,12 +449,12 @@ Special features
 ----------------
 
 These are not deliberately implemented features, but a conequence of the
-HyML ``MiNiMaL`` implementation and how Hy works.
+HyML MiNiMaL implementation and how Hy works.
 
-Nested ``MiNiMaL`` macros
+Nested MiNiMaL macros
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-It is possible to call ``MiNiMaL`` macro again inside unquoted code:
+It is possible to call MiNiMaL macro again inside unquoted code:
 
 .. code-block:: hylang
 
