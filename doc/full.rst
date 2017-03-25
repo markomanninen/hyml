@@ -1,19 +1,29 @@
 
-HyML - XML / (X)HTML generator for Hy
-=====================================
+HyML - Markup Language generator for Hy
+=======================================
 
+`HyML <https://github.com/markomanninen/hyml>`__ (acronym for Hy Markup
+Language) is a set of macros to generate XML, XHTML, and HTML code in
+Hy.
+
+`HyML ``MiNiMaL`` <http://hyml.readthedocs.io/en/latest/minimal.html>`__ macro 
+is departed from the more extensive document and validation oriented "full" 
+version of HyML. HyML ``MiNiMaL`` is meant to be used as a minimal codebase to 
+generate XML (Extensible Markup Language).
 
 Introduction
 ------------
 
-HyML (acronym for Hy Markup Language) is a set of macros to generate XML, XHTML, and HTML code in Hy. Main features are:
+Main features
+~~~~~~~~~~~~~
 
 1. resembling syntax with XML
 2. ability to evaluate Hy program code on macro expansion
 3. processing lists and templates
-4. custom variables
-5. tag validation and attribute minimizing with html4 and html5 macros
-6. custom div, class, and id handlers for html
+4. custom variables (and functions)
+5. tag name validation and attribute with html4 and html5 macros
+5. start and end tag omission for html4 and html5
+6. custom div tag, class and id attribute handlers for (x)html
 
 You can use HyML for:
 
@@ -21,9 +31,9 @@ You can use HyML for:
 * generating html code for Jupyter Notebook for example
 * attached it to the server for dynamic html output generation
 * practice and study
-* challenge your imagination
+* challenge your imagination for any creative use
 
-If you want to skip the nostalgic background rationale part, you can jump straight to the `installation <http://hyml.readthedocs.io/en/latest/#installation>`__ and the `documentation <http://hyml.readthedocs.io/en/latest/#documentation>`__ part.
+If you want to skip the nostalgic background rationale part, you can jump straight to the `installation <http://hyml.readthedocs.io/en/latest/#installation>`__ and the `documentation <http://hyml.readthedocs.io/en/latest/full.html#documentation>`__ part.
 
 
 Motivation
@@ -33,9 +43,9 @@ My primary intention is simple and mundane. Study. Study. Study.
 
 First of all, I wanted to study more Lisp language. Seven years ago, I tried `Scheme <https://cisco.github.io/ChezScheme/>`__ and `CommonLisp <http://cliki.net/>`__ for form generation and validation purposes. Then `Clojure <https://clojure.org/>`__ for `website session handler <https://github.com/markomanninen/websesstudy>`__. Now, in 2017, I found another nice Lisp dialect which was seemlessly interoperating with Python, the language I've already used for an another decade on many spare time research projects.
 
-This implementation, Pythonic Lisp, is called with a concise two character name, `Hy <http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed, and affixed with other words. Playful compounds can be created such as Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), and now: **HyML**.
+This implementation, Pythonic Lisp, is called with a concise two character name, `Hy <http://docs.hylang.org/en/latest/>`__. Well chosen name makes it possible to create many "Hylarious" module names and acronyms when prefixed, infixed, and affixed with other words. Playful compounds can be created such as Hymn, Hy5, Hyway, Shyte, HyLogic, Hyffix, Hypothesis (actually already a Python test library), Archymedes (could have been), and now: **HyML**.
 
-For other Lisp interpreters written in Python should be mentioned. One is from iconic Peter Norvig: `Lispy2 <http://norvig.com/lispy2.html>`__ and McCarthy's original Lisps by Fogus `lithp.py <http://fogus.me/fun/lithp/>`__, and Kjetil Valle, `Root Lisp <https://github.com/kvalle/root-lisp>`__.
+For other Lisp interpreters written in Python should be mentioned. One is from iconic Peter Norvig: `Lispy2 <http://norvig.com/lispy2.html>`__. Other is McCarthy's original Lisp by Fogus: `lithp.py <http://fogus.me/fun/lithp/>`__. Yet one more implementation of Paul Graham's `Root Lisp <https://github.com/kvalle/root-lisp>`__ by Kjetil Valle.
 
 But none of these interact with Python `AST <https://docs.python.org/3/library/ast.html>`__ so that both Lisp and Python modules can be called from each sides, which is why I think Hy is an exceptionally interesting implementation.
 
@@ -48,12 +58,13 @@ As a web developer, most of my time, I'm dealing with different kinds of scripti
 
     -- `cl-who <http://weitz.de/cl-who/>`__
 
+And to be honest, I've made it several times with other languages.
 
 **Python**
 
 Since Hy is a rather new language wrapper, there was no dedicated generator available (natively written) for it. Or at least I didn't find them. Maybe this is also, because one could easily use Python libraries. Any Python library can be imported to Hy with a simple `import` clause. And vice versa, any Hy module can be imported to Python with the ordinary `(import)` command.
 
-I had made html generator module for Python four years ago, namely `tagpy`, which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. It follows strictly XML specifications. I should show some core parts of it.
+I had made tag generator module for Python four years ago, namely `tagpy`, which is now called `Remarkuple3 <https://github.com/markomanninen/remarkuple3>`__. It is a general purpose class with automatic tag object creation on the fly. It follows strictly XML specifications. I should show some core parts of it.
 
 First the tag class:
 
@@ -153,7 +164,7 @@ Then usage of the HtmlElement class:
     $a->addContent(new HE_B("Link"));
     echo $a->render(); // <a href="#"><b>Link</b></a>
 
-Doesn't this feel quite Lispy? I mean generating and modifying code is same what macros do. Here it is done with PHP, and can be done with any language. But the thing is that EVAL in other languages is regarded as EVIL, but for Lisp users it is a "principia primaria".
+Doesn't this feel distantly quite Lispy? I mean generating and modifying code is same what macros do. Here it is done with PHP, and can be done with any language. But the thing is that `eval` in other languages is regarded as `evil` but for Lisp users it is a "principia primaria".
 
 **Javascript**
 
@@ -240,9 +251,11 @@ Data, was it just data as data or code, in the information technology it has alw
 2. hierarchic structures
 3. data types
 
-In HyML the third part is pretty simple. In the output everything is just a plain text. There are no datatypes. Same applies to JSON document too, except that when parsing it, by semantic rules, we can find out few basic datatypes. But again, in HyML, even more in the output ie. xml, data types has a minimal meaning. You should only give attention keywords that starts with colon (:) punctuation mark.
+In HyML the third part is pretty simple. On the output everything is just a plain text. There are no datatypes. In HyML data types has a minimal meaning. You should only give attention keywords that starts with colon (:) punctuation mark and literals that start with " and ends to the counterpart ".
 
-Hierachical structure is defined by nested parentheses. Simple as that. Processing list can be thought as a core Hy / Lisp language syntax utility, but there is also a specific syntactic feature called `unquote-splice <http://hyml.readthedocs.io/en/latest/#unquote-splice>`__, that can delegate a list of elements to the parent element in HyML.
+Hierachical structure is defined by nested parentheses. Simple as that.
+
+Processing list can be thought as a core Hy / Lisp language syntax utility, but there is also a specific syntactic feature called `unquote-splice <http://hyml.readthedocs.io/en/latest/#unquote-splice>`__, that can delegate a rendered list of elements to the parent element in HyML.
 
 **Catch tag if you can**
 
