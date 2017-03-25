@@ -7,10 +7,12 @@ Minimal markup language generator in Hy
 
 `HyML <https://github.com/markomanninen/hyml>`__ (acronym for Hy Markup
 Language) is a set of macros to generate XML, XHTML, and HTML code in
-Hy. HyML ``MiNiMaL`` is derived from the more extensive document and
+Hy.
+
+HyML ``MiNiMaL`` is derived from the more extensive document and
 validation oriented "big brother" HyML. HyML ``MiNiMaL`` is meant to be
 used as a minimal codebase to generate XML (Extensible Markup Language)
-with next features:
+with the next features:
 
 1. closely resembling syntax with XML
 2. ability to mix Hy / Python program code within markup
@@ -84,18 +86,18 @@ repository <https://github.com/markomanninen/hyml/archive/master.zip>`__
 (or clone it with
 ``$ git clone https://github.com/markomanninen/hyml.git``) to your
 computer. It contains all necessary templates to get everything running
-as presented here.
+as presented in the HyML ``MiNiMaL`` `Notebook document <http://nbviewer.jupyter.org/github/markomanninen/hyml/blob/master/HyML%20-%20Minimal.ipynb>`__.
 
-Hy code (all)
--------------
+Hy ``MiNiMaL`` code (all)
+-------------------------
 
 Because codebase for HyML ``MiNiMaL`` implementation is roughly 50 lines
-only, it will be provided here with structural comments for
+only, it is provided here with structural comments for
 introspection. More detailed comment are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
 source file.
 
-.. code:: python
+.. code:: lisp
 
     ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
@@ -222,14 +224,14 @@ mode. This is natural when you think that ``MiNiMaL`` macro is a quoted
 code in the first place. So if you want to evaluate Hy code inside it,
 you need to do it inside unquote.
 
-But let us start from the minimal example first.
+But let us start from the simple example first.
 
 Simple example
 ~~~~~~~~~~~~~~
 
-So the simple example utilizing above features is:
+The simple example utilizing above features is:
 
-.. code:: lisp
+.. code:: hylang
 
     (tag :attr "value" (sub "Content"))
 
@@ -239,7 +241,7 @@ name. ``:attr "value"`` is the keyword-value (attribute-value) -pair.
 keywords) in the tag. Sub node instead has titlecase content
 ``"Content"`` given.
 
-Output is:
+Output would be:
 
 .. code:: xml
 
@@ -248,7 +250,7 @@ Output is:
 Process components with unquote syntax (~)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Any element can be generated instead of hardcoded to the expression.
+Any element (tag name, tag attribute and value, tag content) can be generated instead of hardcoded to the expression.
 
 Tag name
 ^^^^^^^^
@@ -262,9 +264,9 @@ You can generate a tag name with Hy code by using ~ symbol:
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag/>'
+    <tag/>
 
 
 
@@ -286,9 +288,9 @@ Generated attribute name must be a keyword however:
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag attr="value"/>'
+    <tag attr="value"/>
 
 
 
@@ -299,9 +301,9 @@ Generated attribute name must be a keyword however:
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag attr="value"/>'
+    <tag attr="value"/>
 
 
 
@@ -317,9 +319,9 @@ You can generate content with Hy by using ~ symbol:
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag>CONTENT</tag>'
+    <tag>CONTENT</tag>
 
 
 
@@ -327,7 +329,7 @@ Using custom variables and functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can define custom variables and functions for the ``MiNiMaL`` macro.
-Variables and functions are stored on the common registry and avialble
+Variables and functions are stored on the common registry and availble
 on the macro expansion. You can access predefined symbols when quoting
 (~) the expression.
 
@@ -344,9 +346,9 @@ on the macro expansion. You can access predefined symbols when quoting
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag>McDonald, Dennis</tag>'
+    <tag>McDonald, Dennis</tag>
 
 
 
@@ -373,9 +375,9 @@ contains a sub ``MiNiMaL`` expression.
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>'
+    <tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>
 
 
 
@@ -416,7 +418,7 @@ And finally include and render the template:
     (print (indent (ml ~@(include "note.hy"))))
 
 
-.. parsed-literal::
+.. code:: xml
 
     <note src="https://www.w3schools.com/xml/note.xml">
     	<to>Tove</to>
@@ -444,9 +446,9 @@ It is possible to call ``MiNiMaL`` macro again inside unquoted code:
 
 
 
-.. parsed-literal::
+.. code:: xml
 
-    '<tag>Generator inside: <sub>content</sub></tag>'
+    <tag>Generator inside: <sub>content</sub></tag>
 
 
 
