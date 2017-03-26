@@ -453,11 +453,11 @@ retrieved.
 
     [(ml ('tag)) (ml (`tag)) (ml (tag)) (ml ("tag"))]
 
+Output:
 
 .. parsed-literal::
 
     ['<tag/>', '<tag/>', '<tag/>', '<tag/>']
-
 
 
 With keywords, however, single pre-queted strings will get parsed as a
@@ -467,11 +467,11 @@ content.
 
     [(ml (tag ':attr)) (ml (tag `:attr))]
 
+Output:
 
 .. parsed-literal::
 
     ['<tag>attr</tag>', '<tag>attr</tag>']
-
 
 
 Also if keyword marker is followed by a string literal, keyword will be
@@ -481,11 +481,11 @@ empty, thus not a correctly wormed keyword value pair.
 
     (ml (tag :"attr"))
 
+Output:
 
 .. code-block:: xml
 
     <tag ="attr"/>
-
 
 
 So only working version of keyword notation is ``:{symbol}`` or unquoted
@@ -497,11 +497,11 @@ attributes).
 
     [(ml (tag :disabled)) (ml (tag ~(keyword "disabled")))]
 
+Output:
 
 .. parsed-literal::
 
     ['<tag disabled="disabled"/>', '<tag disabled="disabled"/>']
-
 
 
 If you wish to define multiple boolean attributes together with content,
@@ -513,11 +513,11 @@ always needs to have a value pair.
 
     (ml (tag "Content" :disabled :enabled))
 
+Output:
 
 .. code-block:: xml
 
     <tag disabled="disabled" enabled="enabled">Content</tag>
-
 
 
 One more thing with keywords is that if the same keyword value pair is
@@ -530,6 +530,7 @@ names should be unique and not repeated under the same element.
 
     (ml (tag :attr :attr "attr2"))
 
+Output:
 
 .. code-block:: xml
 
