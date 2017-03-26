@@ -701,8 +701,7 @@ So only working version of keyword notation is ``:{symbol}`` or unquoted
 
 .. note::  Keywords without value are interpreted as a keyword having the
            same value as the keyword name (called 
-           `boolean
-attributes <http://www.w3.org/TR/html5/infrastructure.html#boolean-attributes>`__
+           `boolean attributes <http://www.w3.org/TR/html5/infrastructure.html#boolean-attributes>`__
            in HTML).
 
 .. code-block:: hylang
