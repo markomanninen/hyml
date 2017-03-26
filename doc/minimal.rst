@@ -524,7 +524,7 @@ wrap everything and create XHTML document that occupies the most of the
 feature set. Additional comments will be given between the code lines.
 
 .. code-block:: hylang
-
+    
     ; define variables
     (defvar topic "How do you make XHTML 1.0 Transitional document with HyML?"
             tags ['html 'xhtml 'hyml]
