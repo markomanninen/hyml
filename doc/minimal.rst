@@ -97,7 +97,7 @@ as presented in the HyML MiNiMaL `Notebook document <http://nbviewer.jupyter.org
 HyML MiNiMaL codebase
 ----------------------
 
-Because codebase for HyML MiNiMaL implementation is roughly 50 lines
+Because codebase for HyML MiNiMaL implementation is roughly 60 lines
 only (without comments), it is provided here with structural comments and 
 linebreaks for the inspection. More detailed comments are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
@@ -113,23 +113,27 @@ source file.
       (setv variables-and-functions {})
     
       ; internal constants
-      (def **keyword** "keyword")
-      (def **unquote** "unquote")
-      (def **splice** "unquote_splice")
-      (def **unquote-splice** (, **unquote** **splice**))
-    
+      (def **keyword** "keyword") (def **unquote** "unquote")
+      (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
+      (def **quote** "quote") (def **quasi** "quasiquote")
+      (def **quasi-quote** (, **quote** **quasi**))
+
       ; detach keywords and content from code expression
       (defn get-content-attributes [code]
         (setv content [] attributes [] kwd None)
         (for [item code]
-             (do (if (and (= (first item) **unquote**)
-                          (= (first (second item)) **keyword**))
-                     (setv item (eval (second item))))
+             (do (if (iterable? item)
+                     (if (= (first item) **unquote**) (setv item (eval (second item) variables-and-functions))
+                         (in (first item) **quasi-quote**) (setv item (name (eval item)))))
                  (if-not (keyword? item)
                    (if (none? kwd)
                        (.append content (parse-mnml item))
                        (.append attributes (, kwd (parse-mnml item)))))
+                 (if (and (keyword? kwd) (keyword? item))
+                     (.append attributes (, kwd (name kwd))))
                  (if (keyword? item) (setv kwd item) (setv kwd None))))
+        (if (keyword? kwd)
+            (.append attributes (, kwd (name kwd))))
         (, content attributes))
     
       ; recursively parse expression
@@ -440,6 +444,97 @@ Output:
 
     <tag>Generator inside: <sub>content</sub></tag>
 
+Tag names, attribute values, and tag content can be also single
+pre-quoted strings. It doesn't matter because in the final process of
+evaluating the component the string representation of the symbol is
+retrieved.
+
+.. code-block:: hylang
+
+    [(ml ('tag)) (ml (`tag)) (ml (tag)) (ml ("tag"))]
+
+
+.. parsed-literal::
+
+    ['<tag/>', '<tag/>', '<tag/>', '<tag/>']
+
+
+
+With keywords, however, single pre-queted strings will get parsed as a
+content.
+
+.. code-block:: hylang
+
+    [(ml (tag ':attr)) (ml (tag `:attr))]
+
+
+.. parsed-literal::
+
+    ['<tag>attr</tag>', '<tag>attr</tag>']
+
+
+
+Also if keyword marker is followed by a string literal, keyword will be
+empty, thus not a correctly wormed keyword value pair.
+
+.. code-block:: hylang
+
+    (ml (tag :"attr"))
+
+
+.. code-block:: xml
+
+    <tag ="attr"/>
+
+
+
+So only working version of keyword notation is ``:{symbol}`` or unquoted
+``~(keyword {expression})``. Also keywords without value are interpreted
+as a keyword having the same value as the keyword name (called boolean
+attributes).
+
+.. code-block:: hylang
+
+    [(ml (tag :disabled)) (ml (tag ~(keyword "disabled")))]
+
+
+.. parsed-literal::
+
+    ['<tag disabled="disabled"/>', '<tag disabled="disabled"/>']
+
+
+
+If you wish to define multiple boolean attributes together with content,
+you can collect them at the end of the expression. Note that in XML
+boolean attributes cannot be minimized similar to HTML. Attributes
+always needs to have a value pair.
+
+.. code-block:: hylang
+
+    (ml (tag "Content" :disabled :enabled))
+
+
+.. code-block:: xml
+
+    <tag disabled="disabled" enabled="enabled">Content</tag>
+
+
+
+One more thing with keywords is that if the same keyword value pair is
+given multiple times, it will show up in the mark up in the same order,
+as multiple. Depending on the markup parser, the last attribute might be
+valuated OR parser might give an error, because by XML Standard attibute
+names should be unique and not repeated under the same element.
+
+.. code-block:: hylang
+
+    (ml (tag :attr :attr "attr2"))
+
+
+.. code-block:: xml
+
+    <tag attr="attr" attr="attr2"/>
+
 
 Test main features
 ------------------
@@ -449,14 +544,24 @@ output after running these. If there is, then there is a problem!
 
 .. code-block:: hylang
 
+    ;;;;;;;;;
+    ; basic ;
+    ;;;;;;;;;
+    ; empty things
+    (assert (= (ml) ""))
+    (assert (= (ml"") ""))
+    (assert (= (ml "") ""))
     (assert (= (ml ("")) "</>"))
+    ; tag names
     (assert (= (ml (tag)) "<tag/>"))
     (assert (= (ml (TAG)) "<TAG/>"))
     (assert (= (ml (~(.upper "tag"))) "<TAG/>"))
     (assert (= (ml (tag "")) "<tag></tag>"))
+    ; content cases
     (assert (= (ml (tag "content")) "<tag>content</tag>"))
     (assert (= (ml (tag "CONTENT")) "<tag>CONTENT</tag>"))
     (assert (= (ml (tag ~(.upper "content"))) "<tag>CONTENT</tag>"))
+    ; attribute names and values
     (assert (= (ml (tag :attr "val")) "<tag attr=\"val\"/>"))
     (assert (= (ml (tag ~(keyword "attr") "val")) "<tag attr=\"val\"/>"))
     (assert (= (ml (tag :attr "val" "")) "<tag attr=\"val\"></tag>"))
@@ -465,22 +570,53 @@ output after running these. If there is, then there is a problem!
     (assert (= (ml (tag ~(keyword (.upper "attr")) "val")) "<tag ATTR=\"val\"/>"))
     (assert (= (ml (tag :attr "VAL")) "<tag attr=\"VAL\"/>"))
     (assert (= (ml (tag :attr ~(.upper "val"))) "<tag attr=\"VAL\"/>"))
+    ; nested tags
     (assert (= (ml (tag (sub))) "<tag><sub/></tag>"))
+    ; unquote splice
     (assert (= (ml (tag ~@(list-comp `(sub ~(str item)) [item [1 2 3]])))
                "<tag><sub>1</sub><sub>2</sub><sub>3</sub></tag>"))
-    
+    ; variables
     (defvar x "variable")
     (assert (= (ml (tag ~x)) "<tag>variable</tag>"))
-    
+    ; functions
     (deffun f (fn [x] x))
     (assert (= (ml (tag ~(f "function"))) "<tag>function</tag>"))
-    
+    ; templates
     (with [f (open "test.hy" "w")] (f.write "(tag)"))
     (assert (= (ml ~@(include "test.hy")) "<tag/>"))
-    
-    ; special
+    ;;;;;;;;;;;
+    ; special ;
+    ;;;;;;;;;;;
+    ; tag names
     (assert (= (ml (J)) "<1j/>"))
     (assert (= (ml (~"J")) "<J/>"))
+    (assert (= [(ml ('tag)) (ml (`tag)) (ml (tag)) (ml ("tag"))] (* ["<tag/>"] 4)))
+    ; attribute values
+    (assert (= [(ml (tag :attr 'val)) (ml (tag :attr `val)) (ml (tag :attr val)) (ml (tag :attr "val"))]
+               (* ["<tag attr=\"val\"/>"] 4)))
+    ; content
+    (assert (= [(ml (tag 'val)) (ml (tag `val)) (ml (tag val)) (ml (tag "val"))]
+               (* ["<tag>val</tag>"] 4)))
+    ; keyword processing
+    (assert (= [(ml (tag ':attr)) (ml (tag `:attr))] ["<tag>attr</tag>" "<tag>attr</tag>"]))
+    (assert (= (ml (tag :"attr")) "<tag =\"attr\"/>"))
+    (assert (= [(ml (tag :attr)) (ml (tag ~(keyword "attr")))] ["<tag attr=\"attr\"/>" "<tag attr=\"attr\"/>"]))
+    (assert (= (ml (tag :attr1 :attr2)) "<tag attr1=\"attr1\" attr2=\"attr2\"/>"))
+    (assert (= (ml (tag Content :attr1 :attr2)) "<tag attr1=\"attr1\" attr2=\"attr2\">Content</tag>"))
+    (assert (= (ml (tag :attr1 :attr2 Content)) "<tag attr1=\"attr1\" attr2=\"Content\"/>"))
+    ; no space between attribute name and value as a string literal
+    (assert (= (ml (tag :attr"val")) "<tag attr=\"val\"/>"))
+    ; no space between tag, keywords, keyword value, and content string literals
+    (assert (= (ml (tag"content":attr"val")) "<tag attr=\"val\">content</tag>"))
+    ;;;;;;;;;
+    ; weird ;
+    ;;;;;;;;;
+    ; quote should not be unquoted or surpressed
+    (assert (= (ml (quote :quote "quote" "quote")) "<quote quote=\"quote\">quote</quote>"))
+    ; tag name, keyword name, value and content can be same
+    (assert (= (ml (tag :tag "tag" "tag")) "<tag tag=\"tag\">tag</tag>"))
+    ; multiple same attribute names stays in the markup in the reserved order
+    (assert (= (ml (tag :attr "attr1" :attr "attr2")) "<tag attr=\"attr1\" attr=\"attr2\"/>"))
 
 
 The `MIT <http://choosealicense.com/licenses/mit/>`__ License
