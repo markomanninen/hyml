@@ -31,7 +31,7 @@
 
 (try
   ; needed for Jupyter Notebook ml> render helper
-  ; but it is optional only for main codebase
+  ; but it is optional only for the main codebase
   (import IPython)
   (except (e Exception)))
 
@@ -40,42 +40,73 @@
   ; internal constants
   (def **keyword** "keyword") (def **unquote** "unquote")
   (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
+  (def **quote** "quote") (def **quasi** "quasiquote")
+  (def **quasi-quote** (, **quote** **quasi**))
   ; detach keywords and content from code expression
   (defn get-content-attributes [code]
     (setv content [] attributes [] kwd None)
     (for [item code]
-         (do (if (and (= (first item) **unquote**)
-                      (= (first (second item)) **keyword**))
-                 (setv item (eval (second item))))
+         (do (if (iterable? item)
+                 ; should we evaluate keyword
+                 (if (= (first item) **unquote**) (setv item (eval (second item) variables-and-functions))
+                     ; single pre-quoted symbols will get accepted
+                     ; this is practically to make attribute value and content part 
+                     ; coherent with create-tag functionality. without this
+                     ; quotation symbols would be interpreted as tag names!
+                     (in (first item) **quasi-quote**) (setv item (name (eval item)))))
+             ; should we add item to content / attributes list
              (if-not (keyword? item)
                (if (none? kwd)
+                   ; keyword was not set, so item must be a content
                    (.append content (parse-mnml item))
+                   ; otherwise it is attribute
                    (.append attributes (, kwd (parse-mnml item)))))
+             ; handle possible boolean attributes
+             (if (and (keyword? kwd) (keyword? item))
+                 (.append attributes (, kwd (name kwd))))
+             ; should we regard next item as a values of the keyword?
              (if (keyword? item) (setv kwd item) (setv kwd None))))
+    ; attributes without values are boolean attributes that
+    ; has same value than the name of the attribute
+    (if (keyword? kwd)
+        (.append attributes (, kwd (name kwd))))
     (, content attributes))
   ; recursively parse expression
   (defn parse-mnml [code] 
     (if (coll? code)
         (do (setv tag (catch-tag (first code)))
+            ; special processing for unquote and unquote-splice 
             (if (in tag **unquote-splice**)
                 (if (= tag **unquote**)
+                    ; must pass variables-and-functions functions so that
+                    ; custom variables and functions are found in the namespace
                     (str (eval (second code) variables-and-functions))
+                    ; process the list of code
                     (.join "" (map parse-mnml (eval (second code) variables-and-functions))))
+                ; normal tag creation
                 (do (setv (, content attributes) (get-content-attributes (drop 1 code)))
+                    ; start tag with attributes
+                    ; if there is no content, then we can use short tags
                     (+ (tag-start tag attributes (empty? content))
+                       ; if there is no content, we dodn't need end tag
                        (if (empty? content) ""
                            (+ (.join "" (map str content)) (+ "</" tag ">")))))))
+        ; returned value is always a string
         (if (none? code) "" (str code))))
   ; detach tag from expression
   (defn catch-tag [code]
+    ; see if we should evaluate unquoted tag name
     (if (and (iterable? code) (= (first code) **unquote**))
         (eval (second code))
+        ; otherwise try to catch the evaluated name
         (try (name (eval code))
+             ; or just return the string representation of the tag
              (except (e Exception) (str code)))))
   ; concat attributes
   (defn tag-attributes [attr]
     (if (empty? attr) ""
         (+ " " (.join " " (list-comp
+          ; get the name of the keyword and value symbols
           (% "%s=\"%s\"" (, (name kwd) (name value))) [[kwd value] attr])))))
   ; create start tag
   (defn tag-start [tag-name attr short]
@@ -84,7 +115,11 @@
 (defmacro include [template]
   `(do (import [hy.importer [tokenize]])
        (with [f (open ~template)]
+         ; content of the file must be wrapped with expression parentheses ()
+         ; quasiquoted (`) and finally unquote-spliced (~@) so that
+         ; final evaluation is done in the main parse-mnml loop
          (tokenize (+ "~@`(" (f.read) ")")))))
 ; main MiNiMaL macro to be used. passes code to parse-mnml
 (defmacro ml [&rest code]
+  ; with map multiple expressions, not only nested ones, can be processed
   (.join "" (map parse-mnml code)))
