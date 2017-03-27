@@ -97,7 +97,7 @@ And run the simple example:
 
     (ml (tag :attr "value" (sub "Content")))
 
-That should output:
+That should |output|
 
 .. code-block:: xml
 
@@ -342,13 +342,13 @@ Generated attribute name must be a keyword however:
 
 .. code-block:: hylang
 
-    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; output: <tag attr="value"/>
+    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; |output| <tag attr="value"/>
 
 And same for value:
 
 .. code-block:: hylang
 
-    (ml (tag :attr ~(+ 'v 'a 'l 'u 'e))) ; output: <tag attr="value"/>
+    (ml (tag :attr ~(+ 'v 'a 'l 'u 'e))) ; |output| <tag attr="value"/>
 
 Content
 ^^^^^^^
@@ -357,7 +357,7 @@ You can generate content with Hy by using ~ symbol:
 
 .. code-block:: hylang
 
-    (ml (tag ~(.upper "content"))) ; output: <tag>CONTENT</tag>
+    (ml (tag ~(.upper "content"))) ; |output| <tag>CONTENT</tag>
 
 
 Using custom variables and functions
@@ -380,7 +380,7 @@ on the macro expansion. You can access predefined symbols when quoting
     ; use variables and functions with unquote / unquote splice
     (ml (tag ~(wholename firstname lastname)))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -407,7 +407,7 @@ contains a sub MiNiMaL expression.
     ; generate 5 sub tags and use enumerated numeric value as a content
     (ml (tag ~@(list-comp `(sub ~(str item)) [item (range 5)])))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -448,7 +448,7 @@ And finally include and render the template:
     (import (hyml.helpers (indent)))
     (print (indent (ml ~@(include "note.hy"))))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -459,6 +459,10 @@ Output:
       <body>Don't forget me this weekend!</body>
     </note>
 
+.. Danger:: In HyML, but with templates especially, you must realize that 
+            inside macro there is a full access to all Hy and Python modules
+            including to file systems and so on. This might raise up some security
+            concerns that you should be aware of.
 
 Directly calling the ``parse-mnml`` function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -470,7 +474,7 @@ dictionary. First lets see the simple example:
 
 .. code:: python
 
-    (parse-mnml '(tag)) ; output: <tag/>
+    (parse-mnml '(tag)) ; |output| <tag/>
 
 Then let us make it a bit more complicated:
 
@@ -499,6 +503,7 @@ Then let us make it a bit more complicated:
                 [[tag val] (.items contact)]))
           [contact contacts]))))))
 
+|output|
 
 .. code-block:: xml
 
@@ -632,7 +637,7 @@ It is possible to call MiNiMaL macro again inside unquoted code:
 
     (ml (tag ~(+ "Generator inside: " (ml (sub "content")))))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -647,7 +652,7 @@ Unrecognized symbols (that is they are not specified as literals with double quo
 
     (ml (tag :alfred J. Kwak))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -665,7 +670,7 @@ retrieved.
 
     [(ml ('tag)) (ml (`tag)) (ml (tag)) (ml ("tag"))]
 
-Output:
+|output|
 
 .. parsed-literal::
 
@@ -679,7 +684,7 @@ content.
 
     [(ml (tag ':attr)) (ml (tag `:attr))]
 
-Output:
+|output|
 
 .. parsed-literal::
 
@@ -694,7 +699,7 @@ empty, thus not a correctly wormed keyword value pair.
 
 .. code-block:: hylang
 
-    (ml (tag :"attr")) : output: <tag ="attr"/>
+    (ml (tag :"attr")) ; |output| <tag ="attr"/>
 
 So only working version of keyword notation is ``:{symbol}`` or unquoted
 ``~(keyword {expression})``. 
@@ -708,7 +713,7 @@ So only working version of keyword notation is ``:{symbol}`` or unquoted
 
     [(ml (tag :disabled)) (ml (tag ~(keyword "disabled"))) (ml (tag :disabled "disabled"))]
 
-Output:
+|output|
 
 .. parsed-literal::
 
@@ -725,7 +730,7 @@ you can collect them at the end of the expression.
 
     (ml (tag "Content" :disabled :enabled))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -742,7 +747,7 @@ names should be unique and not repeated under the same element.
 
     (ml (tag :attr :attr "attr2"))
 
-Output:
+|output|
 
 .. code-block:: xml
 
@@ -838,3 +843,5 @@ The `MIT <http://choosealicense.com/licenses/mit/>`__ License
 -------------------------------------------------------------
 
 Copyright (c) 2017 Marko Manninen
+
+.. |output| replace:: ⎒ **Output** ⎑
