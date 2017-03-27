@@ -844,4 +844,4 @@ The `MIT <http://choosealicense.com/licenses/mit/>`__ License
 
 Copyright (c) 2017 Marko Manninen
 
-.. |output| replace:: ⎒ **Output** ⎑
+.. |Output:| replace:: ⎑ **Output**:
