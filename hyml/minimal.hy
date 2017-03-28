@@ -42,13 +42,23 @@
   (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
   (def **quote** "quote") (def **quasi** "quasiquote")
   (def **quasi-quote** (, **quote** **quasi**))
+  ; given two dicts, merge them into a new dict as a shallow copy.
+  (defn merge-two-dicts [x y]
+    (if-not (or (empty? x) (empty y))
+            ; tiny optimization, if there is values in both x and y
+            (do (setv z (.copy x)) (.update z y) z)
+            ; else one more check to return the one that has values
+            ; or maybe all were empty then x should be fine
+            (if (empty? x) y x)))
   ; detach keywords and content from code expression
-  (defn get-content-attributes [code]
+  (defn get-content-attributes [code &optional [vars-and-funcs {}]]
     (setv content [] attributes [] kwd None)
     (for [item code]
          (do (if (iterable? item)
                  ; should we evaluate keyword
-                 (if (= (first item) **unquote**) (setv item (eval (second item) variables-and-functions))
+                 (if (= (first item) **unquote**)
+                     (setv item (eval (second item)
+                                      (merge-two-dicts variables-and-functions vars-and-funcs)))
                      ; single pre-quoted symbols will get accepted
                      ; this is practically to make attribute value and content part 
                      ; coherent with create-tag functionality. without this
@@ -58,9 +68,9 @@
              (if-not (keyword? item)
                (if (none? kwd)
                    ; keyword was not set, so item must be a content
-                   (.append content (parse-mnml item))
+                   (.append content (parse-mnml item vars-and-funcs))
                    ; otherwise it is attribute
-                   (.append attributes (, kwd (parse-mnml item)))))
+                   (.append attributes (, kwd (parse-mnml item vars-and-funcs)))))
              ; handle possible boolean attributes
              (if (and (keyword? kwd) (keyword? item))
                  (.append attributes (, kwd (name kwd))))
@@ -71,8 +81,10 @@
     (if (keyword? kwd)
         (.append attributes (, kwd (name kwd))))
     (, content attributes))
-  ; recursively parse expression
-  (defn parse-mnml [code] 
+  ; recursively parse expression. take optional variables and functions
+  ; dictionary for eval functionality. note that ml macro does NOT
+  ; support this, only parse-mnml direct function call
+  (defn parse-mnml [code &optional [vars-and-funcs {}]]
     (if (coll? code)
         (do (setv tag (catch-tag (first code)))
             ; special processing for unquote and unquote-splice 
@@ -80,11 +92,16 @@
                 (if (= tag **unquote**)
                     ; must pass variables-and-functions functions so that
                     ; custom variables and functions are found in the namespace
-                    (str (eval (second code) variables-and-functions))
+                    (str (eval (second code) (merge-two-dicts variables-and-functions vars-and-funcs)))
                     ; process the list of code
-                    (.join "" (map parse-mnml (eval (second code) variables-and-functions))))
+                    (.join "" (map
+                      ; if there are variables and functions we would like to pass them to parse function
+                      ; else just simple parse-mnml map
+                      (if (empty? vars-and-funcs) parse-mnml (fn [item] (parse-mnml item vars-and-funcs))) 
+                          (eval (second code) 
+                                (merge-two-dicts variables-and-functions vars-and-funcs)))))
                 ; normal tag creation
-                (do (setv (, content attributes) (get-content-attributes (drop 1 code)))
+                (do (setv (, content attributes) (get-content-attributes (drop 1 code) vars-and-funcs))
                     ; start tag with attributes
                     ; if there is no content, then we can use short tags
                     (+ (tag-start tag attributes (empty? content))
