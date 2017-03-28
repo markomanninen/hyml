@@ -44,7 +44,7 @@
   (def **quasi-quote** (, **quote** **quasi**))
   ; given two dicts, merge them into a new dict as a shallow copy.
   (defn merge-two-dicts [x y]
-    (if-not (or (empty? x) (empty y))
+    (if-not (or (empty? x) (empty? y))
             ; tiny optimization, if there is values in both x and y
             (do (setv z (.copy x)) (.update z y) z)
             ; else one more check to return the one that has values
