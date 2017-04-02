@@ -135,7 +135,7 @@
          ; content of the file must be wrapped with expression parentheses ()
          ; quasiquoted (`) and finally unquote-spliced (~@) so that
          ; final evaluation is done in the main parse-mnml loop
-         (tokenize (+ "~@`(" (f.read) ")")))))
+         (tokenize (+ "~@`(" (f.read) ")")))))
 ; main MiNiMaL macro to be used. passes code to parse-mnml
 (defmacro ml [&rest code]
   ; with map multiple expressions, not only nested ones, can be processed
