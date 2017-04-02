@@ -1,0 +1,2 @@
+~(extend-template "layout.hyml" 
+    {"body" `(p "Page content")})
