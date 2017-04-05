@@ -47,17 +47,17 @@
                 (apply render-template (extend (extend [~tmpl] ~args) [(globals)])))
             (render-template ~tmpl (globals))))
 
-; beside render-template and extend-template, macro can be used
+; beside render-template and extend-template, template macro can be used
 ; to pass expression and variables directly to the parse-mnml
 ; functionality instead of using file to read the expression
-; usage: (macro `(p ~var) {"var" 1}) -> <p>1</p>
+; usage: (template `(p ~var) {"var" 1}) -> <p>1</p>
 ; - one must quasiquote (`) the expression.
 ; - expression must have a single root node
 ; - dictionary of variables is optional and can be provided
-;   as the first or the second argument to the macro
+;   as the first or the second argument
 ; - one argument is mandatory
 ; - if the only argument is empty string or dictionary None will be returned
-(defmacro macro [p1 &optional p2]
+(defmacro template [p1 &optional p2]
   ; detect if the first or the second is the dictionary or the expression
   (setv variables {})
   (if (isinstance p1 hy.HyDict)
@@ -71,3 +71,13 @@
          (setv variables (merge-two-dicts variables (globals)))
          ; quote before eval and parse evaluated expression
          (parse-mnml (eval (quote ~args) ~variables) ~variables))))
+
+; macro is a wrapper around defmacro and it is used to return
+; quoted body so that unquotes can be evaluated later on the process
+; this is used with render-template and inside template files
+(defmacro macro [name params &rest body]
+  `(do
+    (defmacro ~name ~params
+      `(quote ~~@body))
+    ; return None to prevent printing created anonymous macro/function
+    None))
