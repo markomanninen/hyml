@@ -46,3 +46,28 @@
                 ; pass variables and functions dictionaries to render-template function
                 (apply render-template (extend (extend [~tmpl] ~args) [(globals)])))
             (render-template ~tmpl (globals))))
+
+; beside render-template and extend-template, macro can be used
+; to pass expression and variables directly to the parse-mnml
+; functionality instead of using file to read the expression
+; usage: (macro `(p ~var) {"var" 1}) -> <p>1</p>
+; - one must quasiquote (`) the expression.
+; - expression must have a single root node
+; - dictionary of variables is optional and can be provided
+;   as the first or the second argument to the macro
+; - one argument is mandatory
+; - if the only argument is empty string or dictionary None will be returned
+(defmacro macro [p1 &optional p2]
+  ; detect if the first or the second is the dictionary or the expression
+  (setv variables {})
+  (if (isinstance p1 hy.HyDict)
+      (do (setv variables p1) (setv args p2))
+      (do (setv args p1)
+          (if (isinstance p2 hy.HyDict)
+              (setv variables p2))))
+  (if args
+    ; merge dictionaries (local, global and variables-and-functions)
+    `(do (setv variables (merge-two-dicts ~variables variables-and-functions))
+         (setv variables (merge-two-dicts variables (globals)))
+         ; quote before eval and parse evaluated expression
+         (parse-mnml (eval (quote ~args) ~variables) ~variables))))
