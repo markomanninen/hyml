@@ -71,13 +71,3 @@
          (setv variables (merge-two-dicts variables (globals)))
          ; quote before eval and parse evaluated expression
          (parse-mnml (eval (quote ~args) ~variables) ~variables))))
-
-; macro is a wrapper around defmacro and it is used to return
-; quoted body so that unquotes can be evaluated later on the process
-; this is used with render-template and inside template files
-(defmacro macro [name params &rest body]
-  `(do
-    (defmacro ~name ~params
-      `(quote ~~@body))
-    ; return None to prevent printing created anonymous macro/function
-    None))

@@ -140,3 +140,15 @@
 (defmacro ml [&rest code]
   ; with map multiple expressions, not only nested ones, can be processed
   (.join "" (map parse-mnml code)))
+; macro is a wrapper around defmacro and it is used to return
+; quoted body so that unquotes can be evaluated later on the process
+; this is used mostly with render-template and inside template files
+; but detecting it if defined in template.hy fails for some reason
+; thats why macro is here althought it doesnt strictly speaking belong
+; to MiNiMaL package...
+(defmacro macro [name params &rest body]
+  `(do
+    (defmacro ~name ~params
+      `(quote ~~@body))
+    ; return None to prevent printing created anonymous macro/function
+    None))

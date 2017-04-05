@@ -1,21 +1,4 @@
-~(template `(p ~var) {"var" 1})
-
-~(do (defmacro defmacro* [name params &rest body]
-  `(do
-    (defmacro ~name ~params
-      `(quote ~~@body)) None)) None)
-
-~(do (defmacro custom [attr]
-  `(quote (p :class ~attr))) None)
-
-~(defmacro* custom2 [attr]
-  `(p :class ~attr))
-
-~(macros custom3 [attr]
+~(macro custom [attr]
   `(p :class ~attr))
 
 ~(custom ~class)
-
-~(custom2 ~class)
-
-~(custom3 "")

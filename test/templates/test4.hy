@@ -1,0 +1,1 @@
+~(macro custom [content] `(tag ~content))~(custom ~content)
