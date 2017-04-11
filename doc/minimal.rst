@@ -7,35 +7,37 @@ Minimal markup language generator in Hy
 
 `HyML <https://github.com/markomanninen/hyml>`__ (acronym for Hy Markup
 Language) is a set of macros to generate XML, XHTML, and HTML code in
-Hy.
+`Hy <http://hy.readthedocs.io/en/latest/>`__.
 
 HyML MiNiMaL (``ml``) macro is departed from the more extensive document
-and validation oriented "full" version of HyML. HyML MiNiMaL is meant to
-be used as a minimal codebase to generate XML (Extensible Markup
-Language) with the next features:
+and validation oriented "full" version of HyML.
+
+HyML MiNiMaL is meant to be used as a minimal codebase to generate XML 
+(Extensible Markup Language) with the next principal features:
 
 1. closely resembling syntax with XML
-2. ability to mix Hy / Python program code within markup
+2. ability to embed Hy / Python program code within markup
 3. processing lists and external templates
 4. using custom variables and functions
 
-You can use HyML MiNiMaL for:
+You can use HyML MiNiMaL:
 
--  static XML / XHTML / HTML content and file generation
--  render html code for the Jupyter Notebook for example
--  attach it to a server for dynamic html output generation
--  practice and study
+-  for static XML / XHTML / HTML content and file generation
+-  to render html code for the Jupyter Notebook, Sphinx docs, etc.
+-  to attach it to a server for dynamic html output generation 
+   (`sHyte 0.2 <https://github.com/markomanninen/shyte>`__)
+-  for practice and study
    `DSL <https://en.wikipedia.org/wiki/Domain-specific_language>`__ and
    macro (Lisp) programming
 -  challenge your imagination
 
-To compare with HyML XML / HTML macros, MiNiMaL means that there is
-no tag name validation and no tag and attribute minimize techniques
+To compare with the full HyML XML / HTML macros, MiNiMaL means that there 
+is no tag name validation and no tag and attribute minimize techniques
 utilized. If you need them, you should see 
 `full HyML <http://hyml.readthedocs.io/en/latest/#>`__ documentation.
 
-HyML thus refers to XML, althought markup language term itself is more 
-`generic <https://en.wikipedia.org/wiki/Markup_language>`__ term.
+.. note::  HyML refers to XML, althought "Markup Language" -term itself is more 
+           `generic <https://en.wikipedia.org/wiki/Markup_language>`__ term.
 
 
 Ready, steady, go!
@@ -62,6 +64,8 @@ There are no other dependencies except Hy language upon Python of cource.
 If Hy does not exist on your computer, it will be installed (or updated to 
 the version 0.12.1 or greater) at the same time.
 
+At the moment, the latest version of HyML is 0.2.6 (pre-release).
+
 
 Import
 ~~~~~~
@@ -72,7 +76,7 @@ Then import MiNiMaL macros:
 
     (require (hyml.minimal (*)))
 
-This will load the next macros for usage
+This will load the next macros for usage:
 
 - main markup macro: ``ml``
 - ``defvar`` and ``deffun`` macros for custom variable and function setter
@@ -80,7 +84,7 @@ This will load the next macros for usage
 - ``list-comp*`` list comprehension helper macro
 
 Optionally ``ml>`` render macro will be loaded, if code is executed on Jupyter 
-Notebook / IPython environment with ``display.HTML`` function available.
+Notebook / IPython environment with the ``display.HTML`` function available.
 
 If you intend to use xml code ``indent`` function, you should also import it:
 
@@ -88,10 +92,13 @@ If you intend to use xml code ``indent`` function, you should also import it:
 
     (import (hyml.minimal (indent)))
 
+With indent function you can make printed XML output prettier and more readable.
+
+
 Run
 ~~~
 
-And run the simple example:
+Finally, run the simple example:
 
 .. code-block:: hylang
 
@@ -102,6 +109,7 @@ That should |output|
 .. code-block:: xml
 
     <tag attr="value"><sub>Content</sub></tag>
+
 
 Tests
 ~~~~~
@@ -215,22 +223,29 @@ source file.
     (defmacro ml [&rest code]
       (.join "" (map parse-mnml code)))
 
+    ; macro -macro to be used inside templates
+    (defmacro macro [name params &rest body]
+      `(do
+        (defmacro ~name ~params
+          `(quote ~~@body)) None))
+
 
 Features
 --------
 
+
 Basic syntax
 ~~~~~~~~~~~~
 
-MiNiMaL macro syntax is simple and practically follows the rules of 
+MiNiMaL macro syntax is simple. It practically follows the rules of 
 `Hy syntax <http://docs.hylang.org/en/latest/language/api.html>`__. 
 
 MiNiMaL macro expression is made of four components:
 
 1. tag name
-2. tag attribute-value pairs
+2. tag attribute-value pair(s)
 3. tag text content
-4. sub expression
+4. sub expression(s)
 
 Syntax of the expression consists of:
 
@@ -253,10 +268,10 @@ Syntax of the expression consists of:
 There is no limit on nested levels. There is no limit on how many
 attribute-value pairs you want to use. Also it doesn't matter in what
 order you define tag content and keywords, althougt it might be easier
-to read for others, if the keywords are introduced first and then the
+to read for others, if keywords are introduced first and then the
 content. However, all keywords are rendered in the same order they have
-been presented in the markup. Also content and sub nodes are rendered
-similarly in the given order.
+been presented in the markup. Also content and sub nodes (expressions) 
+are rendered similarly in the given order.
 
 Main differences to XML syntax are:
 
@@ -289,8 +304,6 @@ mode. This is natural when you think that MiNiMaL macro is a quoted
 code in the first place. So if you want to evaluate Hy code inside it,
 you need to do it inside unquote.
 
-But let us start from the simple example first.
-
 
 Simple example
 ~~~~~~~~~~~~~~
@@ -314,31 +327,33 @@ Output would be:
     <tag attr="value"><sub>Content</sub></tag>
 
 
-Process components with unquote syntax (~)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Process components with unquote syntax (``~``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any component (tag name, tag attribute / value, and tag content) can be 
 generated instead of hardcoded to the expression.
 
+
 Tag name
 ^^^^^^^^
 
-You can generate a tag name with Hy code by using ~ symbol:
+You can generate a tag name with Hy code by using ``~`` symbol:
 
 .. code-block:: hylang
 
     (ml (~(+ "t" "a" "g"))) ; <tag/>
 
-This is useful if tag names collide with Hy internal symbols and
+This is useful, if tag names collide with Hy internal symbols and
 datatypes. For example, the symbol ``J`` is reserved for complex number
 type. Instead of writing: ``(ml (J))`` which produces ``<1j/>``, you
 should use: ``(ml (~"J"))`` or ``(ml ("J"))``.
 
+
 Attribute name and value
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can generate an attribute name or a value with Hy by using ~ symbol.
-Generated attribute name must be a keyword however:
+You can generate an attribute name or a value with Hy by using ``~`` symbol.
+Generated attribute name must be a keyword type however:
 
 .. code-block:: hylang
 
@@ -350,10 +365,11 @@ And same for value:
 
     (ml (tag :attr ~(+ 'v 'a 'l 'u 'e))) ; |output| <tag attr="value"/>
 
+
 Content
 ^^^^^^^
 
-You can generate content with Hy by using ~ symbol:
+You can generate content with Hy by using ``~`` symbol:
 
 .. code-block:: hylang
 
@@ -364,9 +380,9 @@ Using custom variables and functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can define custom variables and functions for the MiNiMaL macro.
-Variables and functions are stored on the common registry and availble
+Variables and functions are stored on the common registry and available
 on the macro expansion. You can access predefined symbols when quoting
-(~) the expression.
+``~`` the expression.
 
 .. code-block:: hylang
 
@@ -387,12 +403,13 @@ on the macro expansion. You can access predefined symbols when quoting
     <tag>McDonald, Dennis</tag>
 
 
-Process lists with unquote splice syntax (~@)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Process lists with unquote splice syntax (``~@``)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Unquote-splice is a special symbol to be used with the list and the
 template processing. It is perhaps the most powerful feature in the
 MiNiMaL macro.
+
 
 Generate list of items
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -413,8 +430,12 @@ contains a sub MiNiMaL expression.
 
     <tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>
 
+
 Using templates
 ~~~~~~~~~~~~~~~
+
+One useful extension of the HyML MiNiMaL is that you can define 
+code on external templates and ``include`` them for generation.
 
 Let us first show the template content existing in the external file:
 
@@ -431,8 +452,7 @@ Let us first show the template content existing in the external file:
       (body ~body))
 
 
-Then we will define variables and a function to be used inside
-MiNiMaL macro:
+Then we will define variables to be used inside the template:
 
 .. code-block:: hylang
 
@@ -441,12 +461,11 @@ MiNiMaL macro:
             heading "Reminder"
             body "Don't forget me this weekend!")
 
-And finally include and render the template:
+And finally use ``include`` macro to render the template:
 
 .. code-block:: hylang
 
-    (import (hyml.helpers (indent)))
-    (print (indent (ml ~@(include "note.hy"))))
+    (ml ~@(include "note.hy"))
 
 |output|
 
@@ -461,8 +480,15 @@ And finally include and render the template:
 
 .. Danger:: In HyML, but with templates especially, you must realize that 
             inside macro there is a full access to all Hy and Python modules
-            including to file systems and so on. This might raise up some security
-            concerns that you should be aware of.
+            including file systems access and so on. This might raise up some 
+            security concerns that you should be aware of.
+
+
+Templates extra
+~~~~~~~~~~~~~~~
+
+...
+
 
 Directly calling the ``parse-mnml`` function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -488,8 +514,6 @@ Then let us make it a bit more complicated:
         {:firstname "Mary"
          :lastname "Johnson"
          :telephone "+1-202-555-0185"}])
-    ; pretty print
-    (print (indent
     (ml
       ; root contacts node
       (contacs
@@ -501,7 +525,7 @@ Then let us make it a bit more complicated:
             ; last contact detail node
             ~@(list-comp (parse-mnml `(~tag ~val))
                 [[tag val] (.items contact)]))
-          [contact contacts]))))))
+          [contact contacts]))))
 
 |output|
 
@@ -519,7 +543,28 @@ Then let us make it a bit more complicated:
         <telephone>+1-202-555-0185</telephone>
       </contact>
     </contacs>
-    
+
+
+With ``parse-mnml`` function it is also possible to pass an optional dictionary 
+to be used for custom variables and functions on evaluation process. This is NOT 
+possible with ``ml`` macro.
+
+.. code-block:: hylang
+
+    (parse-mnml '(tag :attr ~val) {"val" "val"}) ; |output| <tag attr="val"/>
+
+With ``template`` macro you can actually see a very similar behaviour. In cases 
+where variables can be hard coded, you might want to use this option:
+
+.. code-block:: hylang
+
+    (template {"val" "val"} `(tag :attr ~val)) ; |output| <tag attr="val"/>
+
+It doesn't really matter in which order you pass expression and dictionary to 
+the ``template`` macro. It is also ok to leave dictionary out if expression does 
+not contain any variables. For ``template`` macro, expression needs to be 
+quasiquoted, if it contains ``HyML`` code.
+
 
 Wrapping up everything
 ----------------------
@@ -550,37 +595,35 @@ feature set. Additional comments will be given between the code lines.
         \"I've been wondering if it is possible to create XHTML 1.0 Transitional 
           document by using a brand new HyML?\")"))
     
-    ; print indented document as a pretty raw html
-    (print (indent
-      ; start up the MiNiMaL macro
-      (ml
-        ; xml document declaration
-        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" 
-        \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
-        ; create html tag with xml namespace and language attributes
-        (html :xmlns "http://www.w3.org/1999/xhtml" :lang "en"
-          (head
-            ; title of the page
-            (title "Conforming XHTML 1.0 Transitional Template")
-            (meta :http-equiv "Content-Type" :content "text/html; charset=utf-8"))
-          (body
-            ; wrap everything inside the post div
-            (div :class "post"
-              ; first is the header of the post
-              (div :class "header" ~topic)
-              ; then body of the post from external template file
-              ~@(include "body.hy")
-              ; then the tags in spans
-              (div :class "tags"
-                ~@(list-comp `(span ~tag) [tag tags]))
-              ; finally the footer
-              (div :id "footer"
-                (p "Posted by: " ~postedBy)
-                (p "Email: " 
-                  (a :href ~(+ "mailto:" contactEmail) ~contactEmail) ".")))
-             ; proceed valid stamp by a defined function
-             ~(valid))))))
+    ; start up the MiNiMaL macro
+    (ml
+      ; xml document declaration
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+      "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" 
+      \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
+      ; create html tag with xml namespace and language attributes
+      (html :xmlns "http://www.w3.org/1999/xhtml" :lang "en"
+        (head
+          ; title of the page
+          (title "Conforming XHTML 1.0 Transitional Template")
+          (meta :http-equiv "Content-Type" :content "text/html; charset=utf-8"))
+        (body
+          ; wrap everything inside the post div
+          (div :class "post"
+            ; first is the header of the post
+            (div :class "header" ~topic)
+            ; then body of the post from external template file
+            ~@(include "body.hy")
+            ; then the tags in spans
+            (div :class "tags"
+              ~@(list-comp `(span ~tag) [tag tags]))
+            ; finally the footer
+            (div :id "footer"
+              (p "Posted by: " ~postedBy)
+              (p "Email: " 
+                (a :href ~(+ "mailto:" contactEmail) ~contactEmail) ".")))
+           ; proceed valid stamp by a defined function
+           ~(valid))))
 
 .. code-block:: xml
 
@@ -621,8 +664,8 @@ feature set. Additional comments will be given between the code lines.
     </html>
 
 
-Special features
-----------------
+Unintended features
+-------------------
 
 These are not deliberately implemented features, but a consequence of the
 HyML MiNiMaL implementation and how Hy works.
@@ -643,6 +686,7 @@ It is possible to call MiNiMaL macro again inside unquoted code:
 
     <tag>Generator inside: <sub>content</sub></tag>
 
+
 Unrecognized symbols
 ~~~~~~~~~~~~~~~~~~~~
 
@@ -658,12 +702,13 @@ Unrecognized symbols (that is they are not specified as literals with double quo
 
     <tag alfred="J.">Kwak</tag>
 
+
 Quote and quasiquote
 ~~~~~~~~~~~~~~~~~~~~
 
 Tag names, attribute values, and tag content can be also single
 pre-quoted strings. It doesn't matter because in the final process of
-evaluating the component the string representation of the symbol is
+evaluating the component, a string representation of the symbol is
 retrieved.
 
 .. code-block:: hylang
@@ -694,7 +739,7 @@ content.
 Keyword specialties
 ~~~~~~~~~~~~~~~~~~~
 
-Also if keyword marker is followed by a string literal, keyword will be
+Also, if keyword marker is followed by a string literal, keyword will be
 empty, thus not a correctly wormed keyword value pair.
 
 .. code-block:: hylang
@@ -745,13 +790,7 @@ names should be unique and not repeated under the same element.
 
 .. code-block:: hylang
 
-    (ml (tag :attr :attr "attr2"))
-
-|output|
-
-.. code-block:: xml
-
-    <tag attr="attr" attr="attr2"/>
+    (ml (tag :attr :attr "attr2")) ; |output| <tag attr="attr" attr="attr2"/>
 
 
 Test main features

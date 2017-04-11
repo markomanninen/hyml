@@ -3,7 +3,7 @@ Welcome to HyML's documentation!
 ================================
 
 HyML (acronym for Hy Markup Language) is a set of macros to generate XML, 
-XHTML, and HTML code in Hy.
+XHTML, and HTML code in `Hy <http://hy.readthedocs.io/en/latest/>`__.
 
 `HyML MiNiMaL <http://hyml.readthedocs.io/en/latest/minimal.html>`__ macro 
 is departed from the more extensive document and validation oriented "full" 
@@ -14,7 +14,7 @@ to generate XML (Extensible Markup Language).
    :maxdepth: 3
    :caption: Contents:
 
-   full
    minimal
+   full
    specs
    tests
