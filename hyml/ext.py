@@ -15,8 +15,6 @@ def extract_from_ast(source):
             if d == hy.HySymbol("_") or \
                d == hy.HySymbol("gettext"):
                 return 0, str(d), e
-            else:
-                d = None
     return filter_hy(source)
 
 def chunks(l, n):
