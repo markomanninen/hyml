@@ -24,5 +24,9 @@ def chunks(l, n):
 
 def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
-    node = hyi.import_buffer_to_hst("".join(map(chr, byte)))[0]
+    print(byte)
+    source = "".join(map(chr, byte))
+    print(source)
+    node = hyi.import_buffer_to_hst(source)[0]
+    print(node)
     return chunks(extract_from_ast(node, fileobj.name), 4)
