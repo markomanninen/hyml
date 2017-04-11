@@ -14,7 +14,7 @@ def extract_from_ast(source):
         elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString):
             if d == hy.HySymbol("_") or \
                d == hy.HySymbol("gettext"):
-                return 0, d, e, []
+                return 0, str(d), e
     return filter_hy(source)
 
 def chunks(l, n):
@@ -26,4 +26,4 @@ def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
     source = "".join(map(chr, byte))
     node = hyi.import_buffer_to_hst(source)
-    return chunks(extract_from_ast(node), 4)
+    return chunks(extract_from_ast(node), 3)
