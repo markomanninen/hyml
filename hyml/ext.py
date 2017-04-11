@@ -30,5 +30,5 @@ def babel_extract(fileobj, *args, **kw):
     node = hyi.import_buffer_to_hst(source)
     print(node)
     chunk = chunks(extract_from_ast(node), 3)
-    print(chunk)
+    print(list(chunk))
     return chunk
