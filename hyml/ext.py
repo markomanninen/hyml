@@ -11,7 +11,7 @@ os.environ["VARIABLE_START_STRING"] = "(_ \""
 os.environ["VARIABLE_END_STRING"] = "\")"
 
 def babel_extract(fileobj, *args, **kw):
-	kw['options']['extensions'] = jinja_extensions
+    kw['options']['extensions'] = jinja_extensions
     fileobj.read()
     raw_extract = extract_jinja2(fileobj, *args, **kw)
     fileobj.seek(0)
