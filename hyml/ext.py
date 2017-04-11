@@ -20,7 +20,7 @@ def extract_from_ast(source):
 def chunks(l, n):
     if l:
         for i in range(0, len(l), n):
-            yield tuple(l[i:i + n])
+            yield tuple(l[i:i + n]+[[]])
 
 def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
