@@ -8,7 +8,7 @@ def extract_from_ast(source, file=""):
     d = None
     def filter_hy(e):
         global d
-        if isinstance(e, hy.HyExpression):
+        if isinstance(e, hy.HyExpression) or isinstance(e, list):
             d = e[0]
             return list(itertools.chain(*filter(None, map(filter_hy, e))))
         elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString):
@@ -24,9 +24,7 @@ def chunks(l, n):
 
 def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
-    print(byte)
     source = "".join(map(chr, byte))
-    print(source)
-    node = hyi.import_buffer_to_hst(source)[0]
+    node = hyi.import_buffer_to_hst(source)
     print(node)
     return chunks(extract_from_ast(node, fileobj.name), 4)
