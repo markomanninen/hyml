@@ -24,7 +24,11 @@ def chunks(l, n):
             yield tuple(t[:2]+[[t[2]]]+[[]])
 
 def babel_extract(fileobj, *args, **kw):
+	print([fileobj, args, kw])
     byte = fileobj.read()
     source = "".join(map(chr, byte))
     node = hyi.import_buffer_to_hst(source)
-    return chunks(extract_from_ast(node), 3)
+    print(node)
+    chunk = chunks(extract_from_ast(node), 3)
+    print(chunk)
+    return chunk
