@@ -17,13 +17,13 @@ setup(
     'hyml': ['*.hy']
   },
   
-  version = 'v0.2.6',
+  version = 'v0.2.7',
   description = 'HyML - XML / (X)HTML generator for Hy',
   author = 'Marko Manninen',
   author_email = 'elonmedia@gmail.com',
 
   url = 'https://github.com/markomanninen/hyml',
-  download_url = 'https://github.com/markomanninen/hyml/archive/v0.2.6.tar.gz',
+  download_url = 'https://github.com/markomanninen/hyml/archive/v0.2.7.tar.gz',
   keywords = ['hylang', 'python', 'lisp', 'macros', 'markup language', 'dsl', 'xml', 'html', 'xhtml'],
   platforms = ['any'],
   
@@ -34,5 +34,10 @@ setup(
     "Operating System :: OS Independent",
     "Programming Language :: Lisp",
     "Topic :: Software Development :: Libraries",
-  ]
+  ],
+
+  entry_points = """
+    [babel.extractors]
+    hyml = hyml.ext:babel_extract
+  """
 )
