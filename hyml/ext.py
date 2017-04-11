@@ -4,7 +4,7 @@ import os
 from jinja2.ext import babel_extract as extract_jinja2
 
 jinja_extensions = '''
-                    jinja2.ext.do, jinja2.ext.with_, hyml.ext.babel_extract
+                    jinja2.ext.do, jinja2.ext.with_, jinja2.ext.i18n, jinja2.ext.loopcontrols, jinja2.ext.autoescape
                    '''
 
 os.environ["VARIABLE_START_STRING"] = "(_ \""
