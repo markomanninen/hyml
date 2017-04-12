@@ -10,6 +10,8 @@ is departed from the more extensive document and validation oriented "full"
 version of HyML. HyML MiNiMaL is meant to be used as a minimal codebase 
 to generate `XML <https://en.wikipedia.org/wiki/XML>`__ (Extensible Markup Language).
 
+Contents:
+
 .. toctree::
    :maxdepth: 3
 
