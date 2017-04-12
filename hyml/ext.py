@@ -6,7 +6,7 @@ import hy, hy.importer as hyi
 from jinja2.ext import extract_from_ast
 import itertools
 
-def extract_from_ast(source):
+def extract_from_ast(source, keywords):
     d = None
     def filter_hy(e):
         global d
@@ -17,7 +17,7 @@ def extract_from_ast(source):
             d = None
             return x
         elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString):
-            if d == hy.HySymbol("_") or d == hy.HySymbol("gettext"):
+            if d == hy.HySymbol("_") or d == hy.HySymbol("gettext") and d in keywords:
                 return 0, str(d), str(e)
     return filter_hy(source)
 
@@ -31,4 +31,10 @@ def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
     source = "".join(map(chr, byte))
     node = hyi.import_buffer_to_hst(source)
-    return chunks(extract_from_ast(node), 3)
+    # map keywords to hy symbols for later comparison
+    if len(args[0]) > 0:
+        keywords = map(hy.HySymbol, args[0])
+    else:
+        keywords = map(hy.HySymbol, ['ngettext', 'pgettext', 'ungettext', 'dngettext', 'dgettext', 'ugettext', 'gettext', '_', 'N_', 'npgettext'])
+    ast = extract_from_ast(node, keywords)
+    return chunks(ast, 3)
