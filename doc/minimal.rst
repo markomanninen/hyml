@@ -341,7 +341,7 @@ You can generate a tag name with Hy code by using ``~`` symbol:
 
 .. code-block:: hylang
 
-    (ml (~(+ "t" "a" "g"))) ; <tag/>
+    (ml (~(+ "t" "a" "g"))) ; output: <tag/>
 
 This is useful, if tag names collide with Hy internal symbols and
 datatypes. For example, the symbol ``J`` is reserved for complex number
@@ -487,7 +487,130 @@ And finally use ``include`` macro to render the template:
 Templates extra
 ~~~~~~~~~~~~~~~
 
-...
+On HyML package there is also the ``render-template`` function and the
+``extend-template`` macro available via ``HyML.template`` module.
+
+``HyML.template`` is especially useful when embedding ``HyML MiNiMaL``
+to webserver, `Flask <http://flask.pocoo.org/>`__ for example. Here just
+the basic use case is shown, more examples you can find from `sHyte 0.2
+HyML Edition <https://github.com/markomanninen/shyte>`__ codebase.
+
+In practice, ``render-template`` function is a shortcut to call
+``parse-mnml`` with parameters and ``include`` in sequence. The first
+argument in ``render-template`` is the template name, and the rest of
+the arguments are dictionaries to be used on the template. So this is
+also an alternative way of using (bypassing the usage of) ``defvar`` and
+``deffun`` macros.
+
+.. code-block:: hylang
+
+    ; extend-template macro
+    (require [hyml.template [*]])
+    ; render-template function
+    (import [hyml.template [*]])
+    ; prepare template variables and functions
+    (setv template-variables-and-functions 
+         {"var" "Variable 1" "func" (fn[]"Function 1")})
+    ; render template
+    (render-template "render.hyml" template-variables-and-functions)
+
+.. code-block:: xml
+
+    <root><var>Variable 1</var><func>Function 1</func></root>
+
+
+On template engines it is a common practice to extend sub template with
+main template. Say we have a layout template, that is used as a wapper
+for many other templates. We can refactor layout xml code to another
+file and keep the changing sub content on other files.
+
+In ``HyML MiNiMaL``, ``extend-template`` macro is used for that.
+
+Lets show an example again. First we have the content of the
+``layout.hyml`` template file:
+
+.. code-block:: hylang
+
+    (with [f (open "templates/layout.hyml")] (print (f.read)))
+
+
+.. code-block:: hylang
+
+    (html
+      (head (title ~title))
+      (body ~body))
+    
+
+And the content of the ``extend.hyml`` sub template file:
+
+.. code-block:: hylang
+
+    (with [f (open "templates/extend.hyml")] (print (f.read)))
+
+
+.. code-block:: hylang
+
+    ~(extend-template "layout.hyml" 
+        {"body" `(p "Page content")})
+    
+
+We have decided to set the ``title`` as a "global" variable but define
+the ``body`` on the sub template. The render process goes like this:
+
+.. code-block:: hylang
+
+    (setv locvar {"title" "Page title"})
+    (render-template "extend.hyml" locvar)
+
+
+.. code-block:: xml
+
+    <html><head><title>Page title</title></head><body><p>Page content</p></body></html>
+
+Note that extension name ``.hyml`` was used here even though it doesn't
+really matter what file extension is used.
+
+At first it may look overly complicated and verbose to handle templates
+this way. Major advantage is found when processing multiple nested
+templates. Difference to simply including template files
+``~@(include "templates/template.hy")`` is that on ``include`` you pass
+variables (could be evaluated ``HyML`` code) to template, but on
+``extend-template`` you pass unevaluated ``HyML`` code to another
+template. This will add one more dynamic level on using ``HyML MiNiMaL``
+for XML content generation.
+
+
+**Template directory**
+
+Default template directory is set to ``"template/"``. You can change
+directory by changing ``template-dir`` variable in the ``HyML.template``
+module:
+
+.. code:: hylang
+
+    (import hyml.template)
+    (def hyml.template.template-dir "templates-extra/")
+
+
+**Macro -macro**
+
+One more related feature to templates is a ``macro`` -macro that can be
+used inside template files to factorize code for local purposes. If our
+template file would look like this:
+
+.. code:: hylang
+
+    ~(macro custom [attr]
+      `(p :class ~attr))
+
+    ~(custom ~class)
+
+Then rendering it, would yield:
+
+.. code-block:: hylang
+
+    (render-template "macro.hyml" {"class" "main"}) ; output: <p class="main"/>
+
 
 
 Directly calling the ``parse-mnml`` function
@@ -498,7 +621,7 @@ quoted code directly to ``parse-mnml`` function. This can actually be a
 good idea, for example if you want to generate tags based on a
 dictionary. First lets see the simple example:
 
-.. code:: python
+.. code-block:: hylang
 
     (parse-mnml '(tag)) ; output: <tag/>
 
@@ -624,6 +747,8 @@ feature set. Additional comments will be given between the code lines.
                 (a :href ~(+ "mailto:" contactEmail) ~contactEmail) ".")))
            ; proceed valid stamp by a defined function
            ~(valid))))
+
+|Output:|
 
 .. code-block:: xml
 
@@ -877,4 +1002,4 @@ output after running these. If there is, then *Houston, we have a problem!*
     ; multiple same attribute names stays in the markup in the reserved order
     (assert (= (ml (tag :attr "attr1" :attr "attr2")) "<tag attr=\"attr1\" attr=\"attr2\"/>"))
 
-.. |Output:| replace:: ⎑ **Output**:
+.. |Output:| replace:: ⎑ *Output*:
