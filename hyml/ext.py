@@ -16,9 +16,8 @@ def extract_from_ast(source, keywords):
             x = list(itertools.chain(*filter(None, map(filter_hy, e))))
             d = None
             return x
-        elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString):
-            if d == hy.HySymbol("_") or d == hy.HySymbol("gettext") and d in keywords:
-                return 0, str(d), str(e)
+        elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString) and d in keywords:
+            return 0, str(d), str(e)
     return filter_hy(source)
 
 def chunks(l, n):
