@@ -132,12 +132,12 @@ todo_include_todos = True
 # further.  For a list of options available for each theme, see the
 # documentation.
 #
-html_theme_options = {
-    'collapse_navigation': False,
-    'display_version': True,
-    'navigation_depth': 3,
-    'canonical_url' = 'http://hyml.readthedocs.io/en/latest/'
-}
+#html_theme_options = {
+#   'collapse_navigation': False,
+#    'display_version': True,
+#    'navigation_depth': 3,
+#    'canonical_url' = 'http://hyml.readthedocs.io/en/latest/'
+#}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
