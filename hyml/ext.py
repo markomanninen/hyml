@@ -30,23 +30,21 @@ def extract_from_ast(source, keywords):
 
 def chunks(long_list, n):
     # split list to n chunks
-    for i in range(0, len(long_list), n):
-        t = long_list[i:i + n]
-        # add empty keyword list to the tuple for babel
-        yield tuple(t[:2]+[t[2]["singular"]]+[[]])
+    if long_list:
+        for i in range(0, len(long_list), n):
+            t = long_list[i:i + n]
+            # add empty keyword list to the tuple for babel
+            yield tuple(t[:2]+[t[2]["singular"]]+[[]])
 
 def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
     # unfortunately line breaks (line numbers) are lost at this point...
     source = "".join(map(chr, byte))
-    if source:
-        node = hyi.import_buffer_to_hst(source)
-        if node:
-            # map keywords to hy symbols for later comparison
-            if len(args[0]) > 0:
-                keywords = map(hy.HySymbol, args[0])
-            else:
-                keywords = map(hy.HySymbol, ['ngettext', 'pgettext', 'ungettext', 'dngettext', 'dgettext', 'ugettext', 'gettext', '_', 'N_', 'npgettext'])
-            ast = extract_from_ast(node, keywords)
-            if ast:
-                return chunks(ast, 3)
+    node = hyi.import_buffer_to_hst(source)
+    # map keywords to hy symbols for later comparison
+    if len(args[0]) > 0:
+        keywords = map(hy.HySymbol, args[0])
+    else:
+        keywords = map(hy.HySymbol, ['ngettext', 'pgettext', 'ungettext', 'dngettext', 'dgettext', 'ugettext', 'gettext', '_', 'N_', 'npgettext'])
+    ast = extract_from_ast(node, keywords)
+    return chunks(ast, 3)
