@@ -18,20 +18,22 @@ def extract_from_ast(source, keywords):
                 # this could be the keyword we are searching for
                 d = e[0]
             # flatten list, maybe could be done later...
-            return list(itertools.chain(*filter(None, map(filter_hy, e))))
+            x = list(itertools.chain(*filter(None, map(filter_hy, e))))
+            # reset keyword
+            d = None
+            return x
         elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString) and d in keywords:
             # no comments available, thus only three items are returned
             # TODO: message context and plural message support
-            return 0, str(d), str(e)
-        # reset keyword
-        d = None
+            return 0, str(d), {"context": str(e), "singular": str(e), "plural": str(e)}
     return filter_hy(source)
 
 def chunks(long_list, n):
     # split list to n chunks
     for i in range(0, len(long_list), n):
+        t = long_list[i:i + n]
         # add empty keyword list to the tuple for babel
-        yield tuple(long_list[i:i + n]+[[]])
+        yield tuple(t[:2]+[t[2]["singular"]]+[[]])
 
 def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
