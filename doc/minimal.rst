@@ -514,6 +514,8 @@ also an alternative way of using (bypassing the usage of) ``defvar`` and
     ; render template
     (render-template "render.hyml" template-variables-and-functions)
 
+|Output:|
+
 .. code-block:: xml
 
     <root><var>Variable 1</var><func>Function 1</func></root>
@@ -562,6 +564,7 @@ the ``body`` on the sub template. The render process goes like this:
     (setv locvar {"title" "Page title"})
     (render-template "extend.hyml" locvar)
 
+|Output:|
 
 .. code-block:: xml
 
