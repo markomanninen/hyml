@@ -5,16 +5,16 @@ HyML tests
 Test main features
 ------------------
 
-Assert tests for all main features of HyML. There should be no output after 
-running these. If there is, then *Houston, we have a problem!*
-
+Assert tests for all main features of HyML library. There should be no 
+output after running these tests. If there is, then *Houston, we have 
+a problem!*
 
 .. code-block:: hylang
 
     ;;;;;;;;;
     ; basic ;
     ;;;;;;;;;
-
+    
     ; empty things
     (assert (= (ml) ""))
     (assert (= (ml"") ""))
@@ -50,13 +50,37 @@ running these. If there is, then *Houston, we have a problem!*
     (deffun f (fn [x] x))
     (assert (= (ml (tag ~(f "function"))) "<tag>function</tag>"))
     ; templates
-    (with [f (open "test.hy" "w")] (f.write "(tag)"))
-    (assert (= (ml ~@(include "test.hy")) "<tag/>"))
-
+    (with [f (open "test/templates/test.hy" "w")] 
+      (f.write "(tag)"))
+    (assert (= (ml ~@(include "test/templates/test.hy")) "<tag/>"))
+    ; set up custom template directory
+    (import hyml.template)
+    (def hyml.template.template-dir "test/templates/")
+    ; render template function
+    (import [hyml.template [*]])
+    (with [f (open "test/templates/test2.hy" "w")] 
+      (f.write "(tag ~tag)"))
+    (assert (= (render-template "test2.hy" {"tag" "content"}) "<tag>content</tag>"))
+    ; extend template
+    (require [hyml.template [*]])
+    (with [f (open "test/templates/test3.1.hy" "w")] 
+      (f.write "(tags :attr ~val ~tag)"))
+    (with [f (open "test/templates/test3.2.hy" "w")] 
+      (f.write "~(extend-template \"test3.1.hy\" {\"tag\" `(tag)})"))
+    (assert (= (render-template "test3.2.hy" {"val" "val"}) "<tags attr=\"val\"><tag/></tags>"))
+    ; macro -macro
+    (with [f (open "test/templates/test4.hy" "w")] 
+      (f.write "~(macro custom [content] `(tag ~content))~(custom ~content)"))
+    (assert (= (render-template "test4.hy" {"content" "content"}) "<tag>content</tag>"))
+    ; revert path
+    (def hyml.template.template-dir "templates/")
+    ; template macro
+    (assert (= (template {"val" "val"} `(tag :attr ~val)) (template `(tag :attr ~val) {"val" "val"})))
+    
     ;;;;;;;;;;;
     ; special ;
     ;;;;;;;;;;;
-
+    
     ; tag names
     (assert (= (ml (J)) "<1j/>"))
     (assert (= (ml (~"J")) "<J/>"))
@@ -80,7 +104,7 @@ running these. If there is, then *Houston, we have a problem!*
     (assert (= (ml (tag :attr"val")) "<tag attr=\"val\"/>"))
     ; no space between tag, keywords, keyword value, and content string literals
     (assert (= (ml (tag"content":attr"val")) "<tag attr=\"val\">content</tag>"))
-
+    
     ;;;;;;;;;
     ; weird ;
     ;;;;;;;;;
@@ -91,3 +115,6 @@ running these. If there is, then *Houston, we have a problem!*
     (assert (= (ml (tag :tag "tag" "tag")) "<tag tag=\"tag\">tag</tag>"))
     ; multiple same attribute names stays in the markup in the reserved order
     (assert (= (ml (tag :attr "attr1" :attr "attr2")) "<tag attr=\"attr1\" attr=\"attr2\"/>"))
+    ; parse-mnlm with variable and function dictionary
+    (assert (= (parse-mnml '(tag :attr ~var ~(func)) 
+                           {"var" "val" "func" (fn[]"Content")}) "<tag attr=\"val\">Content</tag>"))
