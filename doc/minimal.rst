@@ -104,7 +104,7 @@ Finally, run the simple example:
 
     (ml (tag :attr "value" (sub "Content")))
 
-That should |output|
+That should output:
 
 .. code-block:: xml
 
@@ -357,13 +357,13 @@ Generated attribute name must be a keyword type however:
 
 .. code-block:: hylang
 
-    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; |output| <tag attr="value"/>
+    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; output: <tag attr="value"/>
 
 And same for value:
 
 .. code-block:: hylang
 
-    (ml (tag :attr ~(+ 'v 'a 'l 'u 'e))) ; |output| <tag attr="value"/>
+    (ml (tag :attr ~(+ 'v 'a 'l 'u 'e))) ; output: <tag attr="value"/>
 
 
 Content
@@ -373,7 +373,7 @@ You can generate content with Hy by using ``~`` symbol:
 
 .. code-block:: hylang
 
-    (ml (tag ~(.upper "content"))) ; |output| <tag>CONTENT</tag>
+    (ml (tag ~(.upper "content"))) ; output: <tag>CONTENT</tag>
 
 
 Using custom variables and functions
@@ -396,7 +396,7 @@ on the macro expansion. You can access predefined symbols when quoting
     ; use variables and functions with unquote / unquote splice
     (ml (tag ~(wholename firstname lastname)))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -424,7 +424,7 @@ contains a sub MiNiMaL expression.
     ; generate 5 sub tags and use enumerated numeric value as a content
     (ml (tag ~@(list-comp `(sub ~(str item)) [item (range 5)])))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -467,7 +467,7 @@ And finally use ``include`` macro to render the template:
 
     (ml ~@(include "note.hy"))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -500,7 +500,7 @@ dictionary. First lets see the simple example:
 
 .. code:: python
 
-    (parse-mnml '(tag)) ; |output| <tag/>
+    (parse-mnml '(tag)) ; output: <tag/>
 
 Then let us make it a bit more complicated:
 
@@ -527,7 +527,7 @@ Then let us make it a bit more complicated:
                 [[tag val] (.items contact)]))
           [contact contacts]))))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -551,14 +551,14 @@ possible with ``ml`` macro.
 
 .. code-block:: hylang
 
-    (parse-mnml '(tag :attr ~val) {"val" "val"}) ; |output| <tag attr="val"/>
+    (parse-mnml '(tag :attr ~val) {"val" "val"}) ; output: <tag attr="val"/>
 
 With ``template`` macro you can actually see a very similar behaviour. In cases 
 where variables can be hard coded, you might want to use this option:
 
 .. code-block:: hylang
 
-    (template {"val" "val"} `(tag :attr ~val)) ; |output| <tag attr="val"/>
+    (template {"val" "val"} `(tag :attr ~val)) ; output: <tag attr="val"/>
 
 It doesn't really matter in which order you pass expression and dictionary to 
 the ``template`` macro. It is also ok to leave dictionary out if expression does 
@@ -680,7 +680,7 @@ It is possible to call MiNiMaL macro again inside unquoted code:
 
     (ml (tag ~(+ "Generator inside: " (ml (sub "content")))))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -696,7 +696,7 @@ Unrecognized symbols (that is they are not specified as literals with double quo
 
     (ml (tag :alfred J. Kwak))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -715,7 +715,7 @@ retrieved.
 
     [(ml ('tag)) (ml (`tag)) (ml (tag)) (ml ("tag"))]
 
-|output|
+|Output:|
 
 .. parsed-literal::
 
@@ -729,7 +729,7 @@ content.
 
     [(ml (tag ':attr)) (ml (tag `:attr))]
 
-|output|
+|Output:|
 
 .. parsed-literal::
 
@@ -744,7 +744,7 @@ empty, thus not a correctly wormed keyword value pair.
 
 .. code-block:: hylang
 
-    (ml (tag :"attr")) ; |output| <tag ="attr"/>
+    (ml (tag :"attr")) ; output: <tag ="attr"/>
 
 So only working version of keyword notation is ``:{symbol}`` or unquoted
 ``~(keyword {expression})``. 
@@ -758,7 +758,7 @@ So only working version of keyword notation is ``:{symbol}`` or unquoted
 
     [(ml (tag :disabled)) (ml (tag ~(keyword "disabled"))) (ml (tag :disabled "disabled"))]
 
-|output|
+|Output:|
 
 .. parsed-literal::
 
@@ -775,7 +775,7 @@ you can collect them at the end of the expression.
 
     (ml (tag "Content" :disabled :enabled))
 
-|output|
+|Output:|
 
 .. code-block:: xml
 
@@ -790,7 +790,7 @@ names should be unique and not repeated under the same element.
 
 .. code-block:: hylang
 
-    (ml (tag :attr :attr "attr2")) ; |output| <tag attr="attr" attr="attr2"/>
+    (ml (tag :attr :attr "attr2")) ; output: <tag attr="attr" attr="attr2"/>
 
 
 Test main features
