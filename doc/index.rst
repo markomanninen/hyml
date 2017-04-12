@@ -12,7 +12,8 @@ to generate XML (Extensible Markup Language).
 
 .. toctree::
    :maxdepth: 3
-   :caption: Contents:
+   :caption: Table of contents
+   :name: mastertoc
 
    minimal
    full
