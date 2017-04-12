@@ -39,7 +39,7 @@ def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
     # unfortunately line breaks (line numbers) are lost at this point...
     source = "".join(map(chr, byte))
-    if soure:
+    if source:
         node = hyi.import_buffer_to_hst(source)
         if node:
             # map keywords to hy symbols for later comparison
