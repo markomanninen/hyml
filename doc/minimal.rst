@@ -877,10 +877,4 @@ output after running these. If there is, then *Houston, we have a problem!*
     ; multiple same attribute names stays in the markup in the reserved order
     (assert (= (ml (tag :attr "attr1" :attr "attr2")) "<tag attr=\"attr1\" attr=\"attr2\"/>"))
 
-
-The `MIT <http://choosealicense.com/licenses/mit/>`__ License
--------------------------------------------------------------
-
-Copyright (c) 2017 Marko Manninen
-
 .. |Output:| replace:: ⎑ **Output**:
