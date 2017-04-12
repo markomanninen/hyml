@@ -6,7 +6,7 @@ import hy, hy.importer as hyi
 from jinja2.ext import extract_from_ast
 import itertools
 
-def extract_from_ast(source, keywords):
+def extract_from_ast(source):
     d = None
     def filter_hy(e):
         global d
@@ -16,24 +16,21 @@ def extract_from_ast(source, keywords):
             x = list(itertools.chain(*filter(None, map(filter_hy, e))))
             d = None
             return x
-        elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString) and d in keywords:
-            return 0, str(d), str(e)
+        elif not isinstance(e, hy.HySymbol) and isinstance(e, hy.HyString):
+            # ['ngettext', 'pgettext', 'ungettext', 'dngettext', 'dgettext', 'ugettext', 'gettext', '_', 'N_', 'npgettext']
+            if d == hy.HySymbol("_") or d == hy.HySymbol("gettext"):
+                return 0, str(d), str(e)
     return filter_hy(source)
 
-def chunks(l, n):
-    if l:
-        for i in range(0, len(l), n):
-            t = l[i:i + n]
+def chunks(long_list, n):
+    if long_list:
+        for i in range(0, len(long_list), n):
+            t = long_list[i:i + n]
             yield tuple(t[:2]+[[t[2]]]+[[]])
 
 def babel_extract(fileobj, *args, **kw):
     byte = fileobj.read()
-    source = "".join(map(chr, byte))
-    node = hyi.import_buffer_to_hst(source)
-    # map keywords to hy symbols for later comparison
-    if len(args[0]) > 0:
-        keywords = map(hy.HySymbol, args[0])
-    else:
-        keywords = map(hy.HySymbol, ['ngettext', 'pgettext', 'ungettext', 'dngettext', 'dgettext', 'ugettext', 'gettext', '_', 'N_', 'npgettext'])
-    ast = extract_from_ast(node, keywords)
-    return chunks(ast, 3)
+    text = "".join(map(chr, byte))
+    node = hyi.import_buffer_to_hst(text)
+    tpls = extract_from_ast(node)
+    return chunks(tpls, 3)
