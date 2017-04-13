@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+#
 # Copyright (c) Marko Manninen <elonmedia@gmail.com>, 2017
 #
 # entry_points = """
@@ -14,7 +15,6 @@
 # extensions=hyml.ext.babel_extract
 #
 # to babel.cfg file
-
 
 import hy, hy.importer as hyi
 import itertools
@@ -41,6 +41,8 @@ def extract_from_ast(ast):
             if d == hy.HySymbol("_") or d == hy.HySymbol("gettext"):
                 # there are no comments available in ast, thus only three items are returned
                 # TODO: message context and plural message support could be done here
+                # third parameter could be: {"context": str(e), "singular": str(e), "plural": str(e)}
+                # and then use it on chunks  -function...
                 return 0, str(d), str(e)
     return filter_hy(ast)
 
