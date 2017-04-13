@@ -920,4 +920,4 @@ names should be unique and not repeated under the same element.
 
     (ml (tag :attr :attr "attr2")) ; output: <tag attr="attr" attr="attr2"/>
 
-.. |Output:| replace:: [output]:
+.. |Output:| replace:: [output]
