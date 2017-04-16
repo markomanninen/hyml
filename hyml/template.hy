@@ -71,3 +71,7 @@
          (setv variables (merge-two-dicts variables (globals)))
          ; quote before eval and parse evaluated expression
          (parse-mnml (eval (quote ~args) ~variables) ~variables))))
+
+; bhybel macro shortcut for babel/gettext localization and internalization
+(eval-and-compile
+  (defreader i [args] `(_ ~@args)))
