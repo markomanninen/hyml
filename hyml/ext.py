@@ -61,11 +61,11 @@ def extract_from_ast(ast):
             # reset keyword
             d = None
             return x
-        print(1, e, readermacro)
+        print(1, str(e), str(readermacro))
         if e == readermacro:
             d, f = e, 0
         elif is_message(e):
-            print(2, d, readermacro)
+            print(1, str(d))
             # reader macro is regarded as singular form gettext function
             if d == readermacro:
                 # we dont accept any more argument for gettext / readermacro
