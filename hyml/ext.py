@@ -20,11 +20,9 @@ import hy, hy.importer as hyi
 import itertools
 
 # special reader macro symbol for translating string less verbose way.
-# instead of (_ "message") in hy you can do ㎕"message" as long as you have
-# defined: (defreader ㎕ [args] `(_ ~@args)) in your program
-readermacro = hy.HySymbol("㎕")
-
-print(readermacro)
+# instead of (_ "message") in hy you can do i"message" as long as you have
+# defined: (defreader i [args] `(_ ~@args)) in your program
+readermacro = hy.HySymbol("i")
 
 # accepted gettext / babel keywords
 keywords = [hy.HySymbol("_"), 
@@ -63,7 +61,6 @@ def extract_from_ast(ast):
             # reset keyword
             d = None
             return x
-        print(d, e)
         if e == readermacro:
             d, f = e, 0
         elif is_message(e):
@@ -99,7 +96,6 @@ def message_form(t1, t2, t3):
 
 # make extracted message list to 4 item chunks
 def chunks(l, n):
-    print(l, n)
     for i in range(0, len(l), n):
         t1, t2, t3 = items(l, i, n)
         if t1[2]["singular"] != None:
