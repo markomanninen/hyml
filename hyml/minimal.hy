@@ -152,3 +152,6 @@
       `(quote ~~@body))
     ; return None to prevent printing created anonymous macro/function
     None))
+
+; bhybel macro shortcut for babel/gettext localization and internalization
+(defreader i [args] `(_ ~@args))
