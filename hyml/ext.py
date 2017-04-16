@@ -78,7 +78,9 @@ def extract_from_ast(ast):
                 # plural and singular forms are combined. this is not particularly genious 
                 # way of doing it. other recursive parsing technique could handle everything
                 # more efficiently
-                return 0, str(d), str(e)
+                msg = message(e, f)
+                f += 1
+                return e.start_line, str(d), msg
     return filter_hy(ast)
 
 # return list of message items
@@ -98,7 +100,7 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         t1, t2, t3 = items(l, i, n)
         print(t1, t2, t3)
-        if t1 and t1[2] and t1[2]["singular"] != None:
+        if t1[2]["singular"] != None:
             # add empty keyword list to the tuple for babel
             yield tuple(t1[:2]+[message_form(t1, t2, t3)]+[[]])
 
