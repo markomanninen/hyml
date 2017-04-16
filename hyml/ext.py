@@ -94,9 +94,11 @@ def message_form(t1, t2, t3):
 
 # make extracted message list to 4 item chunks
 def chunks(l, n):
+    print(l, n)
     for i in range(0, len(l), n):
         t1, t2, t3 = items(l, i, n)
-        if t1[2]["singular"] != None:
+        print(t1, t2, t3)
+        if t1 and t1[2] and t1[2]["singular"] != None:
             # add empty keyword list to the tuple for babel
             yield tuple(t1[:2]+[message_form(t1, t2, t3)]+[[]])
 
