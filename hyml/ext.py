@@ -52,8 +52,8 @@ def extract_from_ast(ast):
         # basicly we are searching for babel keyword expressions here
         # and when one is found, it is returned along with:
         # linenumber, keyword itself, and message string
-        global d, f, keywords, readermacro
-        print(e, e == readermacro, d == readermacro)
+        global d, f
+        print(1, e, e == readermacro)
         if isinstance(e, hy.HyExpression) or isinstance(e, list):
             if isinstance(e, hy.HyExpression):
                 d, f = e[0], 0
@@ -65,6 +65,7 @@ def extract_from_ast(ast):
         if e == readermacro:
             d, f = e, 0
         elif is_message(e):
+            print(2, d, d == readermacro)
             # reader macro is regarded as singular form gettext function
             if d == readermacro:
                 # we dont accept any more argument for gettext / readermacro
