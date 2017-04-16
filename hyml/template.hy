@@ -73,5 +73,4 @@
          (parse-mnml (eval (quote ~args) ~variables) ~variables))))
 
 ; bhybel macro shortcut for babel/gettext localization and internalization
-(eval-and-compile
-  (defreader i [args] `(_ ~@args)))
+(defreader i [args] `(_ ~args))
