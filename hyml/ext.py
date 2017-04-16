@@ -53,6 +53,7 @@ def extract_from_ast(ast):
         # and when one is found, it is returned along with:
         # linenumber, keyword itself, and message string
         global d, f, keywords, readermacro
+        print(e, e == readermacro, d == readermacro)
         if isinstance(e, hy.HyExpression) or isinstance(e, list):
             if isinstance(e, hy.HyExpression):
                 d, f = e[0], 0
@@ -99,7 +100,6 @@ def chunks(l, n):
     print(l, n)
     for i in range(0, len(l), n):
         t1, t2, t3 = items(l, i, n)
-        print(t1, t2, t3)
         if t1[2]["singular"] != None:
             # add empty keyword list to the tuple for babel
             yield tuple(t1[:2]+[message_form(t1, t2, t3)]+[[]])
