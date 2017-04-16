@@ -24,6 +24,8 @@ import itertools
 # defined: (defreader ㎕ [args] `(_ ~@args)) in your program
 readermacro = hy.HySymbol("㎕")
 
+print(readermacro)
+
 # accepted gettext / babel keywords
 keywords = [hy.HySymbol("_"), 
             hy.HySymbol("gettext"), 
@@ -61,6 +63,7 @@ def extract_from_ast(ast):
             # reset keyword
             d = None
             return x
+        print(d, e)
         if e == readermacro:
             d, f = e, 0
         elif is_message(e):
