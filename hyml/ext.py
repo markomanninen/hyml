@@ -40,15 +40,16 @@ import itertools
 # instead of (_ "message") in hy you can do i"message" as long as you have
 # defined: (defreader i [args] `(_ ~args)) in your program
 readermacro, dispatch_reader_macro = hy.HySymbol("i"), hy.HySymbol("dispatch_reader_macro")
-
+# lazy_gettext is a special keyword for flask babel
+gettext, lazy_gettext = hy.HySymbol("gettext"), hy.HySymbol("lazy_gettext")
 # accepted gettext / babel keywords
 keywords = [hy.HySymbol("_"), 
-            hy.HySymbol("gettext"), 
+            gettext, 
             hy.HySymbol("ngettext"), 
             hy.HySymbol("N_"), 
             hy.HySymbol("lgettext"), 
             hy.HySymbol("lngettext"), 
-            hy.HySymbol("lazy_gettext")]
+            lazy_gettext]
 
 # string and int are accepted as gettext messages
 def is_message(expr):
@@ -99,7 +100,11 @@ def extract_from_ast(ast):
                 # more efficiently
                 msg = message(expr, count)
                 count += 1
-                return expr.start_line, str(current), msg
+                if current == lazy_gettext:
+                    key = str(gettext)
+                else:
+                    key = str(current)
+                return expr.start_line, key, msg
         prev = expr
     return filter_hy(ast)
 
