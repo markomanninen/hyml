@@ -47,7 +47,8 @@ keywords = [hy.HySymbol("_"),
             hy.HySymbol("ngettext"), 
             hy.HySymbol("N_"), 
             hy.HySymbol("lgettext"), 
-            hy.HySymbol("lngettext")]
+            hy.HySymbol("lngettext"), 
+            hy.HySymbol("lazy_gettext")]
 
 # string and int are accepted as gettext messages
 def is_message(expr):
