@@ -352,7 +352,7 @@
 ; unicode Square Ml U+3396  is a shorthand for parsing tags. note that
 ; html* and similar macros will accept multiple expressions, not just
 ; an expression with a single root node
-(defreader ㎖ [code] (parse-xml code))
+(defsharp ㎖ [code] (parse-xml code))
 
 ; parser creator
 (defmacro defml [name parser]

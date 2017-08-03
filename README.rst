@@ -565,7 +565,7 @@ It is not possible to define other ``ML`` macro to be used with the
 ``#㎖`` shorthand reader macro. You could however define your own
 shorthands following next quidelines:
 
-    (defreader {unicode-char} [code] (parse-{parser} code))
+    (defsharp {unicode-char} [code] (parse-{parser} code))
 
 ``{unicode-char}`` can be any `unicode
 char <https://unicode-table.com/en/>`__ you want. ``{parser}`` must be

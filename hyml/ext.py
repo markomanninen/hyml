@@ -38,7 +38,7 @@ import itertools
 
 # special reader macro symbol for translating string less verbose way.
 # instead of (_ "message") in hy you can do i"message" as long as you have
-# defined: (defreader i [args] `(_ ~args)) in your program
+# defined: (defsharp i [args] `(_ ~args)) in your program
 readermacro, dispatch_reader_macro = hy.HySymbol("i"), hy.HySymbol("dispatch_reader_macro")
 # lazy_gettext is a special keyword for flask babel
 gettext, lazy_gettext = hy.HySymbol("gettext"), hy.HySymbol("lazy_gettext")

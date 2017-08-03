@@ -73,11 +73,11 @@ First the tag class:
             for key, val in kw.items():
                 self.__dict__['attributes'][key.lower()] = val
         def __getattr__(self, key):
-            """ 
+            """
             Get attribute by key by dot notation: tag.attr. This is a short and nice way, but
-            drawback is that Python has some reserved words, that can't be used this way. Method 
-            is also not-case-sensitive, because key is transformed to lower letters. Returning 
-            None if attribute is not found. 
+            drawback is that Python has some reserved words, that can't be used this way. Method
+            is also not-case-sensitive, because key is transformed to lower letters. Returning
+            None if attribute is not found.
             """
             return self.__dict__['attributes'].get(key.lower(), None)
         def __str__(self):
@@ -135,7 +135,7 @@ I also made a PHP version of the HTML generator even earlier in 2007. That progr
         $arg2 = $element['omitted'] ? 'true' : 'false';
         $arg3 = $element['nocontent'] ? 'true' : 'false';
         $arg4 = $element['strict'] ? 'true' : 'false';
-       
+
         $evalstr .= <<<EOF
     class HE_$abbreviation extends HtmlElement
     {
@@ -270,8 +270,8 @@ One of the core parts of the HyML implementation is where to catch a tag name. B
       (try
         ; code can be a symbol or a sub program
         ; thats why try to evaluate it. internal symbols like "input"
-        ; for example are handled here too. just about anything can be 
-        ; a tag name 
+        ; for example are handled here too. just about anything can be
+        ; a tag name
         (name (eval code))
         ; because evaluation most probably fails when code contains
         ; a symbol name that has not been specified on the global namespace,
@@ -302,7 +302,7 @@ Templating feature requires using globals variable dictionary as a registry for 
         (import [hy.importer [tokenize]])
         (with [f (open ~template)]
           ; funky ~@` part is needed as a prefix to the template code
-          ; so that code on template wont get directly expanded but only 
+          ; so that code on template wont get directly expanded but only
           ; after everything had been collected by the macro for final evaluation
           (tokenize (+ "~@`(" (f.read) ")")))))
 
@@ -356,7 +356,7 @@ You should check that your environment meets the same requirements than mine. My
 
     Hy version:  0.12.1
     Python 3.5.2 |Anaconda custom (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)]
-    
+
 
 So this module has been run on Hy 0.12.1 and Python 3.5.2 installed by Anaconda package in Windows. If any problems occurs, you should report them to: https://github.com/markomanninen/hyml/issues
 
@@ -458,7 +458,7 @@ This will output:
             </div>
         </body>
     </html>
-    
+
 
 XML, HTML4, HTML5, XHTML, and XHTML5
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -492,7 +492,7 @@ Output:
     <node attribute="value"/>
     <node attribute="value"></node>
     <node attribute="value">Content</node>
-    
+
 
 However in ``html4`` and ``html5`` there are certain tags that cannot
 have endings so they will be rendered in correct form by the parser.
@@ -563,7 +563,7 @@ It is not possible to define other ``ML`` macro to be used with the
 ``#㎖`` shorthand reader macro. You could however define your own
 shorthands following next quidelines:
 
-    (defreader {unicode-char} [code] (parse-{parser} code))
+    (defsharp {unicode-char} [code] (parse-{parser} code))
 
 ``{unicode-char}`` can be any `unicode
 char <https://unicode-table.com/en/>`__ you want. ``{parser}`` must be
@@ -746,7 +746,7 @@ table head generation snippet:
 
 .. code-block:: hylang
 
-    (xhtml 
+    (xhtml
      (table (thead
        (tr ~@(list-comp
              `(th :class (if (even? ~i) "even" "odd") ~label " " ~i)
@@ -769,7 +769,7 @@ example:
 
 .. code-block:: hylang
 
-    (xml> 
+    (xml>
       ~@(list-comp `(ul (b "List")
           ~@(list-comp `(li item " " ~li)
               [li uls]))
@@ -844,7 +844,7 @@ and ``cell``) are referenced by quoting them:
            `(tr
              ~@(list-comp* [cell (range 3)]
                `(td  ~row "." ~cell)))))
-        (tfoot 
+        (tfoot
           (tr
             (td :colspan "3" "Footer")))))
 
@@ -862,12 +862,12 @@ try with a short csv file:
 
 .. code-block:: hylang
 
-    (xhtml> 
+    (xhtml>
      (table.data
        (caption "Contacts")
        ~@(list-comp*
          [[idx row] (enumerate (.split (.read (open "data.csv" "r")) "\n"))]
-         (if (pos? idx) 
+         (if (pos? idx)
              `(tbody
                 ~@(list-comp* [item (.split row ",")]
                   `(td ~item)))
@@ -901,7 +901,7 @@ Output:
       (head (title ~title))
       (body
       	(p ~body)))
-    
+
 
 Then I use ``include`` macro to read and process the content:
 
@@ -910,7 +910,7 @@ Then I use ``include`` macro to read and process the content:
     (defvar lang "en"
             title "Page title"
             body "Content")
-    
+
     (xhtml ~@(include "template.hy"))
 
 Output:

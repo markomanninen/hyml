@@ -154,4 +154,4 @@
     None))
 ; bhybel macro shortcut for babel/gettext localization and internalization
 ; explanation to set up it here is same as for macro -macro
-(defreader i [args] `(_ ~args))
+(defsharp i [args] `(_ ~args))
