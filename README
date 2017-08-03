@@ -1,0 +1,26 @@
+
+HyML - XML / (X)HTML generator for Hy
+=====================================
+
+
+Introduction
+------------
+
+HyML (acronym for Hy Markup Language) is a set of macros to generate XML, XHTML, and HTML code in Hy. Main features are:
+
+1. resembling syntax with XML
+2. ability to evaluate Hy program code on macro expansion
+3. processing lists and templates
+4. custom variables
+5. tag validation and attribute minimizing with html4 and html5 macros
+6. custom div, class, and id handlers for html
+
+You can use HyML for:
+
+* static xml/xhtml/html content and file generation
+* generating html code for Jupyter Notebook for example
+* attached it to the server for dynamic html output generation
+* practice and study
+* challenge your imagination
+
+If you want to skip the nostalgic background rationale part, you can jump straight to the `installation <http://hyml.readthedocs.io/en/latest/#installation>`__ and the `documentation <http://hyml.readthedocs.io/en/latest/#documentation>`__ part.
