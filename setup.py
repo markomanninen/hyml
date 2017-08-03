@@ -7,7 +7,7 @@ install_requires = ['hy>=0.13.0']
 # next command not recommended but what can you do in Windows...
 #python setup.py sdist upload -r pypitest
 #python setup.py sdist upload
-# 08/017 windows: python setup.py register sdist upload -r https://www.python.org/pypi
+# 08/017 windows: python setup.py sdist upload -r https://www.python.org/pypi
 
 setup(
   name = 'hyml',
