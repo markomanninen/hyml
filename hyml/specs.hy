@@ -1,4 +1,25 @@
 #!/usr/bin/python3
+;; -*- coding: utf-8 -*-
+;;
+;; Copyright (c) 2017 Marko Manninen
+;;
+;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;; of this software and associated documentation files (the "Software"), to deal
+;; in the Software without restriction, including without limitation the rights
+;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;; copies of the Software, and to permit persons to whom the Software is
+;; furnished to do so, subject to the following conditions:
+;;
+;; The above copyright notice and this permission notice shall be included in
+;; all copies or substantial portions of the Software.
+;;
+;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+;; THE SOFTWARE.
 
 ;--------------------------------------------------------------
 ; HTML4 / HTML5 spesifications
@@ -163,7 +184,7 @@
      (assoc set :name (name key))))
 
 ; next tags are not supported by html5 althought they are at html4
-(setv specs5! (, 
+(setv specs5! (,
   :tt :strike :noframes :frameset :frame :font :dir :center :big :basefont :applet :acronym))
 
 ; add html4 specs (except specs5!) to html5
@@ -192,15 +213,15 @@
 ;--------------------
 ; Boolean attributes
 ;--------------------
-; next boolean attributes can be minimized on html. 
+; next boolean attributes can be minimized on html.
 ; for example <input disabled="disabled"> will be just <input disabled>
 ; https://github.com/kangax/html-minifier/issues/63
-(setv boolean-attributes (, 
-  :allowfullscreen :async :autofocus :autoplay :checked :compact :controls :declare 
-  :default :defaultchecked :defaultmuted :defaultselected :defer :disabled :draggable 
-  :enabled :formnovalidate :hidden :indeterminate :inert :ismap :itemscope :loop :multiple 
-  :muted :nohref :noresize :noshade :novalidate :nowrap :open :pauseonexit :readonly 
-  :required :reversed :scoped :seamless :selected :sortable :spellcheck :translate 
+(setv boolean-attributes (,
+  :allowfullscreen :async :autofocus :autoplay :checked :compact :controls :declare
+  :default :defaultchecked :defaultmuted :defaultselected :defer :disabled :draggable
+  :enabled :formnovalidate :hidden :indeterminate :inert :ismap :itemscope :loop :multiple
+  :muted :nohref :noresize :noshade :novalidate :nowrap :open :pauseonexit :readonly
+  :required :reversed :scoped :seamless :selected :sortable :spellcheck :translate
   :truespeed :typemustmatch :visible))
 
 ;----------------------
@@ -227,15 +248,15 @@
 ; A head element's start tag may be omitted if the element is empty, or if the first thing inside the head element is an element.
   :head (fn [context] False)
 
-; A body element's start tag may be omitted if the element is empty, or if the first thing inside the body element is not ASCII whitespace 
+; A body element's start tag may be omitted if the element is empty, or if the first thing inside the body element is not ASCII whitespace
 ; or a comment, except if the first thing inside the body element is a meta, link, script, style, or template element.
   :body (fn [context] False)
 
-; A colgroup element's start tag may be omitted if the first thing inside the colgroup element is a col element, and if the element is not 
+; A colgroup element's start tag may be omitted if the first thing inside the colgroup element is a col element, and if the element is not
 ; immediately preceded by another colgroup element whose end tag has been omitted. (It can't be omitted if the element is empty.)
   :colgroup (fn [context] False)
 
-; A tbody element's start tag may be omitted if the first thing inside the tbody element is a tr element, and if the element is not immediately 
+; A tbody element's start tag may be omitted if the first thing inside the tbody element is a tr element, and if the element is not immediately
 ; preceded by a tbody, thead, or tfoot element whose end tag has been omitted. (It can't be omitted if the element is empty.)
   :tbody (fn [context] False)})
 
@@ -259,14 +280,14 @@
 ; A dt element's end tag may be omitted if the dt element is immediately followed by another dt element or a dd element.
 :dt (fn [context] (in (get context :followed-by) (, :dt :dd)))
 
-; A dd element's end tag may be omitted if the dd element is immediately followed by another dd element or a dt element, 
+; A dd element's end tag may be omitted if the dd element is immediately followed by another dd element or a dt element,
 ; or if there is no more content in the parent element.
 :dd (fn [context] (or (in (get context :followed-by) (, :dt :dd))
                       (get context :is-last-child)))
 
-; A p element's end tag may be omitted if the p element is immediately followed by an address, article, aside, blockquote, details, div, dl, fieldset, 
-; figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, hr, main, menu, nav, ol, p, pre, section, table, or ul element, 
-; or if there is no more content in the parent element and the parent element is an HTML element that is not an a, audio, del, ins, map, noscript, 
+; A p element's end tag may be omitted if the p element is immediately followed by an address, article, aside, blockquote, details, div, dl, fieldset,
+; figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, hr, main, menu, nav, ol, p, pre, section, table, or ul element,
+; or if there is no more content in the parent element and the parent element is an HTML element that is not an a, audio, del, ins, map, noscript,
 ; or video element, or an autonomous custom element.
 :p (fn [context]  (or (in (get context :followed-by) (, :address :article :aside :blockquote :details :div :dl :fieldset :figcaption
                                                         :figure :footer :form :h1 :h2 :h3 :h4 :h5 :h6 :header :hgroup :hr :main :menu
@@ -282,12 +303,12 @@
 :rp (fn [context] (or (in (get context :followed-by) (, :rt :rp))
                       (get context :is-last-child)))
 
-; An optgroup element's end tag may be omitted if the optgroup element is immediately followed by another optgroup element, 
+; An optgroup element's end tag may be omitted if the optgroup element is immediately followed by another optgroup element,
 ; or if there is no more content in the parent element.
 :optgroup (fn [context] (or (in (get context :followed-by) (, :optgroup))
                             (get context :is-last-child)))
 
-; An option element's end tag may be omitted if the option element is immediately followed by another option element, 
+; An option element's end tag may be omitted if the option element is immediately followed by another option element,
 ; or if it is immediately followed by an optgroup element, or if there is no more content in the parent element.
 :option (fn [context] False)
 
@@ -302,7 +323,7 @@
 ; A thead element's end tag may be omitted if the thead element is immediately followed by a tbody or tfoot element.
 :thead (fn [context] (in (get context :followed-by) (, :tbody :tfoot)))
 
-; A tbody element's end tag may be omitted if the tbody element is immediately followed by a tbody or tfoot element, 
+; A tbody element's end tag may be omitted if the tbody element is immediately followed by a tbody or tfoot element,
 ; or if there is no more content in the parent element.
 :tbody (fn [context] (or (in (get context :followed-by) (, :tbody :tfoot))
                          (get context :is-last-child)))

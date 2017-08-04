@@ -12,7 +12,7 @@
 #  """
 #
 # should be added to distutils setup.py file and then:
-# 
+#
 # [hyml: **.hyml]
 # [hyml: **.hy]
 # extensions=hyml.ext.babel_extract
@@ -43,12 +43,12 @@ readermacro, dispatch_reader_macro = hy.HySymbol("i"), hy.HySymbol("dispatch_rea
 # lazy_gettext is a special keyword for flask babel
 gettext, lazy_gettext = hy.HySymbol("gettext"), hy.HySymbol("lazy_gettext")
 # accepted gettext / babel keywords
-keywords = [hy.HySymbol("_"), 
-            gettext, 
-            hy.HySymbol("ngettext"), 
-            hy.HySymbol("N_"), 
-            hy.HySymbol("lgettext"), 
-            hy.HySymbol("lngettext"), 
+keywords = [hy.HySymbol("_"),
+            gettext,
+            hy.HySymbol("ngettext"),
+            hy.HySymbol("N_"),
+            hy.HySymbol("lgettext"),
+            hy.HySymbol("lngettext"),
             lazy_gettext]
 
 # string and int are accepted as gettext messages
@@ -95,7 +95,7 @@ def extract_from_ast(ast):
             if current in keywords:
                 # there are no comments available in ast, thus only three items are returned
                 # mark singular and plural forms. later in chunks
-                # plural and singular forms are combined. this is not particularly genious 
+                # plural and singular forms are combined. this is not particularly genious
                 # way of doing it. other recursive parsing technique could handle everything
                 # more efficiently
                 msg = message(expr, count)

@@ -1,22 +1,44 @@
 #!/usr/bin/python3
+;; -*- coding: utf-8 -*-
+;;
+;; Copyright (c) 2017 Marko Manninen
+;;
+;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;; of this software and associated documentation files (the "Software"), to deal
+;; in the Software without restriction, including without limitation the rights
+;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;; copies of the Software, and to permit persons to whom the Software is
+;; furnished to do so, subject to the following conditions:
+;;
+;; The above copyright notice and this permission notice shall be included in
+;; all copies or substantial portions of the Software.
+;;
+;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+;; THE SOFTWARE.
+
 ;----------------------------------------------
 ; HyML MiNiMaL
-; 
+;
 ; Minimal Markup Language generator in Hy
-; 
+;
 ; Source:
 ; https://github.com/markomanninen/hyml/
-; 
+;
 ; Install:
 ; $ pip install hyml
-; 
+;
 ; Import macros:
 ; (require (hyml.minimal (*)))
-; 
+;
 ; Usage:
 ; (ml (tag :attr "value" (sub "Content"))) ->
 ; <tag attr="value"><sub>Content</sub></tag>
-; 
+;
 ; Author: Marko Manninen <elonmedia@gmail.com>
 ; Copyright: Marko Manninen (c) 2017
 ; Licence: MIT
@@ -60,7 +82,7 @@
                      (setv item (eval (second item)
                                       (merge-two-dicts variables-and-functions vars-and-funcs)))
                      ; single pre-quoted symbols will get accepted
-                     ; this is practically to make attribute value and content part 
+                     ; this is practically to make attribute value and content part
                      ; coherent with create-tag functionality. without this
                      ; quotation symbols would be interpreted as tag names!
                      (in (first item) **quasi-quote**) (setv item (name (eval item)))))
@@ -87,7 +109,7 @@
   (defn parse-mnml [code &optional [vars-and-funcs {}]]
     (if (coll? code)
         (do (setv tag (catch-tag (first code)))
-            ; special processing for unquote and unquote-splice 
+            ; special processing for unquote and unquote-splice
             (if (in tag **unquote-splice**)
                 (if (= tag **unquote**)
                     ; must pass variables-and-functions functions so that
@@ -97,8 +119,8 @@
                     (.join "" (map
                       ; if there are variables and functions we would like to pass them to parse function
                       ; else just simple parse-mnml map
-                      (if (empty? vars-and-funcs) parse-mnml (fn [item] (parse-mnml item vars-and-funcs))) 
-                          (eval (second code) 
+                      (if (empty? vars-and-funcs) parse-mnml (fn [item] (parse-mnml item vars-and-funcs)))
+                          (eval (second code)
                                 (merge-two-dicts variables-and-functions vars-and-funcs)))))
                 ; normal tag creation
                 (do (setv (, content attributes) (get-content-attributes (drop 1 code) vars-and-funcs))
