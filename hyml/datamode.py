@@ -125,6 +125,11 @@ class Checker:
         self.max_nodes = max_nodes
         self.nodes = 0
         self.problems = []
+        # verdicts by tag and by attribute name, remembered within one call.
+        # a verdict is a problem message or None, reported at every place
+        self.tag_verdicts = {}
+        self.attribute_verdicts = {}
+        self.tag_info = {}
 
     def problem(self, path, message):
         if len(self.problems) < MAX_PROBLEMS:
@@ -244,12 +249,14 @@ class Checker:
             self.problem(path, "nested deeper than max_depth=%d" % self.max_depth)
             return []
         # div#main.note shorthand in the (x)html dialects
-        if html_like:
+        if html_like and ("." in name or "#" in name):
             tag, ids, classes = split_shorthand(name)
             if ids:
                 attributes = merge(attributes, "id", ids)
             if classes:
                 attributes = merge(attributes, "class", classes)
+        elif html_like:
+            tag = name or "div"
         else:
             tag = name
         ok = self.check_tag(tag, path)
@@ -258,47 +265,66 @@ class Checker:
                    if self.check_attribute(tag, attribute, value, path)]
         content = [node for i, child in enumerate(children)
                    for node in convert(child, path + [str(i + 1)], depth + 1)]
-        if ok and html_like and content and is_void(tag, self.specs):
+        if not ok:
+            return []
+        info = self.tag_info.get(tag)
+        if info is None:
+            info = self.tag_info[tag] = tag_info(tag, self.specs)
+        if content and info[1]:
             self.problem(path, "<%s> is a void element and can't have content" % tag)
-        return [(tag, checked, content)] if ok else []
+        # (tag, attributes, content, sibling kind, void, end tag rule, start tag rule)
+        return [(tag, checked, content) + info]
 
     def check_tag(self, tag, path):
+        if tag in self.tag_verdicts:
+            verdict = self.tag_verdicts[tag]
+        else:
+            verdict = self.tag_verdicts[tag] = self.tag_verdict(tag)
+        if verdict is None:
+            return True
+        self.problem(path, verdict)
+        return False
+
+    def tag_verdict(self, tag):
         lower = tag.lower()
         pattern = HTML_TAG_NAME if self.specs else XML_TAG_NAME
         if lower in RESERVED_NAMES or not pattern.fullmatch(tag):
-            self.problem(path, "%r is not a valid tag name" % tag)
-            return False
+            return "%r is not a valid tag name" % tag
         if self.specs and spec(tag, self.specs) is None:
-            self.problem(path, "<%s> is not an %s element" % (tag, self.dialect["name"]))
-            return False
+            return "<%s> is not an %s element" % (tag, self.dialect["name"])
         if self.safe and lower in BLOCKED_TAGS and (self.allowed_tags is None or lower not in self.allowed_tags):
-            self.problem(path, "<%s> is not allowed in safe mode, because it can run scripts or load content" % tag)
-            return False
+            return "<%s> is not allowed in safe mode, because it can run scripts or load content" % tag
         if self.allowed_tags is not None and lower not in self.allowed_tags:
-            self.problem(path, "<%s> is not in the allowed tags: %s" % (tag, ", ".join(sorted(self.allowed_tags))))
-            return False
-        return True
+            return "<%s> is not in the allowed tags: %s" % (tag, ", ".join(sorted(self.allowed_tags)))
+        return None
 
     def check_attribute(self, tag, attribute, value, path):
+        if attribute in self.attribute_verdicts:
+            verdict = self.attribute_verdicts[attribute]
+        else:
+            verdict = self.attribute_verdicts[attribute] = self.attribute_verdict(attribute)
+        if verdict is not None:
+            self.problem(path, verdict)
+            return False
         lower = attribute.lower()
-        if not ATTRIBUTE_NAME.fullmatch(attribute):
-            self.problem(path, "%r is not a valid attribute name" % attribute)
-            return False
-        if (self.safe and (lower.startswith("on") or lower in BLOCKED_ATTRIBUTES)
-                and (self.allowed_attributes is None or lower not in self.allowed_attributes)):
-            self.problem(path, "attribute %s is not allowed in safe mode" % attribute)
-            return False
-        if (self.allowed_attributes is not None
-                and not any(fnmatch.fnmatchcase(lower, pattern) for pattern in self.allowed_attributes)):
-            self.problem(path, "attribute %s is not in the allowed attributes: %s"
-                         % (attribute, ", ".join(self.allowed_attributes)))
-            return False
         if isinstance(value, str) and (lower in URL_ATTRIBUTES or lower == "srcset"):
             urls = ([candidate.strip().split()[0] for candidate in value.split(",") if candidate.strip()]
                     if lower == "srcset" else [value])
             # every URL is checked, so that every problem is reported
             return all([self.check_url(tag, attribute, url, path) for url in urls])
         return True
+
+    def attribute_verdict(self, attribute):
+        lower = attribute.lower()
+        if not ATTRIBUTE_NAME.fullmatch(attribute):
+            return "%r is not a valid attribute name" % attribute
+        if (self.safe and (lower.startswith("on") or lower in BLOCKED_ATTRIBUTES)
+                and (self.allowed_attributes is None or lower not in self.allowed_attributes)):
+            return "attribute %s is not allowed in safe mode" % attribute
+        if (self.allowed_attributes is not None
+                and not any(fnmatch.fnmatchcase(lower, pattern) for pattern in self.allowed_attributes)):
+            return "attribute %s is not in the allowed attributes: %s" % (attribute, ", ".join(self.allowed_attributes))
+        return None
 
     def check_url(self, tag, attribute, url, path):
         # browsers ignore whitespace and control characters inside the scheme
@@ -334,19 +360,21 @@ class Checker:
 
 # rendering the checked tree
 
+def tag_info(tag, specs):
+    """(sibling kind, void, end tag rule, start tag rule) of a checked tag."""
+    lower = tag.lower()
+    kind = "#comment" if tag == "!--" else (re.split(r"[.#]", tag)[0] or "div").lower()
+    void = bool(specs and is_void(tag, specs))
+    return (kind, void, END_RULES.get(lower), START_RULES.get(lower))
+
+
 def sibling_kind(node):
     """What follows an element: a tag name or a kind of text."""
     if isinstance(node, str):
         if node.startswith("<!--"):
             return "#comment"
         return "#whitespace" if node and node[0].isspace() else "#text"
-    tag = node[0]
-    return "#comment" if tag == "!--" else (re.split(r"[.#]", tag)[0] or "div").lower()
-
-
-def optional(tag, context, rules=END_RULES):
-    rule = rules.get(tag.lower())
-    return bool(rule and context and rule(context))
+    return node[3]
 
 
 def attributes_html(attributes, minify):
@@ -362,18 +390,17 @@ def attributes_html(attributes, minify):
 
 
 def render_element(dialect, node, context):
-    tag, attributes, content = node
+    tag, attributes, content, kind, void, end_rule, start_rule = node
     html_mode = dialect["html"]
-    specs = dialect["specs"]
     start = "<" + tag + attributes_html(attributes, html_mode)
-    if specs and is_void(tag, specs):
+    if void:
         return start + (">" if html_mode else "/>")
     body = render_nodes(dialect, content, tag)
     if html_mode:
-        omit_start = (dialect["omit-start"] and not attributes
-                      and optional(tag, dict(context, **{"first-child": sibling_kind(content[0]) if content else None}),
-                                   START_RULES))
-        return ("" if omit_start else start + ">") + body + ("" if optional(tag, context) else "</" + tag + ">")
+        omit_start = (dialect["omit-start"] and not attributes and start_rule is not None
+                      and start_rule(dict(context, **{"first-child": sibling_kind(content[0]) if content else None})))
+        omit_end = end_rule is not None and end_rule(context)
+        return ("" if omit_start else start + ">") + body + ("" if omit_end else "</" + tag + ">")
     if not content:
         return start + "/>"
     return start + ">" + body + "</" + tag + ">"
@@ -395,8 +422,8 @@ def render_nodes(dialect, items, parent=None):
                    "parent": parent.lower() if parent else None,
                    "after-omitted": after_omitted}
         parts.append(render_element(dialect, item, context))
-        kind = sibling_kind(item)
-        after_omitted = kind if html_mode and optional(kind, context) else None
+        # in the html dialects the kind is the tag name, so its end tag rule applies
+        after_omitted = item[3] if html_mode and item[5] is not None and item[5](context) else None
     return "".join(parts)
 
 
