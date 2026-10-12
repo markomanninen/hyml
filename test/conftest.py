@@ -11,6 +11,8 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
+# reference implementations for the differential tests
+sys.path.insert(0, str(ROOT / "test"))
 sys.dont_write_bytecode = True
 
 import hy  # noqa: E402,F401
