@@ -84,7 +84,7 @@
     (setv head (head-name code))
     (cond (isinstance code hy.models.Symbol) (str code)
           (= head "unquote") (->str (evaluate (get code 1)))
-          (in head #("quote" "quasiquote")) (->str (hy.eval code))
+          (in head #("quote" "quasiquote")) (->str (evaluate code))
           (= head ".") (dotted-tag code)
           True (->str code)))
 
