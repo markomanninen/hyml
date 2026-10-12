@@ -88,13 +88,18 @@ def shown(value):
 
 @pytest.fixture
 def restore_state():
-    """The examples define variables and change the template directory."""
+    """The examples define variables, change the template directory and
+    write example files to the working directory."""
     registry = dict(variables_and_functions)
     template_dir = hyml.template.template_dir
+    files = set(Path.cwd().iterdir())
     yield
     variables_and_functions.clear()
     variables_and_functions.update(registry)
     hyml.template.template_dir = template_dir
+    for path in set(Path.cwd().iterdir()) - files:
+        if path.is_file():
+            path.unlink()
 
 
 @pytest.mark.parametrize("doc", DOCS)
