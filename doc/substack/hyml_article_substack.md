@@ -124,7 +124,19 @@ The headline is in the third column. **The attack did not reach a single page**,
 
 The other columns show what the safety layer costs. Going through the HyML tool took about 3 to 4 times as many tokens read and 1.6 to 2.8 times the money, because the agent needs an extra round to call the tool and the tool's description travels with every request. I had also hoped the compact s-expressions would save tokens compared with JSON. They did not. The markup travels to the tool inside a JSON string, so every quotation mark has to be escaped with a backslash, which eats the savings.
 
-The error messages did their job. One Haiku run left an extra closing parenthesis in its markup. HyML's answer named line 22, and the agent's next attempt was correct.
+The error messages did their job. In s-expressions every opening parenthesis needs a closing one, and in one Haiku run the agent closed one too many at the end of its page, on line 22.
+
+```
+(p "Sizes run small, order one size up."))))))
+```
+
+HyML refuses such a page and points to the exact place.
+
+```
+the markup is not valid s-expression text: line 22, column 54: ) without a matching (
+```
+
+The agent removed the extra parenthesis, and its next call rendered the page.
 
 ## Result 3. Checking costs no speed compared with htpy
 
