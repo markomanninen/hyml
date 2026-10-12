@@ -91,3 +91,5 @@ ENV/
 .ropeproject
 
 .pypirc
+# camel_hy experiment output
+experiments/camel_hy/runs/
