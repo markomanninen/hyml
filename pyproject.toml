@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hyml"
-version = "1.1.0"
+version = "1.2.0"
 description = "HyML - XML / (X)HTML generator for Hy"
 readme = "README.rst"
 license = "MIT"
@@ -25,12 +25,17 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7", "ipython", "ipykernel", "nbclient", "nbformat"]
+test = ["pytest>=7", "ipython", "ipykernel", "nbclient", "nbformat", "mcp>=1.2,<2; python_version >= '3.10'"]
 notebook = ["ipython"]
+# mcp 2.x renamed FastMCP; the server uses the 1.x API
+mcp = ["mcp>=1.2,<2"]
 
 [project.urls]
 Homepage = "https://github.com/markomanninen/hyml"
 Documentation = "http://hyml.readthedocs.io/"
+
+[project.scripts]
+hyml-mcp = "hyml.mcp_server:main"
 
 [project.entry-points."babel.extractors"]
 hyml = "hyml.ext:babel_extract"

