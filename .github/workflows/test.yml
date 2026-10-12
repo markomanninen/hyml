@@ -1,0 +1,27 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # oldest supported Hy and Python
+          - python: "3.9"
+            hy: "hy==1.0.0"
+          - python: "3.12"
+            hy: "hy"
+          - python: "3.14"
+            hy: "hy"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install "${{ matrix.hy }}" -e ".[test]"
+      - run: python -m pytest

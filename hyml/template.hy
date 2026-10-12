@@ -1,7 +1,6 @@
-#!/usr/bin/python3
 ;; -*- coding: utf-8 -*-
 ;;
-;; Copyright (c) 2017 Marko Manninen
+;; Copyright (c) 2017-2026 Marko Manninen
 ;;
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -26,48 +25,42 @@
 ;
 ; Utilizing render-template and extend-template
 ;----------------------------------------------
-(require (hyml.minimal (*)))
-(import (hyml.minimal (*)))
+(require hyml.minimal *)
+(import hyml.minimal *)
+(import hyml.core [namespace])
 
 ; template dir setter. this could be retrieved OR set
-; from other modules too
-(def template-dir "templates/")
+; from other modules too: (setv hyml.template.template-dir "views/")
+(setv template-dir "templates/")
 
-; return / chain extended list rather than extending in-place (.extend)
-(defn extend [a b] (.extend a b) a)
+; read a template file and evaluate it as a quasiquoted list of forms,
+; so that ~ and ~@ inside the template are resolved from vars
+(defn read-template [path vars]
+  (with [f (open path :encoding "utf-8")]
+    (setv forms (list (hy.read-many (.read f) :filename path))))
+  (hy.eval (hy.models.Expression [(hy.models.Symbol "quasiquote")
+                                  (hy.models.Expression forms)])
+           vars
+           :module "hyml.template"))
 
-; should take previus variables and pass them to the next template
-; globals are automaticly added, locals should be added with dictinary
-; or (locals) / (vars)
+; globals are automaticly added, locals should be added with dictionary
+; or (locals) / (vars). later dictionaries override earlier ones:
 ; (setv variable "click")
 ; (render-template "index.hyml" (locals))
-(defn render-template [tmpl &rest args]
-  ; prefix template with dir
-  (setv tmpl (+ template-dir tmpl))
+(defn render-template [tmpl #* args]
   ; we want to get a recursive access to render-template function and
   ; extend-template macro to enable "extend" / blocks functionality in templates
   ; and all custom variables and functions set with deffun / defvar
-  (setv vars (merge-two-dicts (globals) variables-and-functions))
-  ; pass variables from arguments
-  (for [d args] (setv vars (merge-two-dicts d vars)))
-  ; next part is very similar to parse-mnml unquote-splice part
-  (.join "" (map
-    (fn [item] (parse-mnml item vars))
-      ; include will return unquote-splice (~@) so we need to get over them to
-      ; real content with first and second
-      (eval (second  (first (include tmpl))) vars))))
+  (setv vars (namespace (globals) #* args))
+  (.join "" (gfor item (read-template (+ template-dir tmpl) vars)
+              (parse-mnml item vars))))
 
 ; to imitate jinja and mako
 ; ~(extend-template "layout.hyml" {"var1" "val1" "var2" "val2"})
-(defmacro extend-template [tmpl &rest args]
-  `(if-not (empty? ~args)
-            (do ; every value of the args dictionaries are getting ready to be evaluated
-                ; via parse-mnml. they may or may not contain HyML code, but if HyML code
-                ; is passed, it must be quasiquoted!
-                (setv args (list-comp (fn [arg] (parse-mnml arg)) (list ~args)))
-                ; pass variables and functions dictionaries to render-template function
-                (apply render-template (extend (extend [~tmpl] ~args) [(globals)])))
-            (render-template ~tmpl (globals))))
+; the namespace of the calling template is passed on, and the given
+; dictionaries override it. values may be quasiquoted HyML code
+(defmacro extend-template [tmpl #* args]
+  `(render-template ~tmpl (globals) ~@args))
 
 ; beside render-template and extend-template, template macro can be used
 ; to pass expression and variables directly to the parse-mnml
@@ -79,17 +72,13 @@
 ;   as the first or the second argument
 ; - one argument is mandatory
 ; - if the only argument is empty string or dictionary None will be returned
-(defmacro template [p1 &optional p2]
+(defmacro template [p1 [p2 None]]
   ; detect if the first or the second is the dictionary or the expression
-  (setv variables {})
-  (if (isinstance p1 hy.HyDict)
-      (do (setv variables p1) (setv args p2))
-      (do (setv args p1)
-          (if (isinstance p2 hy.HyDict)
-              (setv variables p2))))
-  (if args
-    ; merge dictionaries (local, global and variables-and-functions)
-    `(do (setv variables (merge-two-dicts ~variables variables-and-functions))
-         (setv variables (merge-two-dicts variables (globals)))
-         ; quote before eval and parse evaluated expression
-         (parse-mnml (eval (quote ~args) ~variables) ~variables))))
+  (setv [expr variables] (if (isinstance p1 hy.models.Dict) [p2 p1] [p1 p2]))
+  (when (and expr (not (isinstance expr hy.models.Dict)))
+    ; caller's globals, then the given variables
+    `(hy.I.hyml/template.render-expression (quote ~expr) (globals) ~(or variables {}))))
+
+(defn render-expression [expr #* dicts]
+  (setv vars (namespace #* dicts))
+  (parse-mnml (hy.eval expr vars :module "hyml.template") vars))

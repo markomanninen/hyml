@@ -1,7 +1,6 @@
-#!/usr/bin/python3
 ;; -*- coding: utf-8 -*-
 ;;
-;; Copyright (c) 2017 Marko Manninen
+;; Copyright (c) 2017-2026 Marko Manninen
 ;;
 ;; Permission is hereby granted, free of charge, to any person obtaining a copy
 ;; of this software and associated documentation files (the "Software"), to deal
@@ -21,18 +20,27 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ;; THE SOFTWARE.
 
-(eval-and-compile
-  ; without eval-and-compile setv variables doesn't work as a global variable for macros
-  (setv variables-and-functions {}))
+;-------------------------------------------------------------
+; Registry of variables and functions available to unquoted
+; code (~ and ~@) inside ML macros and templates
+;-------------------------------------------------------------
+; markup is rendered at macro-expansion time, so values are
+; evaluated and stored at compile time as well. they are compiled in the
+; calling module, so functions can use the macros it has required (ml, ...)
+(import hyml.core [variables-and-functions HyMLError namespace])
 
-; global variable handler
-(defmacro defvar [&rest args]
-  (setv l (len args) i 0)
-  (while (< i l)
-    (do
-      (assoc variables-and-functions (get args i) (get args (inc i)))
-      (setv i (+ 2 i)))))
+; for example: (defvar x 1 y 2 z 3)
+; later values may refer to earlier ones: (defvar a 1 b (+ a 1))
+(defmacro defvar [_hy_compiler #* args]
+  (when (% (len args) 2)
+    (raise (HyMLError "defvar needs an even number of arguments")))
+  (for [i (range 0 (len args) 2)]
+    (setv (get variables-and-functions (hy.mangle (get args i)))
+          (hy.eval (get args (+ i 1)) (namespace) :module _hy_compiler.module)))
+  None)
 
-; global function handler
-(defmacro deffun [name func]
-  (assoc variables-and-functions name (eval func)))
+; for example: (deffun wholename (fn [x y] (+ y ", " x)))
+(defmacro deffun [_hy_compiler name func]
+  (setv (get variables-and-functions (hy.mangle name))
+        (hy.eval func (namespace) :module _hy_compiler.module))
+  None)
