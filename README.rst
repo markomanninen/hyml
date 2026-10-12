@@ -224,6 +224,8 @@ In Hy (and List generally), language syntax already resembles structured and nes
 
 In Hy, the content is inside the expression:
 
+.. doctest-skip
+
 .. code:: lisp
 
     (tag "Content")
@@ -250,11 +252,15 @@ We are talking about internal implementation of the HyML module now, especially 
 
 Let us take a moment to think of this expression in HyML:
 
+.. doctest-skip
+
 .. code:: lisp
 
     (tag :attr "value" (sub "Content"))
 
 One of the core parts of the HyML implementation is where to catch a tag name. Because the first element after opening parentheses in Hy is normally referring to a function, in HyML we need to change that functionality so that it refers to a tag name. Thus we need to catch tag name with the following code:
+
+.. doctest-skip
 
 .. code:: lisp
 
@@ -285,6 +291,8 @@ This is basicly it. Without html4/5 functionality code base would be maybe one t
 
 Templating feature requires using a registry dictionary for variables and functions, which ``defvar`` and ``deffun`` fill. Macro to expand and evaluate templates is pretty simple:
 
+.. doctest-skip
+
 .. code:: lisp
 
     (defmacro include [template]
@@ -295,6 +303,8 @@ Templating feature requires using a registry dictionary for variables and functi
          (list (hy.read-many (+ "~@`(" (.read f) "\n)")))))
 
 One more catch is to use variables from the registry when evaluating unquoted code on parser:
+
+.. doctest-skip
 
 .. code:: lisp
 
@@ -668,6 +678,8 @@ example below if we try to use ``time`` element in ``html4``, which is
 specifically available in ``html5`` only, we will get an ``HyMLError``
 exception:
 
+.. doctest-skip
+
 .. code:: lisp
 
     (html4 (time))
@@ -786,6 +798,29 @@ Output:
 
     <input type=text value="it's" placeholder="say &quot;hi&quot;">
 
+**Optional start tags**
+
+``html4-min`` and ``html5-min`` go one step further and omit the optional
+start tags of ``html``, ``head``, ``body``, ``colgroup``, and ``tbody`` too,
+under the same `rules <https://html.spec.whatwg.org/multipage/syntax.html#optional-tags>`__.
+A start tag with attributes is always kept:
+
+.. code:: lisp
+
+    (println
+      (html5-min (html (head (title "Page title")) (body (p "Content"))))
+      (html5-min (html :lang "en" (head (title "Page title")) (body (p "Content"))))
+      (html5-min (table (tbody (tr (td "a"))) (tbody (tr (td "b"))))))
+
+Output:
+
+.. parsed-literal::
+
+    <title>Page title</title><p>Content
+    <html lang=en><title>Page title</title><p>Content
+    <table><tr><td>a<tbody><tr><td>b</table>
+
+
 
 Unquoting code
 ~~~~~~~~~~~~~~
@@ -836,6 +871,26 @@ Quoting and executing normal Hy code inside html gives almost unlimited
 possibility to use HyML as a templating engine. Of cource there is also
 a risk to evaluate code that breaks the code execution. Plus
 uncontrolled template engine code may be a security consern.
+
+**Escaping**
+
+Content is not escaped, because markup can be given as plain text too, like
+``"<!-- comment -->"`` above. Text that comes from users should be escaped
+with the ``escape`` function, which is available in all unquoted code:
+
+.. code:: lisp
+
+    (defvar comment "<script>alert('hi')</script>")
+    (html5 (p ~(escape comment)))
+
+Output:
+
+.. parsed-literal::
+
+    <p>&lt;script&gt;alert(&#x27;hi&#x27;)&lt;/script&gt;</p>
+
+Attribute values are always put in quotation marks when needed, and
+double quotes inside them are escaped.
 
 
 Unquote splice
@@ -1110,6 +1165,8 @@ Output:
     <table class="data"><caption>HTML Element Specifications</caption><thead><tr><th>Tag name</th><th>Tag title</th><th>Forbidden</th><th>Omit</th><th>HTML4</th><th>HTML5</th></tr></thead><tbody><tr><td>A</td><td>a</td><td>False</td><td>False</td><td class="html4">True</td><td class="html5"/></tr><tr><td>ABBR</td><td>abbr</td><td>False</td><td>False</td><td class="html4">True</td><td class="html5"/></tr><tr><td>ACRONYM</td><td>acronym</td><td>False</td><td>False</td><td class="html4">True</td><td class=""/></tr><tr><td>ADDRESS</td><td>address</td><td>False</td><td>False</td><td class="html4">True</td><td class="html5"/></tr><tr><td>APPLET</td><td>applet</td><td>False</td><td>False</td><td class="html4">True</td><td class=""/></tr></tbody></table>
 
 
+.. doctest-skip
+
 .. code:: lisp
 
     ; lets import pandas dataframe for easy table view
@@ -1121,6 +1178,8 @@ Output:
 .. code:: python
 
     %javascript IPython.OutputArea.prototype._should_scroll = function(lines) {return false}
+
+.. doctest-skip
 
 .. code:: lisp
 

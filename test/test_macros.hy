@@ -213,3 +213,29 @@
              ["a" "abbr" "acronym"]))
   (assert (get specs :br :forbidden))
   (assert (not (get specs :acronym :html5))))
+
+(defn test-escape []
+  ; content is not escaped by default, escape is available to unquoted code
+  (assert (= (html5 (p ~(escape "<b> & \"x\""))) "<p>&lt;b&gt; &amp; &quot;x&quot;</p>"))
+  (assert (= (xml (p "<b>raw</b>")) "<p><b>raw</b></p>"))
+  (assert (= (render "html5" (read-forms "(p ~(escape user))") {"user" "<script>"})
+             "<p>&lt;script&gt;</p>")))
+
+(defn test-optional-start-tags []
+  (assert (= (html5-min (html (head (title "t")) (body (p "x")))) "<title>t</title><p>x"))
+  ; start tags with attributes are kept
+  (assert (= (html5-min (html :lang "en" (head (title "t")) (body (p "x"))))
+             "<html lang=en><title>t</title><p>x"))
+  ; body starting with script or a comment keeps its start tag
+  (assert (= (html5-min (html (head) (body (script "x")))) "<body><script>x</script>"))
+  (assert (= (html5-min (body "<!-- c -->" (p "x"))) "<body><!-- c --><p>x"))
+  ; tbody right after a tbody whose end tag was omitted keeps its start tag
+  (assert (= (html5-min (table (tbody (tr (td "a"))) (tbody (tr (td "b")))))
+             "<table><tr><td>a<tbody><tr><td>b</table>"))
+  (assert (= (html5-min (table (colgroup (col) (col)) (tr (td "x"))))
+             "<table><col><col><tr><td>x</table>"))
+  ; colgroup and tbody can't lose the start tag when empty
+  (assert (= (html4-min (table (colgroup) (tbody))) "<table><colgroup><tbody></table>"))
+  ; html5 keeps start tags
+  (assert (= (html5 (html (head (title "t")) (body (p "x"))))
+             "<html><head><title>t</title><body><p>x")))

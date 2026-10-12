@@ -101,6 +101,8 @@ With indent function you can make printed XML output prettier and more readable.
 For babel / gettext localization there is also a shorthand reader macro
 ``#i``. Reader macros are required separately:
 
+.. doctest-skip
+
 .. code-block:: hylang
 
     (require hyml.minimal :readers [i])
@@ -167,6 +169,8 @@ source file. A few small helpers shared with the full HyML (``catch-tag``,
 and ``defvar`` / ``deffun`` are in
 `variables.hy <https://github.com/markomanninen/hyml/blob/master/hyml/variables.hy>`__,
 which is appended to the end of the listing.
+
+.. doctest-skip
 
 .. code-block:: hylang
     :linenos:
@@ -393,6 +397,8 @@ Simple example
 
 The simple example utilizing above features and all four components is:
 
+.. doctest-skip
+
 .. code-block:: hylang
 
     (tag :attr "value" (sub "Content"))
@@ -461,6 +467,14 @@ You can generate content with Hy by using ``~`` symbol:
 .. code-block:: hylang
 
     (ml (tag ~(.upper "content"))) ; output: <tag>CONTENT</tag>
+
+Content is not escaped, so markup can be given as plain text too. Text that
+comes from users should be escaped with the ``escape`` function, which is
+available in all unquoted code:
+
+.. code-block:: hylang
+
+    (ml (tag ~(escape "<b> & </b>"))) ; output: <tag>&lt;b&gt; &amp; &lt;/b&gt;</tag>
 
 
 Using custom variables and functions
@@ -553,6 +567,8 @@ Let us first show the template content existing in the external file:
 .. code-block:: hylang
 
     (with [f (open "templates/note.hy")] (print (f.read)))
+
+.. doctest-skip
 
 .. code-block:: hylang
 
@@ -664,6 +680,8 @@ Lets show an example again. First we have the content of the
     (with [f (open "templates/layout.hyml")] (print (f.read)))
 
 
+.. doctest-skip
+
 .. code-block:: hylang
 
     (html
@@ -677,6 +695,8 @@ And the content of the ``extend.hyml`` sub template file:
 
     (with [f (open "templates/extend.hyml")] (print (f.read)))
 
+
+.. doctest-skip
 
 .. code-block:: hylang
 
@@ -717,6 +737,8 @@ Default template directory is set to ``"templates/"``. You can change
 directory by changing ``template-dir`` variable in the ``hyml.template``
 module:
 
+.. doctest-skip
+
 .. code:: hylang
 
     (import hyml.template)
@@ -728,6 +750,8 @@ module:
 One more related feature to templates is a ``macro`` -macro that can be
 used inside template files to factorize code for local purposes. If our
 template file would look like this:
+
+.. doctest-skip
 
 .. code:: hylang
 

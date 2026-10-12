@@ -27,6 +27,8 @@
 ; must exist at compile time too
 (eval-and-compile
 
+  (import html)
+
   (defclass HyMLError [Exception])
 
   ; global registry for variables and functions set by defvar and deffun
@@ -65,7 +67,7 @@
   ; {"first-name" ...} is found by ~first-name. hy must be a global, or
   ; functions defined in the namespace can't run quasiquoted code later
   (defn namespace [#* dicts]
-    (setv ns (dict :hy hy #** variables-and-functions))
+    (setv ns (dict :hy hy :escape escape #** variables-and-functions))
     (for [d dicts]
       (when d
         (for [[k v] (.items d)]
@@ -106,6 +108,11 @@
             True
             (.append result item)))
     result)
+
+  ; content is not escaped, because markup can be given as text too.
+  ; escape text that comes from users: (p ~(escape comment))
+  (defn escape [text]
+    (html.escape (->str text)))
 
   ; quote an attribute value. & and < are left alone so that already
   ; escaped values and template placeholders keep working

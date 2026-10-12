@@ -14,9 +14,9 @@ The value of the last form of a cell is the cell's output. Macros and
 reader macros required in one cell are available in later cells.
 """
 
-import hy
-from hy.reader import HyReader
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
+
+from hyml.session import HySession
 
 
 @magics_class
@@ -24,18 +24,10 @@ class HyMagics(Magics):
 
     def __init__(self, shell):
         super().__init__(shell)
-        # one reader for the whole session, so that reader macros stay enabled
-        self.reader = HyReader()
+        self.session = HySession(shell.user_module, shell.user_ns)
 
     def run(self, source):
-        module = self.shell.user_module
-        result = None
-        # forms are read one at a time, so a reader macro required by one
-        # form can be used by the next one in the same cell
-        for form in hy.read_many(source, filename="<hy-cell>", reader=self.reader):
-            result = hy.eval(form, self.shell.user_ns, module=module)
-            self.reader.reader_macros.update(vars(module).get("_hy_reader_macros", {}))
-        return result
+        return self.session.run(source, "<hy-cell>")
 
     @cell_magic
     def hy(self, line, cell):

@@ -53,3 +53,6 @@
   ; template used to assign a global named variables in the caller's module
   (template `(p ~greeting))
   (assert (= variables "mine")))
+
+(defn test-escape-in-template []
+  (assert (= (template `(p ~(escape user)) {"user" "<b>"}) "<p>&lt;b&gt;</p>")))

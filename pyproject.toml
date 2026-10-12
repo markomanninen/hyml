@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hyml"
-version = "1.0.0"
+version = "1.1.0"
 description = "HyML - XML / (X)HTML generator for Hy"
 readme = "README.rst"
 license = "MIT"
@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=7", "ipython"]
+test = ["pytest>=7", "ipython", "ipykernel", "nbclient", "nbformat"]
 notebook = ["ipython"]
 
 [project.urls]
