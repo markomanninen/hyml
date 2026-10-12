@@ -14,18 +14,20 @@ much slower, and markup data needs none of the language.
 
 import re
 
+# one match per token. whitespace before a token is part of the match, and an
+# atom can't start with #, which starts a reader macro
 TOKEN = re.compile(r'''
-    (?P<space>\s+)
-  | (?P<comment>;[^\n]*)
-  | (?P<open>\()
-  | (?P<close>\))
-  | (?P<string>"(?:[^"\\]|\\.)*")
-  | (?P<unterminated>")
-  | (?P<code>~@|~|'|`)
-  | (?P<macro>\#)
-  | (?P<bracket>[\[\]{}])
-  | (?P<atom>[^\s()\[\]{}";'`~]+)
-''', re.X | re.S)
+    \s*(?:
+      (?P<atom>[^\s()\[\]{}";'`~\#][^\s()\[\]{}";'`~]*)
+    | (?P<open>\()
+    | (?P<close>\))
+    | (?P<string>"(?:[^"\\]|\\.)*")
+    | (?P<comment>;[^\n]*)
+    | (?P<unterminated>")
+    | (?P<code>~@|~|'|`)
+    | (?P<macro>\#)
+    | (?P<bracket>[\[\]{}])
+    )''', re.X | re.S)
 
 ESCAPE = re.compile(r'\\(u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|x[0-9a-fA-F]{2}|.)', re.S)
 SIMPLE = {"n": "\n", "t": "\t", "r": "\r", '"': '"', "\\": "\\", "0": "\0", "a": "\a",
@@ -40,13 +42,6 @@ class ReadError(Exception):
 
 # placeholder for a code marker: the form after it is skipped as well
 SKIP = object()
-
-
-def _add(target, node):
-    if target and target[-1] is SKIP:
-        target[-1] = None
-    else:
-        target.append(node)
 
 
 def _position(text, index):
@@ -109,46 +104,57 @@ def read(text):
     reported at once.
     """
     stack, problems, top = [], [], []
-    position = 0
-    while position < len(text):
-        match = TOKEN.match(text, position)
-        kind, value, start = match.lastgroup, match.group(), position
-        position = match.end()
-        target = stack[-1][1] if stack else top
-        if kind in ("space", "comment"):
+    target = top
+    for match in TOKEN.finditer(text):
+        kind = match.lastgroup
+        if kind == "atom":
+            value = match.group(kind)
+            if value[0] == ":":
+                if stack:
+                    value = Keyword(value[1:])
+                else:
+                    problems.append(f"{_position(text, match.start(kind))}: attribute {value} is outside an element")
+                    continue
+        elif kind == "string":
+            value = match.group(kind)[1:-1]
+            if "\\" in value:
+                value = _unescape(value, text, match.start(kind))
+        elif kind == "open":
+            stack.append((match.start(kind), []))
+            target = stack[-1][1]
             continue
-        if kind == "open":
-            stack.append((start, []))
         elif kind == "close":
             if not stack:
-                raise ReadError(f"{PREFIX}{_position(text, start)}: ) without a matching (")
+                raise ReadError(f"{PREFIX}{_position(text, match.start(kind))}: ) without a matching (")
             opened, items = stack.pop()
-            items = [item for item in items if item is not None and item is not SKIP]
-            _add(stack[-1][1] if stack else top, _element(items, text, opened, problems))
-        elif kind == "string":
-            _add(target, _unescape(value[1:-1], text, start))
+            target = stack[-1][1] if stack else top
+            value = _element([item for item in items if item is not None and item is not SKIP],
+                             text, opened, problems)
+        elif kind == "comment":
+            continue
         elif kind == "unterminated":
-            raise ReadError(f"{PREFIX}{_position(text, start)}: a string is not closed")
-        elif kind == "code":
-            problems.append(f"{_position(text, start)}: {value} is code (~, ~@, ' and `), "
-                            "which is not allowed in markup data")
-            target.append(SKIP)
-        elif kind == "macro":
-            problems.append(f"{_position(text, start)}: # starts a Hy reader macro, "
-                            "which is not allowed in markup data")
-            target.append(SKIP)
+            raise ReadError(f"{PREFIX}{_position(text, match.start(kind))}: a string is not closed")
         elif kind == "bracket":
             # reported once, at the opening bracket
+            value = match.group(kind)
             if value in "[{":
-                problems.append(f"{_position(text, start)}: {value} is not markup. "
+                problems.append(f"{_position(text, match.start(kind))}: {value} is not markup. "
                                 "Use ( ) for elements and \" \" for text")
-        elif value.startswith(":"):
-            if stack:
-                _add(target, Keyword(value[1:]))
-            else:
-                problems.append(f"{_position(text, start)}: attribute {value} is outside an element")
+            continue
         else:
-            _add(target, value)
+            # code and reader macros: the form after them is skipped as well
+            if kind == "code":
+                problems.append(f"{_position(text, match.start(kind))}: {match.group(kind)} is code "
+                                "(~, ~@, ' and `), which is not allowed in markup data")
+            else:
+                problems.append(f"{_position(text, match.start(kind))}: # starts a Hy reader macro, "
+                                "which is not allowed in markup data")
+            target.append(SKIP)
+            continue
+        if target and target[-1] is SKIP:
+            target[-1] = None
+        else:
+            target.append(value)
     if stack:
         raise ReadError(f"{PREFIX}{_position(text, stack[-1][0])}: this ( is not closed")
     return [node for node in top if node is not None and node is not SKIP], problems
