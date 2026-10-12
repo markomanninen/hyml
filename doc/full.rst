@@ -12,21 +12,42 @@ Introduction
 Main features
 ~~~~~~~~~~~~~
 
-1. resembling syntax with XML
-2. ability to evaluate Hy program code on macro expansion
-3. processing lists and templates
-4. custom variables (and functions)
-5. tag name validation and attribute with html4 and html5 macros
-6. start and end tag omission for html4 and html5
-7. custom div tag, class and id attribute handlers for (x)html
+HyML (Hy Markup Language) writes XML, XHTML and HTML as s-expressions in `Hy <https://github.com/hylang/hy>`__, a Lisp that runs on Python. The first item of an expression is the tag, keywords are attributes, strings are text, and nested expressions are child elements:
+
+.. code:: lisp
+
+    (require hyml.macros *)
+    (print (html5 (ul :class "todo" (li "Buy milk") (li (a :href "/recipes" "Find a recipe")))))
+
+Output:
+
+.. parsed-literal::
+
+    <ul class=todo><li>Buy milk<li><a href=/recipes>Find a recipe</a></ul>
+
+HyML renders markup in three ways:
+
+* **Macros** (``ml``, ``xml``, ``xhtml``, ``xhtml5``, ``html4``, ``html5``, ``html4-min`` and ``html5-min``) render pages written in Hy when the code is compiled, so they cost nothing at run time. ``~`` and ``~@`` mix Hy code into the markup.
+* **hyml.render** renders HyML text with code at run time, for templates you write yourself.
+* **hyml.render_data**, the safe data mode, renders markup from users and LLM agents, as s-expression text or JSON lists like ``["p", {"class": "x"}, "Hello"]``. It never evaluates anything. The same check is available to agents as an MCP tool.
+
+What HyML does well:
+
+1. Tag names are checked against the HTML4 and HTML5 specifications.
+2. End and start tags that HTML allows to leave out are left out, following the `WHATWG rules <https://html.spec.whatwg.org/multipage/syntax.html#optional-tags>`__, which makes pages 18-22 % smaller.
+3. The safe data mode refuses scripts, event handlers, unsafe URL schemes and images that would leak data to other sites. It blocked 9 of 10 attacks in a comparison where the sanitizers nh3 and justhtml blocked 8 and 9, and all 10 with a list of allowed sites.
+4. Problems are not stripped silently. Each one is reported with its place in the page, so an agent can fix its markup in one round.
+5. The safe data mode renders about as fast as `htpy <https://htpy.dev>`__ while it checks every tag, attribute and URL.
+6. It works from Hy, from Python, in Jupyter notebooks and as an MCP server.
+
+HyML is tested with more than 200 tests on Python 3.9-3.14 and Hy 1.0-1.3. The tests run every example in this documentation and both notebooks, and compare the safe data mode against a frozen earlier implementation on about 6,000 random pages, valid, broken and malicious.
 
 You can use HyML for:
 
-* static xml/xhtml/html content and file generation
-* generating html code for Jupyter Notebook for example
-* attached it to the server for dynamic html output generation
-* practice and study
-* challenge your imagination for any creative use
+* static xml/xhtml/html pages, reports and emails
+* rendering the answers of AI agents as HTML safely
+* generating html in Jupyter notebooks
+* practice and study of Lisp macros and small languages
 
 If you want to skip the nostalgic background rationale part, you can jump straight to the `installation <http://hyml.readthedocs.io/en/latest/#installation>`__ and the `documentation <http://hyml.readthedocs.io/en/latest/full.html#documentation>`__ part.
 
@@ -325,9 +346,9 @@ Now, with these simple language semantic modifications to Hy, I have managed to 
 Future work
 ~~~~~~~~~~~
 
-There is a nice feature set on arclanguage html generator, that still could optimize the size of the codebase of HyML: http://arclanguage.github.io/ref/html.html
-
-Downside of this is that implementation like that adds more functionas to call and maintain, while HyML at this point is a pretty minimal implementation for its purposes.
+* Compiling a template into a Python function, as Jinja2 does, would make rendering the same page again several times faster. Agent markup is usually rendered once, so this has not been needed.
+* The safe data mode could check markup against a catalog of components, as `A2UI <https://github.com/google/A2UI>`__ and `json-render <https://github.com/vercel-labs/json-render>`__ do, beside the tag and attribute allowlists.
+* The `arclanguage html generator <http://arclanguage.github.io/ref/html.html>`__ has ideas that could still shorten HyML's codebase.
 
 
 Quick start
@@ -480,6 +501,36 @@ Links to other sites are allowed by default, because they need a click and
 agents' answers are full of legitimate ones. ``allowed_url_hosts`` limits every
 URL, links included, to the sites you list, and an empty list,
 ``allowed_url_hosts=[]``, allows no external URLs at all.
+
+**How safe and how fast**
+
+Ten typical attacks from manipulated agent output were given to each tool with its default settings (``benchmarks/security_compare.py``):
+
+=======================================  ======  ========  ======  ======  ==========================
+Attack                                   nh3     justhtml  htpy    HyML    HyML with allowed sites
+=======================================  ======  ========  ======  ======  ==========================
+script, event handler, javascript: link  ✓       ✓         ✗       ✓       ✓
+iframe, meta refresh, CSS url() leak     ✓       ✓         ✗       ✓       ✓
+image URL leak, no click                 ✗       ✓         ✗       ✓       ✓
+form posting to another site             ✓       ✓         ✗       ✓       ✓
+link carrying data, needs a click        ✗       ✗         ✗       ✗       ✓
+**blocked**                              **8**   **9**     **0**   **9**   **10**
+=======================================  ======  ========  ======  ======  ==========================
+
+htpy is a builder for developer code and makes no security claims. Rendering times, in milliseconds, best of five on CPython 3.12 (``benchmarks/render_bench.py``):
+
+==========================================  =================  ===============
+Implementation                              Page, 33 elements  Table, 100 rows
+==========================================  =================  ===============
+HyML macro, built at compile time           0                  static only
+HyML safe data mode, JSON                   0.077              1.07
+HyML safe data mode, s-expression text      0.131              1.74
+htpy                                        0.078              1.07
+dominate                                    0.087              1.30
+Jinja2 template                             0.007              0.20
+==========================================  =================  ===============
+
+A field test with Claude agents, the full measurements and the step-by-step record of the speed work are in `doc/performance.md <https://github.com/markomanninen/hyml/blob/master/doc/performance.md>`__ and `benchmarks/optimization_log.md <https://github.com/markomanninen/hyml/blob/master/benchmarks/optimization_log.md>`__.
 
 **MCP server for agents**
 
