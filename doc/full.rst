@@ -476,13 +476,18 @@ such as ``data-*``), ``allowed_url_hosts``, ``allow_external_resources``,
 ``safe``, ``max_depth`` and ``max_nodes``. Tags and attributes that you list
 explicitly are allowed even when safe mode would block them.
 
+Links to other sites are allowed by default, because they need a click and
+agents' answers are full of legitimate ones. ``allowed_url_hosts`` limits every
+URL, links included, to the sites you list, and an empty list,
+``allowed_url_hosts=[]``, allows no external URLs at all.
+
 **MCP server for agents**
 
 ``pip install "hyml[mcp]"`` installs ``hyml-mcp``, an MCP server with one tool,
 ``render_html``. Agents write markup as data and get back HTML, or the list of
 problems to fix. With ``HYML_OUTPUT_DIR`` set, ``save_as`` writes the page to that
 directory and only a short confirmation goes back to the model. Other settings
-are ``HYML_DIALECT``, ``HYML_ALLOWED_TAGS``, ``HYML_ALLOWED_URL_HOSTS``,
+are ``HYML_DIALECT``, ``HYML_ALLOWED_TAGS``, ``HYML_ALLOWED_URL_HOSTS`` (``none`` for no external URLs),
 ``HYML_EXTERNAL_RESOURCES=1`` and ``HYML_UNSAFE=1``. For Claude Code:
 
 .. code-block:: json

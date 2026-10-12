@@ -14,7 +14,7 @@ import hy  # noqa: F401  (makes the .hy modules importable)
 from hyml.core import HyMLError, escape  # noqa: E402,F401
 from hyml.data import HyMLDataError  # noqa: E402,F401
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 DIALECTS = ("ml", "xml", "xhtml", "xhtml5", "html4", "html5", "html4-min", "html5-min")
 

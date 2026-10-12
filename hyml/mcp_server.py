@@ -15,7 +15,8 @@ HYML_OUTPUT_DIR         directory where ``save_as`` writes pages. Without it
                         pages are returned instead of saved.
 HYML_DIALECT            default dialect (html5)
 HYML_ALLOWED_TAGS       comma-separated tag allowlist
-HYML_ALLOWED_URL_HOSTS  comma-separated hosts that URLs may point to
+HYML_ALLOWED_URL_HOSTS  comma-separated hosts that URLs may point to, or none to
+                        allow no external URLs at all
 HYML_EXTERNAL_RESOURCES set to 1 to allow images and media from any host
 HYML_UNSAFE             set to 1 to allow scripts, styles and other unsafe markup
 """
@@ -52,10 +53,17 @@ def _list(name):
     return [item.strip() for item in value.split(",") if item.strip()] or None
 
 
+def _hosts():
+    # "none" allows no external URLs, an unset variable allows any host
+    if os.environ.get("HYML_ALLOWED_URL_HOSTS", "").strip().lower() == "none":
+        return []
+    return _list("HYML_ALLOWED_URL_HOSTS")
+
+
 def _options():
     return {
         "allowed_tags": _list("HYML_ALLOWED_TAGS"),
-        "allowed_url_hosts": _list("HYML_ALLOWED_URL_HOSTS"),
+        "allowed_url_hosts": _hosts(),
         "allow_external_resources": os.environ.get("HYML_EXTERNAL_RESOURCES") == "1",
         "safe": os.environ.get("HYML_UNSAFE") != "1",
     }
