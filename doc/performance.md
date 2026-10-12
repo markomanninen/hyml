@@ -1,6 +1,6 @@
 # Performance, security and field test
 
-Measured on 2026-10-12 with CPython 3.12 on Apple Silicon, HyML 1.2.0 and Hy 1.3.1.
+Measured on 2026-10-12 with CPython 3.12 on Apple Silicon, HyML 1.3.0 and Hy 1.3.1.
 Timings are the best of five runs. The scripts are in [`benchmarks/`](../benchmarks/).
 See also [background.md](background.md).
 
@@ -14,36 +14,34 @@ implementation, after checking that all of them produce the same text.
 | Implementation | µs per render | Output bytes |
 |---|---:|---:|
 | HyML `html5` macro | 0 (built at compile time) | 504 |
-| HyML `render_data`, JSON | 189 | 504 |
-| HyML `render_data`, s-expression text | 267 | 504 |
-| HyML `render`, s-expression text with code | 1,556 | 504 |
+| HyML `render_data`, JSON | 77 | 504 |
+| HyML `render_data`, s-expression text | 131 | 504 |
+| HyML `render`, s-expression text with code | 1,567 | 504 |
 | Jinja2 3.1.6 template | 7 | 613 |
-| htpy 26.5.1 | 74 | 613 |
-| dominate 2.9.1 | 84 | 598 |
+| htpy 26.5.1 | 78 | 613 |
+| dominate 2.9.1 | 87 | 598 |
 | f-strings and `html.escape` | 2 | 613 |
 
 **Table with 100 rows from data**
 
 | Implementation | µs per render | Output bytes |
 |---|---:|---:|
-| HyML `render_data`, JSON built in Python | 2,907 | 7,353 |
-| HyML `render_data`, s-expression text (7,460 characters) | 4,012 | 7,353 |
-| HyML `render` with `~@` code, evaluated per call | 4,871 | 6,953 |
-| Jinja2 template | 191 | 9,389 |
-| htpy | 1,063 | 9,389 |
-| dominate | 1,294 | 9,389 |
-| f-strings and `html.escape` | 48 | 9,389 |
+| HyML `render_data`, JSON built in Python | 1,071 | 7,353 |
+| HyML `render_data`, s-expression text (7,460 characters) | 1,737 | 7,353 |
+| HyML `render` with `~@` code, evaluated per call | 4,914 | 6,953 |
+| Jinja2 template | 196 | 9,389 |
+| htpy | 1,073 | 9,389 |
+| dominate | 1,296 | 9,389 |
+| f-strings and `html.escape` | 49 | 9,389 |
 
 What this means:
 
 - **The macros cost nothing at run time.** `(html5 ...)` is a string constant
   after compilation, like a hand-written string.
-- **The run-time paths are slower than the alternatives**: about 2.7× htpy and
-  15× Jinja2 from JSON, and about 3.8× htpy from s-expression text, where reading
-  the text adds about 1 ms for the table. Data mode also checks every name, URL and limit, which the others
-  don't do. For markup from agents, which is rendered once per answer, a few
-  milliseconds is not the cost that matters. For a busy web server rendering
-  large pages, Jinja2 or htpy is the better tool.
+- **The data mode is as fast as htpy from JSON**, although it also checks every
+  name, URL and limit. From s-expression text it takes about 1.6× as long,
+  because reading the text adds about 0.7 ms for the table. Jinja2 is about 5×
+  faster, because it compiles each template into a Python function once.
 - **`render` with code is the slowest**, because `hy.eval` compiles the unquoted
   code on every call. Use the macros for code you write, and `render_data` for
   data.
@@ -52,20 +50,22 @@ What this means:
 
 ### Optimizations made
 
-Profiling `render_data` found three costs, all fixed in 1.2:
+Two rounds of work, all checked against the earlier output (see
+[`benchmarks/optimization_log.md`](../benchmarks/optimization_log.md) for each
+step's expectation and result):
 
-| Change | Static page, JSON | Table, 100 rows | s-expression text |
+| | Static page, JSON | Table, 100 rows, JSON | Table, s-expression text |
 |---|---:|---:|---:|
-| Before | 673 µs | 9.35 ms | 2,354 µs |
-| Spec tables and tag rules indexed by plain tag names | 366 µs | 5.56 ms | |
-| Void element sets made once (`:keyword` literals build a `Keyword` on every call) | 197 µs | 3.07 ms | |
-| Own reader for markup data instead of Hy's reader | | | 304 µs |
-| **Speedup** | **3.2×** | **2.9×** | **7.8×** |
+| First version | 673 µs | 9.35 ms | not measured |
+| Round 1: spec tables by tag name, void sets built once, own reader | 189 µs | 2.91 ms | 3.98 ms |
+| Round 2: light tree in plain Python, one regex match per token, per-tag verdicts | 77 µs | 1.07 ms | 1.74 ms |
+| **Speedup** | **8.7×** | **8.7×** | |
 
-Most of the original time went into building `hy.models.Keyword` objects: Hy
-validates every keyword name character by character, and the old code made new
-keywords for every spec lookup. The remaining time is spread evenly over the
-pipeline.
+Hy itself was never the bottleneck: it compiles to ordinary Python bytecode,
+and a profile of the round 1 code found only about 5 % of the time in Hy's
+data structures. The time went into the amount of work: building an
+intermediate tree of Hy models, walking it again with the macro renderer, and
+repeating per-tag lookups for every element.
 
 ## Security comparison
 
