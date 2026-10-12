@@ -40,6 +40,8 @@ What HyML does well:
 5. The safe data mode renders about as fast as `htpy <https://htpy.dev>`__ while it checks every tag, attribute and URL.
 6. It works from Hy, from Python, in Jupyter notebooks and as an MCP server.
 
+The article `Letting AI agents write HTML without trusting them <https://github.com/markomanninen/hyml/blob/master/doc/substack/hyml_article.md>`__ explains why rendering the output of AI agents as HTML is risky, and how HyML compares with HTML sanitizers, with real Claude agents and for speed.
+
 HyML is tested with more than 200 tests on Python 3.9-3.14 and Hy 1.0-1.3. The tests run every example in this documentation and both notebooks, and compare the safe data mode against a frozen earlier implementation on about 6,000 random pages, valid, broken and malicious.
 
 You can use HyML for:
@@ -530,7 +532,7 @@ dominate                                    0.087              1.30
 Jinja2 template                             0.007              0.20
 ==========================================  =================  ===============
 
-A field test with Claude agents, the full measurements and the step-by-step record of the speed work are in `doc/performance.md <https://github.com/markomanninen/hyml/blob/master/doc/performance.md>`__ and `benchmarks/optimization_log.md <https://github.com/markomanninen/hyml/blob/master/benchmarks/optimization_log.md>`__.
+The `article <https://github.com/markomanninen/hyml/blob/master/doc/substack/hyml_article.md>`__ tells the story of these measurements. A field test with Claude agents, the full measurements and the step-by-step record of the speed work are in `doc/performance.md <https://github.com/markomanninen/hyml/blob/master/doc/performance.md>`__ and `benchmarks/optimization_log.md <https://github.com/markomanninen/hyml/blob/master/benchmarks/optimization_log.md>`__.
 
 **MCP server for agents**
 
