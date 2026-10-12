@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hyml"
+version = "1.0.0"
+description = "HyML - XML / (X)HTML generator for Hy"
+readme = "README.rst"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Marko Manninen", email = "elonmedia@gmail.com" }]
+requires-python = ">=3.9"
+dependencies = ["hy>=1.0"]
+keywords = ["hylang", "python", "lisp", "macros", "markup language", "dsl", "xml", "html", "xhtml"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Lisp",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Text Processing :: Markup :: HTML",
+  "Topic :: Text Processing :: Markup :: XML",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7", "ipython"]
+notebook = ["ipython"]
+
+[project.urls]
+Homepage = "https://github.com/markomanninen/hyml"
+Documentation = "http://hyml.readthedocs.io/"
+
+[project.entry-points."babel.extractors"]
+hyml = "hyml.ext:babel_extract"
+
+[tool.setuptools]
+packages = ["hyml"]
+
+[tool.setuptools.package-data]
+hyml = ["*.hy"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+# .hy test modules can't go through pytest's assertion rewriting
+addopts = "--assert=plain -p no:cacheprovider"
