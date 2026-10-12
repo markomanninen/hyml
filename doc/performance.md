@@ -14,30 +14,33 @@ implementation, after checking that all of them produce the same text.
 | Implementation | µs per render | Output bytes |
 |---|---:|---:|
 | HyML `html5` macro | 0 (built at compile time) | 504 |
-| HyML `render_data`, JSON | 213 | 504 |
-| HyML `render_data`, s-expression text | 304 | 504 |
-| HyML `render`, s-expression text with code | 1,760 | 504 |
+| HyML `render_data`, JSON | 189 | 504 |
+| HyML `render_data`, s-expression text | 267 | 504 |
+| HyML `render`, s-expression text with code | 1,556 | 504 |
 | Jinja2 3.1.6 template | 7 | 613 |
-| htpy 26.5.1 | 81 | 613 |
-| dominate 2.9.1 | 92 | 598 |
+| htpy 26.5.1 | 74 | 613 |
+| dominate 2.9.1 | 84 | 598 |
+| f-strings and `html.escape` | 2 | 613 |
 
 **Table with 100 rows from data**
 
 | Implementation | µs per render | Output bytes |
 |---|---:|---:|
-| HyML `render_data`, JSON built in Python | 3,230 | 7,353 |
-| HyML `render` with `~@` code, evaluated per call | 5,620 | 6,953 |
-| Jinja2 template | 209 | 9,389 |
-| htpy | 1,160 | 9,389 |
-| dominate | 1,398 | 9,389 |
-| f-strings and `html.escape` | 51 | 9,389 |
+| HyML `render_data`, JSON built in Python | 2,907 | 7,353 |
+| HyML `render_data`, s-expression text (7,460 characters) | 4,012 | 7,353 |
+| HyML `render` with `~@` code, evaluated per call | 4,871 | 6,953 |
+| Jinja2 template | 191 | 9,389 |
+| htpy | 1,063 | 9,389 |
+| dominate | 1,294 | 9,389 |
+| f-strings and `html.escape` | 48 | 9,389 |
 
 What this means:
 
 - **The macros cost nothing at run time.** `(html5 ...)` is a string constant
   after compilation, like a hand-written string.
 - **The run-time paths are slower than the alternatives**: about 2.7× htpy and
-  15× Jinja2. Data mode also checks every name, URL and limit, which the others
+  15× Jinja2 from JSON, and about 3.8× htpy from s-expression text, where reading
+  the text adds about 1 ms for the table. Data mode also checks every name, URL and limit, which the others
   don't do. For markup from agents, which is rendered once per answer, a few
   milliseconds is not the cost that matters. For a busy web server rendering
   large pages, Jinja2 or htpy is the better tool.
