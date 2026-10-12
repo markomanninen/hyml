@@ -39,6 +39,10 @@ def test_environment_options(monkeypatch):
     monkeypatch.setenv("HYML_ALLOWED_URL_HOSTS", "example.com")
     with pytest.raises(ToolError, match="host that is not allowed"):
         render_html('(img :src "https://evil.example/x.png")')
+    monkeypatch.setenv("HYML_ALLOWED_URL_HOSTS", "none")
+    with pytest.raises(ToolError, match="no external sites are allowed"):
+        render_html('(a :href "https://example.com/" "x")')
+    assert render_html('(a :href "/x" "x")') == "<a href=/x>x</a>"
     monkeypatch.setenv("HYML_UNSAFE", "1")
     monkeypatch.delenv("HYML_ALLOWED_URL_HOSTS")
     assert render_html('(p :style "c" "x")') == "<p style=c>x</p>"

@@ -296,8 +296,11 @@
                                 #(attribute url (.lower (.group scheme 1)))))
           False)
       (and (is-not self.allowed-url-hosts None) external (not-in host self.allowed-url-hosts))
-      (do (self.problem path (% "%s=%r points to a host that is not allowed: %s"
-                                #(attribute url (.join ", " (sorted self.allowed-url-hosts)))))
+      (do (self.problem path (if self.allowed-url-hosts
+                                 (% "%s=%r points to a host that is not allowed: %s"
+                                    #(attribute url (.join ", " (sorted self.allowed-url-hosts))))
+                                 (% "%s=%r points to another site, and no external sites are allowed. Use a relative URL"
+                                    #(attribute url))))
           False)
       (and self.safe external (is self.allowed-url-hosts None) (not self.allow-external-resources)
            (or (in (.lower attribute) resource-attributes)
