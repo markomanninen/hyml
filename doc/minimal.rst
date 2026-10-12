@@ -60,11 +60,14 @@ installer:
 This will install only the necessary source files for HyML, no example
 templates nor Jupyter Notebook files.
 
-There are no other dependencies except Hy language upon Python of cource. 
-If Hy does not exist on your computer, it will be installed (or updated to 
-the version 0.12.1 or greater) at the same time.
+There are no other dependencies except Hy language upon Python of cource.
+HyML needs Python 3.9 or newer and Hy 1.0 or newer. If Hy does not exist
+on your computer, it will be installed (or updated to the version 1.0 or
+greater) at the same time.
 
-At the moment, the latest version of HyML is 0.2.6 (pre-release).
+At the moment, the latest version of HyML is 1.0.0. It has been tested
+with Hy 1.0.0 and Hy 1.3.1 on Python 3.9 - 3.14. Versions before 1.0 were
+written for Hy 0.12 / 0.13 and do not run on Hy 1.x.
 
 
 Import
@@ -74,25 +77,35 @@ Then import MiNiMaL macros:
 
 .. code-block:: hylang
 
-    (require (hyml.minimal (*)))
+    (require hyml.minimal *)
 
 This will load the next macros for usage:
 
 - main markup macro: ``ml``
 - ``defvar`` and ``deffun`` macros for custom variable and function setter
 - ``include`` macro for using templates
-- ``list-comp*`` list comprehension helper macro
-
-Optionally ``ml>`` render macro will be loaded, if code is executed on Jupyter 
-Notebook / IPython environment with the ``display.HTML`` function available.
+- ``macro`` macro for using inside templates
+- ``list-comp*`` list comprehension helper macro (and ``list-comp`` in
+  the old Hy 0.13 argument order)
+- ``ml>`` render macro for Jupyter Notebook / IPython. ``IPython`` is
+  imported only when ``ml>`` is used, so it is not needed otherwise.
 
 If you intend to use xml code ``indent`` function, you should also import it:
 
 .. code-block:: hylang
 
-    (import (hyml.minimal (indent)))
+    (import hyml.minimal [indent])
 
 With indent function you can make printed XML output prettier and more readable.
+
+For babel / gettext localization there is also a shorthand reader macro
+``#i``. Reader macros are required separately:
+
+.. code-block:: hylang
+
+    (require hyml.minimal :readers [i])
+
+    #i"Hello" ; same as (_ "Hello")
 
 
 Run
@@ -114,13 +127,21 @@ That should output:
 Tests
 ~~~~~
 
-To run basic tests, you can use Jupyter Notebook `document <http://nbviewer.jupyter.org/github/markomanninen/hyml/blob/master/HyML%20-%20Minimal.ipynb#Test-main-features>`__ for now.
+Tests are written for `pytest <https://pytest.org/>`__. Clone the repository,
+install HyML with the test extras, and run ``pytest`` in the repository root:
+
+.. code-block:: bash
+
+    $ pip install -e ".[test]"
+    $ pytest
+
+See `HyML tests <http://hyml.readthedocs.io/en/latest/tests.html>`__ for more.
 
 
 Jupyter Notebook
 ~~~~~~~~~~~~~~~~
 
-If you want to play with the provided HyML Notebook document, you should 
+If you want to play with the provided HyML Notebook document, you should
 download the whole `HyML
 repository <https://github.com/markomanninen/hyml/archive/master.zip>`__
 (or clone it with
@@ -128,106 +149,166 @@ repository <https://github.com/markomanninen/hyml/archive/master.zip>`__
 computer. It contains all necessary templates to get everything running
 as presented in the HyML MiNiMaL Notebook `document <http://nbviewer.jupyter.org/github/markomanninen/hyml/blob/master/HyML%20-%20Minimal.ipynb>`__.
 
+.. note:: The Notebook document runs on the standard Python 3 kernel
+          with the ``hyml.ipython`` extension: ``%load_ext hyml.ipython``
+          and then ``%%hy`` at the start of the Hy cells.
+
 
 HyML MiNiMaL codebase
 ----------------------
 
-Because codebase for HyML MiNiMaL implementation is roughly 60 lines
+Because codebase for HyML MiNiMaL implementation is roughly 80 lines
 only (without comments), it is provided here with structural comments and 
 linebreaks for the inspection. More detailed comments are available in the
 `minimal.hy <https://github.com/markomanninen/hyml/blob/master/hyml/minimal.hy>`__
-source file.
+source file. A few small helpers shared with the full HyML (``catch-tag``,
+``namespace``, ``eval-in`` and so on) are in
+`core.hy <https://github.com/markomanninen/hyml/blob/master/hyml/core.hy>`__,
+and ``defvar`` / ``deffun`` are in
+`variables.hy <https://github.com/markomanninen/hyml/blob/master/hyml/variables.hy>`__,
+which is appended to the end of the listing.
 
 .. code-block:: hylang
     :linenos:
 
+    ; global registry for variables and functions
+    (require hyml.variables [defvar deffun])
+    (import hyml.core [variables-and-functions HyMLError])
+    ; some helpers
+    (require hyml.helpers [println ml> list-comp list-comp*])
+    (import hyml.helpers [indent])
+
     ; eval and compile variables, constants and functions for ml, defvar, deffun, and include macros
     (eval-and-compile
-    
-      ; global registry for variables and functions
-      (setv variables-and-functions {})
-    
+      (import hyml.core [keyword? coll? head-name ->str eval-in
+                         escape-attribute unquoted]
+              hyml.core :as core)
       ; internal constants
-      (def **keyword** "keyword") (def **unquote** "unquote")
-      (def **splice** "unquote_splice") (def **unquote-splice** (, **unquote** **splice**))
-      (def **quote** "quote") (def **quasi** "quasiquote")
-      (def **quasi-quote** (, **quote** **quasi**))
-
+      (setv **unquote** "unquote"
+            **splice** "unquote-splice"
+            **unquote-splice** #(**unquote** **splice**)
+            **quote** "quote"
+            **quasi** "quasiquote"
+            **quasi-quote** #(**quote** **quasi**))
+      ; unquoted code sees the macros of this module (list-comp*, include, ...)
+      (defn evaluate [code vars-and-funcs]
+        (eval-in code "hyml.minimal" vars-and-funcs))
       ; detach keywords and content from code expression
-      (defn get-content-attributes [code]
+      (defn get-content-attributes [code [vars-and-funcs None]]
         (setv content [] attributes [] kwd None)
         (for [item code]
-             (do (if (iterable? item)
-                     (if (= (first item) **unquote**) (setv item (eval (second item) variables-and-functions))
-                         (in (first item) **quasi-quote**) (setv item (name (eval item)))))
-                 (if-not (keyword? item)
-                   (if (none? kwd)
-                       (.append content (parse-mnml item))
-                       (.append attributes (, kwd (parse-mnml item)))))
-                 (if (and (keyword? kwd) (keyword? item))
-                     (.append attributes (, kwd (name kwd))))
-                 (if (keyword? item) (setv kwd item) (setv kwd None))))
-        (if (keyword? kwd)
-            (.append attributes (, kwd (name kwd))))
-        (, content attributes))
-    
-      ; recursively parse expression
-      (defn parse-mnml [code] 
+          ; should we evaluate keyword
+          (setv head (head-name item))
+          (cond (= head **unquote**)
+                (setv item (unquoted (evaluate (get item 1) vars-and-funcs)))
+                ; single pre-quoted symbols will get accepted
+                ; this is practically to make attribute value and content part
+                ; coherent with create-tag functionality. without this
+                ; quotation symbols would be interpreted as tag names!
+                (in head **quasi-quote**)
+                (setv item (->str (hy.eval item))))
+          (if (keyword? item)
+              (do
+                ; a keyword right after a keyword is a boolean attribute that
+                ; has same value than the name of the attribute
+                (when (is-not kwd None)
+                  (.append attributes #(kwd (->str kwd))))
+                (setv kwd item))
+              (do
+                ; keyword was not set, so item must be a content
+                ; otherwise it is attribute
+                (if (is kwd None)
+                    (.append content (parse-mnml item vars-and-funcs))
+                    (.append attributes #(kwd (parse-mnml item vars-and-funcs))))
+                (setv kwd None))))
+        ; trailing keyword is a boolean attribute too
+        (when (is-not kwd None)
+          (.append attributes #(kwd (->str kwd))))
+        #(content attributes))
+      ; recursively parse expression. take optional variables and functions
+      ; dictionary for eval functionality. note that ml macro does NOT
+      ; support this, only parse-mnml direct function call
+      (defn parse-mnml [code [vars-and-funcs None]]
         (if (coll? code)
-            (do (setv tag (catch-tag (first code)))
-                (if (in tag **unquote-splice**)
-                    (if (= tag **unquote**)
-                        (str (eval (second code) variables-and-functions))
-                        (.join "" (map parse-mnml (eval (second code) variables-and-functions))))
-                    (do (setv (, content attributes) (get-content-attributes (drop 1 code)))
-                        (+ (tag-start tag attributes (empty? content))
-                           (if (empty? content) ""
-                               (+ (.join "" (map str content)) (+ "</" tag ">")))))))
-            (if (none? code) "" (str code))))
-    
+            (do (setv tag (catch-tag (if code (get code 0) None) vars-and-funcs))
+                (cond
+                  ; unquoted value may be markup too, so parse it again
+                  (= tag **unquote**)
+                  (parse-mnml (unquoted (evaluate (get code 1) vars-and-funcs)) vars-and-funcs)
+                  ; process the list of code
+                  (= tag **splice**)
+                  (.join "" (gfor item (evaluate (get code 1) vars-and-funcs)
+                              (parse-mnml item vars-and-funcs)))
+                  ; normal tag creation
+                  True
+                  (do (setv [content attributes] (get-content-attributes (cut code 1 None) vars-and-funcs))
+                      ; start tag with attributes
+                      ; if there is no content, then we can use short tags
+                      (+ (tag-start tag attributes (not content))
+                         ; if there is no content, we don't need end tag
+                         (if content
+                             (+ (.join "" content) "</" tag ">")
+                             "")))))
+            ; returned value is always a string
+            (->str code)))
       ; detach tag from expression
-      (defn catch-tag [code]
-        (if (and (iterable? code) (= (first code) **unquote**))
-            (eval (second code))
-            (try (name (eval code))
-                 (except (e Exception) (str code)))))
-    
+      (defn catch-tag [code [vars-and-funcs None]]
+        (core.catch-tag code (fn [c] (evaluate c vars-and-funcs))))
       ; concat attributes
       (defn tag-attributes [attr]
-        (if (empty? attr) ""
-            (+ " " (.join " " (list-comp
-              (% "%s=\"%s\"" (, (name kwd) (name value))) [[kwd value] attr])))))
-    
+        (if attr
+            (+ " " (.join " " (gfor [kwd value] attr
+                                (% "%s=\"%s\"" #((->str kwd) (escape-attribute value))))))
+            ""))
       ; create start tag
       (defn tag-start [tag-name attr short]
         (+ "<" tag-name (tag-attributes attr) (if short "/>" ">"))))
-    
-    ; global variable registry handler
-    (defmacro defvar [&rest args]
-      (setv l (len args) i 0)
-      (while (< i l) (do
-        (assoc variables-and-functions (get args i) (get args (inc i)))
-        (setv i (+ 2 i)))))
-    
-    ; global function registry handler
-    (defmacro deffun [name func]
-      (assoc variables-and-functions name (eval func)))
-    
+
     ; include functionality for template engine
     (defmacro include [template]
-      `(do (import [hy.importer [tokenize]])
-           (with [f (open ~template)]
-             (tokenize (+ "~@`(" (f.read) ")")))))
-    
-    ; main MiNiMaL macro to be used. passes code to parse-mnml
-    (defmacro ml [&rest code]
-      (.join "" (map parse-mnml code)))
+      ; content of the file must be wrapped with expression parentheses ()
+      ; quasiquoted (`) and finally unquote-spliced (~@) so that
+      ; final evaluation is done in the main parse-mnml loop
+      `(with [f (open ~template :encoding "utf-8")]
+         (list (hy.read-many (+ "~@`(" (.read f) "\n)")))))
 
-    ; macro -macro to be used inside templates
-    (defmacro macro [name params &rest body]
+    ; main MiNiMaL macro to be used. passes code to parse-mnml
+    (defmacro ml [#* code]
+      ; with map multiple expressions, not only nested ones, can be processed
+      (.join "" (gfor item code (parse-mnml item))))
+
+    ; macro is a wrapper around defmacro and it is used to return
+    ; quoted body so that unquotes can be evaluated later on the process
+    ; this is used mostly with render-template and inside template files
+    (defmacro macro [name params #* body]
       `(do
         (defmacro ~name ~params
-          `(quote ~~@body)) None))
+          `(quote ~~@body))
+        ; return None to prevent printing created anonymous macro/function
+        None))
+
+    ; bhybel reader macro shortcut for babel/gettext localization and
+    ; internalization: #i"message" -> (_ "message")
+    ; enable with (require hyml.minimal :readers [i])
+    (defreader i
+      `(_ ~(.parse-one-form &reader)))
+
+    ; hyml/variables.hy: global registry handlers
+    ; for example: (defvar x 1 y 2 z 3)
+    ; later values may refer to earlier ones: (defvar a 1 b (+ a 1))
+    (defmacro defvar [#* args]
+      (when (% (len args) 2)
+        (raise (HyMLError "defvar needs an even number of arguments")))
+      (for [i (range 0 (len args) 2)]
+        (setv (get variables-and-functions (hy.mangle (get args i)))
+              (hy.eval (get args (+ i 1)) (namespace) :module "hyml.variables")))
+      None)
+
+    ; for example: (deffun wholename (fn [x y] (+ y ", " x)))
+    (defmacro deffun [name func]
+      (setv (get variables-and-functions (hy.mangle name))
+            (hy.eval func (namespace) :module "hyml.variables"))
+      None)
 
 
 Features
@@ -238,7 +319,7 @@ Basic syntax
 ~~~~~~~~~~~~
 
 MiNiMaL macro syntax is simple. It practically follows the rules of 
-`Hy syntax <http://docs.hylang.org/en/latest/language/api.html>`__. 
+`Hy syntax <https://hylang.org/hy/doc/v1.0.0/syntax>`__. 
 
 MiNiMaL macro expression is made of four components:
 
@@ -261,7 +342,9 @@ Syntax of the expression consists of:
 
 * between keywords, keyword values, and content there must a whitespace
   separator OR expression components must be wrapped with double quotes
-  when suitable
+  when suitable. A keyword can be followed directly by a string, like
+  ``:attr"val"``, but a symbol can't: ``(tag"content")`` is a reader
+  error in Hy 1.x, because ``tag"`` would be read as a string prefix
 * whitespace is not needed when a new expression starts or ends
   (opening and closing parentheses)
 
@@ -294,7 +377,7 @@ code generation. They are:
 -  unquote splice ``~@``
 
 These all are symbols used in Hy `macro
-notation <http://docs.hylang.org/en/latest/language/api.html#quasiquote>`__,
+notation <https://hylang.org/hy/doc/v1.0.0/api#quasiquote>`__,
 so they should be self explanatory. But to make everything clear, in the
 MiNiMaL macro they may look they work other way around.
 
@@ -343,10 +426,14 @@ You can generate a tag name with Hy code by using ``~`` symbol:
 
     (ml (~(+ "t" "a" "g"))) ; output: <tag/>
 
-This is useful, if tag names collide with Hy internal symbols and
-datatypes. For example, the symbol ``J`` is reserved for complex number
-type. Instead of writing: ``(ml (J))`` which produces ``<1j/>``, you
-should use: ``(ml (~"J"))`` or ``(ml ("J"))``.
+Plain symbols are never evaluated as tag names, so they can't collide
+with Hy internal symbols and datatypes. For example ``(ml (J))``,
+``(ml (~"J"))``, and ``(ml ("J"))`` all produce ``<J/>``, and
+``(ml (map (input) (object)))`` gives ``<map><input/><object/></map>``.
+Hyphens are kept too: ``(ml (my-tag))`` gives ``<my-tag/>``.
+
+.. note::  In Hy 0.13 tag symbols were evaluated first, so ``(ml (J))``
+           produced ``<1j/>``. This is no longer the case.
 
 
 Attribute name and value
@@ -357,7 +444,7 @@ Generated attribute name must be a keyword type however:
 
 .. code-block:: hylang
 
-    (ml (tag ~(keyword (.join "" ['a 't 't 'r])) "value")) ; output: <tag attr="value"/>
+    (ml (tag ~(hy.models.Keyword (.join "" ['a 't 't 'r])) "value")) ; output: <tag attr="value"/>
 
 And same for value:
 
@@ -402,6 +489,19 @@ on the macro expansion. You can access predefined symbols when quoting
 
     <tag>McDonald, Dennis</tag>
 
+``defvar`` evaluates the values when the variables are defined, so a
+later value can refer to an earlier one: ``(defvar n 1 m (+ n 1))``. Names
+with hyphens work as usual, ``~first-name`` finds a variable defined as
+``first-name``. The registry is shared with the full HyML ``xml``,
+``xhtml``, ``xhtml5``, ``html4``, and ``html5`` macros.
+
+.. note::  Markup is generated when the code is compiled, so variables set
+           with ``setv`` are not visible to unquoted code in the ``ml``
+           macro. Use ``defvar`` and ``deffun`` for that. Also a function
+           registered with ``deffun`` is compiled inside HyML, so it should
+           return quasiquoted HyML code like ``(fn [] `(p "text"))``
+           rather than call the ``ml`` macro itself.
+
 
 Process lists with unquote splice syntax (``~@``)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -422,13 +522,24 @@ contains a sub MiNiMaL expression.
 .. code-block:: hylang
 
     ; generate 5 sub tags and use enumerated numeric value as a content
-    (ml (tag ~@(list-comp `(sub ~(str item)) [item (range 5)])))
+    (ml (tag ~@(lfor item (range 5) `(sub ~(str item)))))
 
 |Output:|
 
 .. code-block:: xml
 
     <tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>
+
+The same can be done with ``list-comp*`` macro, which takes the list
+first and an optional condition last, or with ``list-comp`` macro, which
+uses the Hy 0.13 argument order:
+
+.. code-block:: hylang
+
+    (ml (tag ~@(list-comp* [item (range 5)] `(sub ~(str item)) (% item 2))))
+    ; output: <tag><sub>1</sub><sub>3</sub></tag>
+    (ml (tag ~@(list-comp `(sub ~(str item)) [item (range 5)])))
+    ; output: <tag><sub>0</sub><sub>1</sub><sub>2</sub><sub>3</sub><sub>4</sub></tag>
 
 
 Using templates
@@ -441,7 +552,7 @@ Let us first show the template content existing in the external file:
 
 .. code-block:: hylang
 
-    (with [f (open "note.hy")] (print (f.read)))
+    (with [f (open "templates/note.hy")] (print (f.read)))
 
 .. code-block:: hylang
 
@@ -465,18 +576,33 @@ And finally use ``include`` macro to render the template:
 
 .. code-block:: hylang
 
-    (ml ~@(include "note.hy"))
+    (ml ~@(include "templates/note.hy"))
+
+|Output:|
+
+.. code-block:: xml
+
+    <note src="https://www.w3schools.com/xml/note.xml"><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>
+
+To make it more readable, use the ``indent`` function:
+
+.. code-block:: hylang
+
+    (print (indent (ml ~@(include "templates/note.hy"))))
 
 |Output:|
 
 .. code-block:: xml
 
     <note src="https://www.w3schools.com/xml/note.xml">
-      <to>Tove</to>
-      <from>Jani</from>
-      <heading>Reminder</heading>
-      <body>Don't forget me this weekend!</body>
+        <to>Tove</to>
+        <from>Jani</from>
+        <heading>Reminder</heading>
+        <body>Don't forget me this weekend!</body>
     </note>
+
+``indent`` needs well-formed xml with a single root node. Otherwise it
+raises ``HyMLError``.
 
 .. Danger:: In HyML, but with templates especially, you must realize that 
             inside macro there is a full access to all Hy and Python modules
@@ -488,9 +614,9 @@ Templates extra
 ~~~~~~~~~~~~~~~
 
 On HyML package there is also the ``render-template`` function and the
-``extend-template`` macro available via ``HyML.template`` module.
+``extend-template`` macro available via ``hyml.template`` module.
 
-``HyML.template`` is especially useful when embedding ``HyML MiNiMaL``
+``hyml.template`` is especially useful when embedding ``HyML MiNiMaL``
 to webserver, `Flask <http://flask.pocoo.org/>`__ for example. Here just
 the basic use case is shown, more examples you can find from `sHyte 0.2
 HyML Edition <https://github.com/markomanninen/shyte>`__ codebase.
@@ -500,17 +626,19 @@ In practice, ``render-template`` function is a shortcut to call
 argument in ``render-template`` is the template name, and the rest of
 the arguments are dictionaries to be used on the template. So this is
 also an alternative way of using (bypassing the usage of) ``defvar`` and
-``deffun`` macros.
+``deffun`` macros. Explicitly passed dictionaries override the variables
+of the ``defvar`` / ``deffun`` registry and the globals of the
+``hyml.template`` module, and later dictionaries override earlier ones.
 
 .. code-block:: hylang
 
     ; extend-template macro
-    (require [hyml.template [*]])
+    (require hyml.template *)
     ; render-template function
-    (import [hyml.template [*]])
+    (import hyml.template *)
     ; prepare template variables and functions
-    (setv template-variables-and-functions 
-         {"var" "Variable 1" "func" (fn[]"Function 1")})
+    (setv template-variables-and-functions
+         {"var" "Variable 1" "func" (fn [] "Function 1")})
     ; render template
     (render-template "render.hyml" template-variables-and-functions)
 
@@ -539,9 +667,9 @@ Lets show an example again. First we have the content of the
 .. code-block:: hylang
 
     (html
-      (head (title ~title))
-      (body ~body))
-    
+        (head (title ~title))
+        (body ~body))
+
 
 And the content of the ``extend.hyml`` sub template file:
 
@@ -552,9 +680,9 @@ And the content of the ``extend.hyml`` sub template file:
 
 .. code-block:: hylang
 
-    ~(extend-template "layout.hyml" 
+    ~(extend-template "layout.hyml"
         {"body" `(p "Page content")})
-    
+
 
 We have decided to set the ``title`` as a "global" variable but define
 the ``body`` on the sub template. The render process goes like this:
@@ -585,14 +713,14 @@ for XML content generation.
 
 **Template directory**
 
-Default template directory is set to ``"template/"``. You can change
-directory by changing ``template-dir`` variable in the ``HyML.template``
+Default template directory is set to ``"templates/"``. You can change
+directory by changing ``template-dir`` variable in the ``hyml.template``
 module:
 
 .. code:: hylang
 
     (import hyml.template)
-    (def hyml.template.template-dir "templates-extra/")
+    (setv hyml.template.template-dir "templates-extra/")
 
 
 **Macro -macro**
@@ -642,33 +770,39 @@ Then let us make it a bit more complicated:
          :telephone "+1-202-555-0185"}])
     (ml
       ; root contacts node
-      (contacs
+      (contacts
         ~@(do
           ; import parse-mnml function at the highest level of unquoted code
-          (import (hyml.minimal (parse-mnml)))
+          (import hyml.minimal [parse-mnml])
           ; contact node
-          (list-comp `(contact
-            ; last contact detail node
-            ~@(list-comp (parse-mnml `(~tag ~val))
-                [[tag val] (.items contact)]))
-          [contact contacts]))))
+          (lfor contact contacts
+            `(contact
+              ; last contact detail node
+              ~@(lfor [tag val] (.items contact)
+                  (parse-mnml `(~tag ~val))))))))
 
 |Output:|
 
 .. code-block:: xml
 
-    <contacs>
-      <contact>
-        <firstname>Eric</firstname>
-        <lastname>Johnson</lastname>
-        <telephone>+1-202-555-0170</telephone>
-      </contact>
-      <contact>
-        <firstname>Mary</firstname>
-        <lastname>Johnson</lastname>
-        <telephone>+1-202-555-0185</telephone>
-      </contact>
-    </contacs>
+    <contacts><contact><firstname>Eric</firstname><lastname>Johnson</lastname><telephone>+1-202-555-0170</telephone></contact><contact><firstname>Mary</firstname><lastname>Johnson</lastname><telephone>+1-202-555-0185</telephone></contact></contacts>
+
+Or with ``indent``:
+
+.. code-block:: xml
+
+    <contacts>
+        <contact>
+            <firstname>Eric</firstname>
+            <lastname>Johnson</lastname>
+            <telephone>+1-202-555-0170</telephone>
+        </contact>
+        <contact>
+            <firstname>Mary</firstname>
+            <lastname>Johnson</lastname>
+            <telephone>+1-202-555-0185</telephone>
+        </contact>
+    </contacts>
 
 
 With ``parse-mnml`` function it is also possible to pass an optional dictionary 
@@ -689,7 +823,13 @@ where variables can be hard coded, you might want to use this option:
 It doesn't really matter in which order you pass expression and dictionary to 
 the ``template`` macro. It is also ok to leave dictionary out if expression does 
 not contain any variables. For ``template`` macro, expression needs to be 
-quasiquoted, if it contains ``HyML`` code.
+quasiquoted, if it contains ``HyML`` code. Global variables of the calling
+module are available in the expression too:
+
+.. code-block:: hylang
+
+    (setv greeting "hello")
+    (template `(p ~greeting)) ; output: <p>hello</p>
 
 
 Wrapping up everything
@@ -699,33 +839,41 @@ So all features of the MiNiMaL macro has now been introduced. Let us
 wrap everything and create XHTML document that occupies the most of the
 feature set. Additional comments will be given between the code lines.
 
+First, let us just artificially create a body for the post and save it
+to the external template file. Do this in a separate REPL / Notebook
+cell before the rest, because the ``ml`` macro reads included files
+already when the code is compiled:
+
 .. code-block:: hylang
-    
+
+    (with [f (open "body.hy" "w")]
+      (f.write "(div :class \"body\"
+        \"I've been wondering if it is possible to create XHTML 1.0 Transitional
+          document by using a brand new HyML?\")"))
+
+Then the document itself:
+
+.. code-block:: hylang
+
     ; define variables
     (defvar topic "How do you make XHTML 1.0 Transitional document with HyML?"
             tags ['html 'xhtml 'hyml]
             postedBy "Hege Refsnes"
             contactEmail "hege.refsnes@example.com")
-    
-    ; define function
+
+    ; define function. it returns quasiquoted HyML code
+    ; that the MiNiMaL macro will render
     (deffun valid (fn []
-      (ml (p (a :href "http://validator.w3.org/check?uri=referer" 
-             (img :src "http://www.w3.org/Icons/valid-xhtml10" 
-                  :alt "Valid XHTML 1.0 Transitional" 
-                  :height "31" :width "88"))))))
-    
-    ; let just arficially create a body for the post
-    ; and save it to the external template file
-    (with [f (open "body.hy" "w")]
-      (f.write "(div :class \"body\"
-        \"I've been wondering if it is possible to create XHTML 1.0 Transitional 
-          document by using a brand new HyML?\")"))
-    
-    ; start up the MiNiMaL macro
-    (ml
+      `(p (a :href "http://validator.w3.org/check?uri=referer"
+             (img :src "http://www.w3.org/Icons/valid-xhtml10"
+                  :alt "Valid XHTML 1.0 Transitional"
+                  :height "31" :width "88")))))
+
+    ; start up the MiNiMaL macro, and indent the result for printing
+    (print (indent (ml
       ; xml document declaration
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-      "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" 
+      "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
       \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">"
       ; create html tag with xml namespace and language attributes
       (html :xmlns "http://www.w3.org/1999/xhtml" :lang "en"
@@ -742,14 +890,14 @@ feature set. Additional comments will be given between the code lines.
             ~@(include "body.hy")
             ; then the tags in spans
             (div :class "tags"
-              ~@(list-comp `(span ~tag) [tag tags]))
+              ~@(lfor tag tags `(span ~tag)))
             ; finally the footer
             (div :id "footer"
               (p "Posted by: " ~postedBy)
-              (p "Email: " 
+              (p "Email: "
                 (a :href ~(+ "mailto:" contactEmail) ~contactEmail) ".")))
            ; proceed valid stamp by a defined function
-           ~(valid))))
+           ~(valid))))))
 
 |Output:|
 
@@ -759,36 +907,36 @@ feature set. Additional comments will be given between the code lines.
     <!DOCTYPE html
       PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN'
       'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
-    <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
-      <head>
-        <title>Conforming XHTML 1.0 Transitional Template</title>
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-      </head>
-      <body>
-        <div class="post">
-          <div class="header">How do you make XHTML 1.0 Transitional document with HyML?</div>
-          <div class="body">I've been wondering if it is possible to create XHTML 1.0 Transitional 
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+        <head>
+            <title>Conforming XHTML 1.0 Transitional Template</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        </head>
+        <body>
+            <div class="post">
+                <div class="header">How do you make XHTML 1.0 Transitional document with HyML?</div>
+                <div class="body">I've been wondering if it is possible to create XHTML 1.0 Transitional
           document by using a brand new HyML?</div>
-          <div class="tags">
-            <span>html</span>
-            <span>xhtml</span>
-            <span>hyml</span>
-          </div>
-          <div id="footer">
-            <p>Posted by: Hege Refsnes</p>
+                <div class="tags">
+                    <span>html</span>
+                    <span>xhtml</span>
+                    <span>hyml</span>
+                </div>
+                <div id="footer">
+                    <p>Posted by: Hege Refsnes</p>
+                    <p>
+                        Email: 
+                        <a href="mailto:hege.refsnes@example.com">hege.refsnes@example.com</a>
+                        .
+                    </p>
+                </div>
+            </div>
             <p>
-              Email: 
-              <a href="mailto:hege.refsnes@example.com">hege.refsnes@example.com</a>
-              .
+                <a href="http://validator.w3.org/check?uri=referer">
+                    <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0 Transitional" height="31" width="88"/>
+                </a>
             </p>
-          </div>
-        </div>
-        <p>
-          <a href="http://validator.w3.org/check?uri=referer">
-            <img alt="Valid XHTML 1.0 Transitional" height="31" src="http://www.w3.org/Icons/valid-xhtml10" width="88"/>
-          </a>
-        </p>
-      </body>
+        </body>
     </html>
 
 
@@ -818,17 +966,20 @@ It is possible to call MiNiMaL macro again inside unquoted code:
 Unrecognized symbols
 ~~~~~~~~~~~~~~~~~~~~
 
-Unrecognized symbols (that is they are not specified as literals with double quotas and have no whitespace) are regarded as string literals, unless they are unquoted and they are not colliding with internal Hy symbols.
+Unrecognized symbols (that is they are not specified as literals with double quotas and have no whitespace) are regarded as string literals, unless they are unquoted.
 
 .. code-block:: hylang
 
-    (ml (tag :alfred J. Kwak))
+    (ml (tag :alfred J Kwak))
 
 |Output:|
 
 .. code-block:: xml
 
-    <tag alfred="J.">Kwak</tag>
+    <tag alfred="J">Kwak</tag>
+
+Note that the symbol must still be valid Hy. For example ``J.`` with a
+trailing dot is a reader error in Hy 1.x.
 
 
 Quote and quasiquote
@@ -875,7 +1026,7 @@ empty, thus not a correctly wormed keyword value pair.
     (ml (tag :"attr")) ; output: <tag ="attr"/>
 
 So only working version of keyword notation is ``:{symbol}`` or unquoted
-``~(keyword {expression})``. 
+``~(hy.models.Keyword {expression})``.
 
 .. note::  Keywords without value are interpreted as a keyword having the
            same value as the keyword name (called 
@@ -884,7 +1035,7 @@ So only working version of keyword notation is ``:{symbol}`` or unquoted
 
 .. code-block:: hylang
 
-    [(ml (tag :disabled)) (ml (tag ~(keyword "disabled"))) (ml (tag :disabled "disabled"))]
+    [(ml (tag :disabled)) (ml (tag ~(hy.models.Keyword "disabled"))) (ml (tag :disabled "disabled"))]
 
 |Output:|
 

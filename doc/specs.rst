@@ -8,27 +8,33 @@ conventions of the tags or their relation to each other or global
 structure of the markup document. It is all on the responsibility of the
 user to make it correct.
 
-``html4`` and ``html5`` as well as ``xhtml4`` and ``xhtml5`` macros will render 
+``html4`` and ``html5`` as well as ``xhtml`` and ``xhtml5`` macros will render
 tags as specified below. These macros will minimize code when possible. Using 
 undefined tag will raise an error. Attributes are not validated however. One 
 should use official `validator <http://validator.w3.org/>`__ for a proper
 validation.
 
-This is also the last example of using ``ML`` macros. xhtml> will delegate 
+This is also the last example of using ``ML`` macros. xhtml> will delegate
 xhtml content to IPython.display method so that content is rendered on
 Jupyter Notebook cell rather than just output as a raw xml string.
+``xhtml>`` is required from ``hyml.helpers``, and the ``xhtml`` macro
+gives the same markup as a string outside of Jupyter Notebook.
 
 Columns in the table are:
 
 -  Tag name
 -  Tag code when using empty content
--  Has the optional end tag?
+-  Has the optional end tag? (in ``html4`` and ``html5``, depending on the
+   next sibling and the parent element)
 -  Has a forbidden content and the end tag?
 -  Can omit the short tag? For example: ``<col>``
 -  Is the tag in HTML4 specifications?
 -  Is the tag in HTML5 specifications?
 
 .. code-block:: hylang
+
+    (require hyml.macros *)
+    (require hyml.helpers [xhtml>])
 
     (xhtml>
       (table.data
@@ -37,17 +43,18 @@ Columns in the table are:
           (tr
             ~@(list-comp* [col ["Tag name" "Code" "Optional" "Forbidden" "Omit" "HTML4" "HTML5"]]
               `(th ~col))))
-        (tbody 
-          ~@(do (import html)
-                (import (hyml.macros (specs optional? parse-html4 parse-html5)))
+        (tbody
+          ~@(do (import html
+                        hyml.macros [specs parse-html4 parse-html5]
+                        hyml.specs [optional-end-tags])
             (list-comp* [[id row] (.items specs)]
              `(tr
                (td ~(.upper (get row :name)))
                (td ~(html.escape
                      (if (get row :html4)
-                         (parse-html4 `(~(get row :name) ""))
-                         (parse-html5 `(~(get row :name) "")))))
-               (td ~(if (optional? (get row :name)) "✓" ""))
+                         (parse-html4 `(~(get row :name)))
+                         (parse-html5 `(~(get row :name))))))
+               (td ~(if (in id optional-end-tags) "✓" ""))
                (td ~(if (get row :forbidden) "✓" ""))
                (td ~(if (get row :omit) "✓" ""))
                (td ~(if (get row :html4) "✓" ""))
@@ -272,6 +279,14 @@ Columns in the table are:
       -  ✓
       -  ✓
 
+   *  -  DATA
+      -  <data></data>
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
    *  -  DATALIST
       -  <datalist></datalist>
       -  
@@ -282,7 +297,7 @@ Columns in the table are:
 
    *  -  DD
       -  <dd></dd>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -346,7 +361,7 @@ Columns in the table are:
 
    *  -  DT
       -  <dt></dt>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -361,10 +376,10 @@ Columns in the table are:
       -  ✓
 
    *  -  EMBED
-      -  <embed></embed>
+      -  <embed>
       -  
-      -  
-      -  
+      -  ✓
+      -  ✓
       -  
       -  ✓
 
@@ -496,6 +511,14 @@ Columns in the table are:
       -  
       -  ✓
 
+   *  -  HGROUP
+      -  <hgroup></hgroup>
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
    *  -  HR
       -  <hr>
       -  
@@ -569,9 +592,9 @@ Columns in the table are:
       -  ✓
 
    *  -  KEYGEN
-      -  <keygen></keygen>
+      -  <keygen>
       -  
-      -  
+      -  ✓
       -  ✓
       -  
       -  ✓
@@ -594,7 +617,7 @@ Columns in the table are:
 
    *  -  LI
       -  <li></li>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -706,7 +729,7 @@ Columns in the table are:
 
    *  -  OPTGROUP
       -  <optgroup></optgroup>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -714,7 +737,7 @@ Columns in the table are:
 
    *  -  OPTION
       -  <option></option>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -730,7 +753,7 @@ Columns in the table are:
 
    *  -  P
       -  <p></p>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -778,7 +801,7 @@ Columns in the table are:
 
    *  -  RP
       -  <rp></rp>
-      -  
+      -  ✓
       -  
       -  
       -  
@@ -786,7 +809,7 @@ Columns in the table are:
 
    *  -  RT
       -  <rt></rt>
-      -  
+      -  ✓
       -  
       -  
       -  
@@ -824,6 +847,14 @@ Columns in the table are:
       -  ✓
       -  ✓
 
+   *  -  SEARCH
+      -  <search></search>
+      -  
+      -  
+      -  
+      -  
+      -  ✓
+
    *  -  SECTION
       -  <section></section>
       -  
@@ -838,6 +869,14 @@ Columns in the table are:
       -  
       -  
       -  ✓
+      -  ✓
+
+   *  -  SLOT
+      -  <slot></slot>
+      -  
+      -  
+      -  
+      -  
       -  ✓
 
    *  -  SMALL
@@ -922,7 +961,7 @@ Columns in the table are:
 
    *  -  TBODY
       -  <tbody></tbody>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -930,10 +969,18 @@ Columns in the table are:
 
    *  -  TD
       -  <td></td>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
+      -  ✓
+
+   *  -  TEMPLATE
+      -  <template></template>
+      -  
+      -  
+      -  
+      -  
       -  ✓
 
    *  -  TEXTAREA
@@ -946,7 +993,7 @@ Columns in the table are:
 
    *  -  TFOOT
       -  <tfoot></tfoot>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -954,7 +1001,7 @@ Columns in the table are:
 
    *  -  TH
       -  <th></th>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -962,7 +1009,7 @@ Columns in the table are:
 
    *  -  THEAD
       -  <thead></thead>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -986,7 +1033,7 @@ Columns in the table are:
 
    *  -  TR
       -  <tr></tr>
-      -  
+      -  ✓
       -  
       -  
       -  ✓
@@ -1047,5 +1094,3 @@ Columns in the table are:
       -  ✓
       -  
       -  ✓
-
-

@@ -254,7 +254,7 @@ Processing list can be thought as a core Hy / Lisp language syntax utility, but 
 
 **Catch tag if you can**
 
-We are talking about internal implementation of the HyML module now, especially the `macros.hy <https://github.com/markomanninen/hyml/blob/master/hyml/macros.hy>`__ file.
+We are talking about internal implementation of the HyML module now, especially the `macros.hy <https://github.com/markomanninen/hyml/blob/master/hyml/macros.hy>`__ and `core.hy <https://github.com/markomanninen/hyml/blob/master/hyml/core.hy>`__ files.
 
 Let us take a moment to think of this expression in HyML:
 
@@ -266,25 +266,24 @@ One of the core parts of the HyML implementation is where to catch a tag name. B
 
 .. code-block:: hylang
 
-    (defn catch-tag [code]
-      (try
-        ; code can be a symbol or a sub program
-        ; thats why try to evaluate it. internal symbols like "input"
-        ; for example are handled here too. just about anything can be
-        ; a tag name
-        (name (eval code))
-        ; because evaluation most probably fails when code contains
-        ; a symbol name that has not been specified on the global namespace,
-        ; thats why return quoted code which should work every time.
-        ; tag will be tag and evaluation of the code can go on without failing
-        ; in the catch-tag part
-        (except (e Exception) (eval 'code))))
+    (defn catch-tag [code evaluate]
+      (setv head (head-name code))
+      ; symbols and strings are tag names as such, they are NOT evaluated.
+      ; ~(code) is evaluated, 'tag and `tag are unquoted, and dotted
+      ; symbols like h1.main.header are joined back to a string
+      (cond (isinstance code hy.models.Symbol) (str code)
+            (= head "unquote") (->str (evaluate (get code 1)))
+            (in head #("quote" "quasiquote")) (->str (hy.eval code))
+            (= head ".") (dotted-tag code)
+            True (->str code)))
+
+Early versions of HyML tried to evaluate the tag name first and used the symbol only when the evaluation failed. That made names like ``input`` or ``J`` depend on what happened to be defined in Python. Now a symbol is always just a tag name, and only an unquoted ``~(code)`` is evaluated.
 
 Then the rest of the HyML expression gets interpreted. It can contain basicly just key-value pairs or content. Content can be a string or yet another similar HyML expression. `get-content-attributes` in `macros.hy <https://github.com/markomanninen/hyml/blob/master/hyml/macros.hy>`__ will find out all keyword pairs first and then rest of the expression in regarded as content, which is a string or a nested HyML expression.
 
 **Semantic sugar**
 
-Then some tag names are specially handled like: `unquote`, `unquote_splice`, , `!__`, `<?xml`, `!DOCTYPE`, and in `html4/5` mode tag names starting with . or # (`dispatch_reader_macro`).
+Then some tag names are specially handled like: `unquote`, `unquote-splice`, `!--`, `?xml`, `!DOCTYPE`, and in `(x)html` mode tag names containing . or # like `.main`, `ul#main`, and `h1.main.header` (Hy reads dotted names as `(. h1 main header)`, so HyML joins them back).
 
 For example ~ (unquote) symbol is used to switch the following expression from macro mode to Hy program mode. Other are mroe closely discussed in the `documentation <http://hyml.readthedocs.io/en/latest/#documentation>`__.
 
@@ -292,27 +291,24 @@ Finally when tags are created some rules from specs.hy `<https://github.com/mark
 
 This is basicly it. Without html4/5 functionality code base would be maybe one third of the current code base. Tag validation and minimizing did add a lot of extra code to the module. Being a plain xml generator it would have been comparative to `Remarkuple <https://github.com/markomanninen/remarkuple3/blob/master/remarkuple/main.py>`__ code base.
 
-Templating feature requires using globals variable dictionary as a registry for variables. Macro to expand and evaluate templates is pretty simple:
+Templating feature requires using a registry dictionary for variables and functions, which ``defvar`` and ``deffun`` fill. Macro to expand and evaluate templates is pretty simple:
 
 .. code-block:: hylang
 
     (defmacro include [template]
-      `(do
-        ; tokenize is needed to parse external file
-        (import [hy.importer [tokenize]])
-        (with [f (open ~template)]
-          ; funky ~@` part is needed as a prefix to the template code
-          ; so that code on template wont get directly expanded but only
-          ; after everything had been collected by the macro for final evaluation
-          (tokenize (+ "~@`(" (f.read) ")")))))
+      ; funky ~@` part is needed as a prefix to the template code
+      ; so that code on template wont get directly expanded but only
+      ; after everything had been collected by the macro for final evaluation
+      `(with [f (open ~template :encoding "utf-8")]
+         (list (hy.read-many (+ "~@`(" (.read f) "\n)")))))
 
-One more catch is to use variables from globals dictionary when evaluating code on parser:
+One more catch is to use variables from the registry when evaluating unquoted code on parser:
 
 .. code-block:: hylang
 
-    (.join "" (map ~name (eval (second code) variables)))
+    (hy.eval code (namespace #* dicts) :module module)
 
-This makes it possible to use custom variables at the moment in HyML module and maybe custom functions on templates later in future.
+``namespace`` merges the registry with any extra dictionaries given to the parser, so custom variables and functions are available both in ``ML`` macros and in templates.
 
 Now, with these simple language semantic modifications to Hy, I have managed to do a new programable markup language, HyML, that produces XML / XHTML, and HTML code as an output.
 
@@ -337,39 +333,48 @@ HyML can be installed effortlessly with `pip <https://pip.pypa.io/en/latest/inst
 
     `$ pip install hyml`
 
-HyML requires of cource Python and Hy on a computer. Hy will be automaticly installed, or updated at least to version 0.12.1, if it wasn't already.
+HyML requires of cource Python and Hy on a computer: Python 3.9 or newer and Hy 1.0 or newer. Hy will be automaticly installed, or updated at least to version 1.0, if it wasn't already.
+
+To run the tests, clone the repository and install HyML with the test extras, then run `pytest <https://pytest.org/>`__ in the repository root. See `tests <http://hyml.readthedocs.io/en/latest/tests.html>`__ for more.
+
+.. code-block:: bash
+
+    $ pip install -e ".[test]"
+    $ pytest
 
 
 Environment check
 ~~~~~~~~~~~~~~~~~
 
-You should check that your environment meets the same requirements than mine. My environment for the sake of clarity:
+You should check that your environment meets the requirements:
 
 .. code-block:: hylang
 
     (import hy sys)
-    (print "Hy version: " hy.__version__)
+    (print "Hy version:" hy.__version__)
     (print "Python" sys.version)
 
-
-.. parsed-literal::
-
-    Hy version:  0.12.1
-    Python 3.5.2 |Anaconda custom (64-bit)| (default, Jul  5 2016, 11:41:13) [MSC v.1900 64 bit (AMD64)]
-
-
-So this module has been run on Hy 0.12.1 and Python 3.5.2 installed by Anaconda package in Windows. If any problems occurs, you should report them to: https://github.com/markomanninen/hyml/issues
+This version of HyML has been tested with Hy 1.0.0 and Hy 1.3.1 on Python 3.9 - 3.14. Versions of HyML before 1.0 were written for Hy 0.12 / 0.13 and do not run on Hy 1.x. If any problems occurs, you should report them to: https://github.com/markomanninen/hyml/issues
 
 
 Import main macros
 ~~~~~~~~~~~~~~~~~~
 
-After installation you can import ML macros with the next code snippet in Hy REPL or Jupyter Notebook with `calysto_hy <https://github.com/Calysto/calysto_hy>`__ kernel:
+After installation you can import ML macros with the next code snippet in Hy REPL:
 
 .. code-block:: hylang
 
-    (require [hyml.macros [*]])
-    (import (hyml.macros (*)))
+    (require hyml.macros *)
+    ; the #㎖ reader macro must be required separately
+    (require hyml.macros :readers [㎖])
+    (import hyml.macros *)
+
+Helpers like the ``indent`` function and the Jupyter Notebook renderers (``xml>``, ``html5>``, ...) live in the ``hyml.helpers`` module:
+
+.. code-block:: hylang
+
+    (require hyml.helpers *)
+    (import hyml.helpers [indent])
 
 Let us just try that everything works with a small test:
 
@@ -384,6 +389,34 @@ That should output:
     <tag attr="val"><sub>Content</sub></tag>
 
 So is this it, the code generation at its best? With 35 characters of code we made 40 characters xml string. Not to mention some 500 lines of code on a module to make it work! Give me one more change and let me convince you with the next `all-in-one <http://hyml.readthedocs.io/en/latest/#all-in-one-example>`__ example.
+
+**From Python**
+
+HyML can be used from plain Python too. ``hyml.render`` takes HyML source text, a dialect (``ml``, ``xml``, ``xhtml``, ``xhtml5``, ``html4``, or ``html5``) and an optional dictionary of variables for unquoted code:
+
+.. code-block:: python
+
+    >>> import hyml
+    >>> hyml.render('(p :class "x" "Hello")', "html5")
+    '<p class=x>Hello</p>'
+    >>> hyml.render('(p ~name)', "xhtml", {"name": "Ada"})
+    '<p>Ada</p>'
+
+**Jupyter Notebooks**
+
+The Jupyter Notebook documents in the repository run on the standard Python 3 kernel. HyML includes an IPython extension for running Hy code in notebook cells (``pip install "hyml[notebook]"``):
+
+.. code-block:: python
+
+    %load_ext hyml.ipython
+
+.. code-block:: hylang
+
+    %%hy
+    (require hyml.macros *)
+    (html5 (p "Hello"))
+
+The value of the last form is the output of the cell, and macros required in one cell are available in the later ones. Start Jupyter in the repository directory, because the example templates are read relative to it.
 
 
 Documentation
@@ -412,12 +445,21 @@ First, I'd like to show an example that presents the most of the features includ
               ~(.capitalize "page header"))
             (ul#main "List"
               ~@(list-comp* [[idx num] (enumerate (range 3))]
-                `(li :class ~(if (even? idx) "even" "odd") ~num)))
+                `(li :class ~(if (% idx 2) "odd" "even") ~num)))
             (table
               (thead
                 (tr (th "Col 1") (th "Col 2") (th "Col 3")))
               (tbody
-                ~@(include "rows.hy")))))))))
+                ~@(include "templates/rows.hy")))))))))
+
+Where the ``templates/rows.hy`` template file contains:
+
+.. code-block:: hylang
+
+    ~@(list-comp* [row rows]
+      `(tr (td ~(get row 0))
+           (td ~(get row 1))
+           (td ~(get row 2))))
 
 This will output:
 
@@ -425,13 +467,13 @@ This will output:
 
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE html>
-    <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
         <head>
             <title>Page title</title>
         </head>
         <body>
             <!-- body starts here -->
-            <div class="main_container">
+            <div class="main-container">
                 <h1 class="main header">Page header</h1>
                 <ul id="main">
                     List
@@ -453,11 +495,18 @@ This will output:
                             <td>2</td>
                             <td>3</td>
                         </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </body>
     </html>
+
+``indent`` uses Python's ``xml.dom.minidom`` for pretty printing, which is why the ``xmlns`` attribute moved first. The ``xhtml5`` macro itself keeps the attributes in the given order. Note also that the ``-`` character in ``.main-container`` is kept as it is.
 
 
 XML, HTML4, HTML5, XHTML, and XHTML5
@@ -526,10 +575,13 @@ Output:
 **Shorthand macro**
 
 ``#㎖`` (Square Ml) can be used as a shorthand `reader
-macro <http://docs.hylang.org/en/latest/language/readermacros.html>`__
-for generating xml/html/xhtml code:
+macro <https://hylang.org/hy/doc/v1.0.0/macros>`__
+for generating xml/html/xhtml code. Reader macros are required with the
+``:readers`` option:
 
 .. code-block:: hylang
+
+    (require hyml.macros :readers [㎖])
 
     #㎖(html
         (head (title "Page title"))
@@ -563,12 +615,27 @@ It is not possible to define other ``ML`` macro to be used with the
 ``#㎖`` shorthand reader macro. You could however define your own
 shorthands following next quidelines:
 
-    (defsharp {unicode-char} [code] (parse-{parser} code))
+    (eval-and-compile (import hyml.macros [parse-{parser}]))
+    (defreader {unicode-char} (parse-{parser} (.parse-one-form &reader)))
 
 ``{unicode-char}`` can be any `unicode
 char <https://unicode-table.com/en/>`__ you want. ``{parser}`` must be
 one of the following available parsers: xml, xhtml, xhtml5, html4, or
-html5.
+html5. The parser function is needed already when the code is read, hence
+``eval-and-compile``. For example:
+
+.. code-block:: hylang
+
+    (eval-and-compile (import hyml.macros [parse-html5]))
+    (defreader ✓ (parse-html5 (.parse-one-form &reader)))
+
+    #✓(p :class "x" "custom")
+
+Output:
+
+.. code-block:: html
+
+    <p class=x>custom</p>
 
 With ``#㎖`` shorthand you have to provide a single root node for
 generating code. Directry using ``ML`` macros makes it possible to
@@ -587,7 +654,9 @@ Output:
 
 
 Let us then render the code, not just printing it. This can be done via
-``html5>`` macro imported earlier from helpers:
+``html4>`` macro required earlier from helpers. It works in Jupyter
+Notebook / IPython only, because it passes the markup to
+``IPython.display.HTML``:
 
 .. code-block:: hylang
 
@@ -597,11 +666,11 @@ Output:
 
 .. raw:: html
 
-    <p Content is <b>king</b>!</p>
+    <p>Content is <b>king</b>!</p>
 
 
 Renderers are available for all ``ML`` macros: ``xml>``, ``xhtml>``,
-``xhtml5>``, ``html4>``, and ``html5>``.
+``xhtml5>``, ``html4>``, and ``html5>``, and for the MiNiMaL ``ml`` macro: ``ml>``.
 
 
 Validation and minimizing
@@ -615,10 +684,30 @@ exception:
 
 .. code-block:: hylang
 
-    ;(try
-    ; (html4 (time))
-    ; (catch [e [HyMLError]]))
-    ;hytml.macros.HyMLError: Tag 'time' not meeting html4 specs
+    (html4 (time))
+    ; hy.errors.HyMacroExpansionError: expanding macro html4
+    ;   hyml.core.HyMLError: Tag name 'time' not meeting html4 specifications.
+
+Because ``ML`` macros render markup when the code is compiled, the error
+comes up at the macro expansion. To catch it at run time, use the
+``render`` function with quoted code instead:
+
+.. code-block:: hylang
+
+    (try
+      (render "html4" ['(time)])
+      (except [e HyMLError]
+        (print "HyMLError:" e)))
+
+Output:
+
+.. parsed-literal::
+
+    HyMLError: Tag name 'time' not meeting html4 specifications.
+
+Void elements, like ``br`` and ``img``, cannot have content either.
+``(html5 (br "content"))`` raises ``HyMLError`` with a message telling that
+``br`` is a void element.
 
 Other features in ``html4`` and ``html5`` macros are attribute and tag
 minimizing. Under the `certain
@@ -642,7 +731,14 @@ Output:
 
 .. code-block:: xml
 
-    <title/><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>
+    <title></title><table><tr><td>Cell 1<td>Cell 2<td>Cell 3</table>
+
+Note that an empty non-void element like ``title`` is not written as a
+self-closing ``<title/>`` in ``html4`` and ``html5``, because browsers read
+that as an unclosed start tag. Void elements are written as ``<br>``. End
+tags are omitted following the `WHATWG rules
+<https://html.spec.whatwg.org/multipage/syntax.html#optional-tags>`__,
+which depend on the next sibling and the parent element.
 
 **XHTML**
 
@@ -685,6 +781,25 @@ Output:
 
     <input disabled>
 
+A boolean attribute can be given without a value too. ``(html4 (input :disabled))``
+gives the same ``<input disabled>``, and ``(xhtml (input :disabled))`` gives
+``<input disabled="disabled"/>``.
+
+Attribute values are left unquoted in ``html4`` and ``html5`` only when
+it is safe: the value is not empty and has no whitespace, quotes, ``=``,
+``<``, ``>``, or backtick characters. Otherwise the value is quoted, and
+in all dialects ``"`` inside a value is escaped as ``&quot;``:
+
+.. code-block:: hylang
+
+    (html5 (input :type "text" :value "it's" :placeholder "say \"hi\""))
+
+Output:
+
+.. code-block:: html
+
+    <input type=text value="it's" placeholder="say &quot;hi&quot;">
+
 
 Unquoting code
 ~~~~~~~~~~~~~~
@@ -693,26 +808,27 @@ In all ``ML`` macros you can pass any code in it. See for example:
 
 .. code-block:: hylang
 
-    (xml (p "Sum: " (b (apply sum [[1 2 3 4]]))))
+    (xml (p "Sum: " (b (sum [1 2 3 4]))))
 
 Output:
 
 .. code-block:: xml
 
-    <p>Sum: <b><apply>sum<[1, 2, 3, 4]/></apply></b></p>
+    <p>Sum: <b><sum><1>234</1></sum></b></p>
 
 
 But you see, the result was not possibly what you expected. ``ML``
 macros will interpret the first item of the *expression* as a name of
-the tag. Thus *apply* becomes a tag name. Until the next *expression*
-everything else is interpreted either as a content or a keyword.
+the tag. Thus *sum* becomes a tag name, and even the list ``[1 2 3 4]``
+is read as a tag named *1*. Until the next *expression* everything else
+is interpreted either as a content or a keyword.
 
 However using ``~`` (unquote) symbol, ``ML`` macro behaviour can be
 stopped for a moment:
 
 .. code-block:: hylang
 
-    (xml (p "Sum: " (b ~(apply sum [[1 2 3 4]])) !))
+    (xml (p "Sum: " (b ~(sum [1 2 3 4])) !))
 
 Output:
 
@@ -748,9 +864,8 @@ table head generation snippet:
 
     (xhtml
      (table (thead
-       (tr ~@(list-comp
-             `(th :class (if (even? ~i) "even" "odd") ~label " " ~i)
-             [[i label] (enumerate (* ["col"] 3))])))))
+       (tr ~@(lfor [i label] (enumerate (* ["col"] 3))
+               `(th :class (if (% ~i 2) "odd" "even") ~label " " ~i))))))
 
 Output:
 
@@ -759,13 +874,15 @@ Output:
     <table><thead><tr><th class="even">col 0</th><th class="odd">col 1</th><th class="even">col 2</th></tr></thead></table>
 
 
-`List
-comprehensions <https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions>`__
-notation might seem a little bit strange for some people. It takes a
-processing part (expression) as the first argument, and the actual list
-to be processed as the second argument. On a nested code this will move
-lists to be processed in first hand to the end of the notation. For
-example:
+Above, Hy's own `lfor <https://hylang.org/hy/doc/v1.0.0/api#lfor>`__
+`list comprehension <https://docs.python.org/3/tutorial/datastructures.html#list-comprehensions>`__
+takes the list to be processed first and the processing part
+(expression) last. In Hy 0.13 the list comprehension was called
+``list-comp`` and its arguments were in the reverse order, which
+might seem a little bit strange for some people. On a nested code this
+will move lists to be processed in first hand to the end of the notation.
+HyML still provides a compatible ``list-comp`` macro for old code and
+templates. For example:
 
 .. code-block:: hylang
 
@@ -811,7 +928,10 @@ Output:
 
 
 Of cource it is just a matter of the taste which one you like.
-``list-comp*`` with ``unquote-splice`` symbol (``~@``) reminds us that
+``list-comp*`` is in fact the same as Hy's ``lfor`` with the bindings
+wrapped in brackets, and an optional condition can be given as the
+third argument: ``(list-comp* [i (range 4)] `(li ~i) (% i 2))`` picks
+the odd numbers only. ``list-comp*`` with ``unquote-splice`` symbol (``~@``) reminds us that
 it is possible to create any similar custom macros for the HyML
 processor. ``~@`` can be thought as a macro caller, not just unquoting
 and executing Hy code in a normal lisp mode.
@@ -852,7 +972,11 @@ Output:
 
 .. raw:: html
 
-    <table id=data><caption>Data table<colgroup><col style=background-color:red><col style="background-color: green"><col style="background-color: blue"><thead><tr><th>Column 1</th><th>Column 2</th><th>Column 3</th></thead><tbody id=tbody1><tr><td>1.0<td>1.1<td>1.2</tr><tr><td>2.0<td>2.1<td>2.2</tr></tbody><tbody id=tbody2><tr><td>1.0<td>1.1<td>1.2</tr><tr><td>2.0<td>2.1<td>2.2</tr><tfoot><tr><td colspan=3>Footer</tfoot></table>
+    <table id=data><caption>Data table<colgroup><col style=background-color:red><col style="background-color: green"><col style="background-color: blue"><thead><tr><th>Column 1<th>Column 2<th>Column 3<tbody id=tbody1><tr><td>1.0<td>1.1<td>1.2<tr><td>2.0<td>2.1<td>2.2<tbody id=tbody2><tr><td>1.0<td>1.1<td>1.2<tr><td>2.0<td>2.1<td>2.2<tfoot><tr><td colspan=3>Footer</table>
+
+Rows and cells generated with ``~@`` are siblings of each other just like
+the hand written ones, so the optional end tags of ``th``, ``td``, ``tr``,
+``thead``, ``tbody``, and ``tfoot`` can all be left out.
 
 
 **Address book table from CSV file**
@@ -867,7 +991,7 @@ try with a short csv file:
        (caption "Contacts")
        ~@(list-comp*
          [[idx row] (enumerate (.split (.read (open "data.csv" "r")) "\n"))]
-         (if (pos? idx)
+         (if idx
              `(tbody
                 ~@(list-comp* [item (.split row ",")]
                   `(td ~item)))
@@ -891,7 +1015,7 @@ example. Firt I'm just going to show external template file content:
 
 .. code-block:: hylang
 
-    (with [f (open "template.hy")] (print (f.read)))
+    (with [f (open "templates/template.hy")] (print (f.read)))
 
 Output:
 
@@ -911,7 +1035,7 @@ Then I use ``include`` macro to read and process the content:
             title "Page title"
             body "Content")
 
-    (xhtml ~@(include "template.hy"))
+    (xhtml ~@(include "templates/template.hy"))
 
 Output:
 
@@ -920,7 +1044,7 @@ Output:
     <html lang="en"><head><title>Page title</title></head><body><p>Content</p></body></html>
 
 
-All globally defined variables are available on ``ML`` macros likewise:
+All variables defined with ``defvar`` are available on ``ML`` macros likewise:
 
 .. code-block:: hylang
 
@@ -931,6 +1055,19 @@ Output:
 .. parsed-literal::
 
     en, Page title, Content
+
+``defvar`` evaluates the values when the variables are defined, and a
+later value can refer to an earlier one: ``(defvar n 1 m (+ n 1))``.
+Functions are registered with ``deffun``, for example
+``(deffun wholename (fn [x y] (+ y ", " x)))``. Names with hyphens work
+as usual, ``~first-name`` finds a variable defined as ``first-name``. The
+``ML`` macros and the HyML MiNiMaL ``ml`` macro share the same registry
+of variables and functions.
+
+Note that markup is generated when the code is compiled, so plain Hy
+variables set with ``setv`` are not visible to unquoted code in ``ML``
+macros. Use ``defvar`` and ``deffun``, or pass a dictionary of variables
+to the ``render`` function or to ``hyml.render`` in Python.
 
 
 The `MIT <http://choosealicense.com/licenses/mit/>`__ License
