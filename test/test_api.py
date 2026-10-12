@@ -28,3 +28,10 @@ def test_render_variables_are_kept_apart_between_threads():
     with ThreadPoolExecutor(8) as pool:
         results = list(pool.map(job, range(32)))
     assert results == ["<p>%d%d</p>" % (i, i) for i in range(32)]
+
+
+def test_escape_and_min_dialect():
+    assert hyml.escape("<a & b>") == "&lt;a &amp; b&gt;"
+    assert hyml.render("(p ~(escape x))", "html5", {"x": "<i>"}) == "<p>&lt;i&gt;</p>"
+    assert hyml.render("(p ~(escape x))", variables={"x": "<i>"}) == "<p>&lt;i&gt;</p>"
+    assert hyml.render('(html (body (p "x")))', "html5-min") == "<p>x"

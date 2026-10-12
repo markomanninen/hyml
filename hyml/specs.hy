@@ -313,3 +313,41 @@
 
 ; A th element's end tag may be omitted if the th element is immediately followed by a td or th element, or if there is no more content in the parent element.
 :th (fn [context] (or (followed-by? context "td" "th") (last-child? context)))})
+
+;------------------------------------------------------------------
+; Optional start tags, used by html4-min and html5-min
+; https://html.spec.whatwg.org/multipage/syntax.html#optional-tags
+;------------------------------------------------------------------
+; rules get the same context as the end tag rules, plus:
+;   "first-child"   what comes first inside the element, in the same form
+;                   as "followed-by", or None when the element is empty
+;   "after-omitted" tag name of the previous sibling if its end tag was
+;                   omitted, otherwise None
+; a start tag is never omitted if the element has attributes
+
+(defn first-child? [context #* names]
+  (in (get context "first-child") names))
+
+(setv optional-start-tags {
+
+; An html element's start tag may be omitted if the first thing inside the html element is not a comment.
+:html (fn [context] (not (first-child? context "#comment")))
+
+; A head element's start tag may be omitted if the element is empty, or if the first thing inside the head element is an element.
+:head (fn [context] (or (first-child? context None)
+                        (not (.startswith (get context "first-child") "#"))))
+
+; A body element's start tag may be omitted if the element is empty, or if the first thing inside the body element is not ASCII whitespace
+; or a comment, except if the first thing inside the body element is a meta, noscript, link, script, style, or template element.
+:body (fn [context] (not (first-child? context "#whitespace" "#comment" "meta" "noscript"
+                                       "link" "script" "style" "template")))
+
+; A colgroup element's start tag may be omitted if the first thing inside the colgroup element is a col element, and if the element is not
+; immediately preceded by another colgroup element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+:colgroup (fn [context] (and (first-child? context "col")
+                             (!= (get context "after-omitted") "colgroup")))
+
+; A tbody element's start tag may be omitted if the first thing inside the tbody element is a tr element, and if the element is not immediately
+; preceded by a tbody, thead, or tfoot element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+:tbody (fn [context] (and (first-child? context "tr")
+                          (not (in (get context "after-omitted") #("tbody" "thead" "tfoot")))))})

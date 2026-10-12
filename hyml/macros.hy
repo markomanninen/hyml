@@ -64,7 +64,8 @@
 (require hyml.helpers [println list-comp list-comp*])
 (require hyml.minimal [include])
 (import hyml.core [HyMLError variables-and-functions])
-(import hyml.specs [specs4 specs5 specs boolean-attributes optional-end-tags])
+(import hyml.specs [specs4 specs5 specs boolean-attributes optional-end-tags
+                    optional-start-tags])
 
 ; markup is rendered at macro-expansion time
 (eval-and-compile
@@ -72,16 +73,19 @@
   (import hyml.core [HyMLError keyword? coll? head-name ->str eval-in
                      escape-attribute expand]
           hyml.core :as core)
-  (import hyml.specs [specs4 specs5 boolean-attributes optional-end-tags])
+  (import hyml.specs [specs4 specs5 boolean-attributes optional-end-tags
+                      optional-start-tags])
 
   ; parser settings. html dialects minimize attributes and end tags,
-  ; xml does not validate tag names
+  ; the -min ones start tags too. xml does not validate tag names
   (setv dialects {
-    "xml"    {"name" "xml"    "specs" None   "html" False}
-    "xhtml"  {"name" "xhtml4" "specs" specs4 "html" False}
-    "xhtml5" {"name" "xhtml5" "specs" specs5 "html" False}
-    "html4"  {"name" "html4"  "specs" specs4 "html" True}
-    "html5"  {"name" "html5"  "specs" specs5 "html" True}})
+    "xml"       {"name" "xml"    "specs" None   "html" False "omit-start" False}
+    "xhtml"     {"name" "xhtml4" "specs" specs4 "html" False "omit-start" False}
+    "xhtml5"    {"name" "xhtml5" "specs" specs5 "html" False "omit-start" False}
+    "html4"     {"name" "html4"  "specs" specs4 "html" True  "omit-start" False}
+    "html5"     {"name" "html5"  "specs" specs5 "html" True  "omit-start" False}
+    "html4-min" {"name" "html4"  "specs" specs4 "html" True  "omit-start" True}
+    "html5-min" {"name" "html5"  "specs" specs5 "html" True  "omit-start" True}})
 
   (setv boolean-attribute-names (sfor kwd boolean-attributes kwd.name))
 
@@ -179,24 +183,36 @@
           (and text (.isspace (get text 0))) "#whitespace"
           True "#text"))
 
-  ; html end tags may be omitted under the rules in specs
-  (defn optional? [tag context]
-    (setv rule (.get optional-end-tags (hy.models.Keyword (.lower tag))))
+  ; html tags may be omitted under the rules in specs
+  (defn optional? [tag context [rules optional-end-tags]]
+    (setv rule (.get rules (hy.models.Keyword (.lower tag))))
     (bool (and rule context (rule context))))
 
+  ; tag names of the element nodes, None for text
+  (defn node-tags [items]
+    (lfor item items (when (coll? item) (catch-tag (if item (get item 0) None)))))
+
   ; render a list of sibling nodes. siblings are known so that
-  ; optional end tags can be omitted
-  (defn render-nodes [dialect items [parent None]]
-    (setv tags (lfor item items (when (coll? item) (catch-tag (if item (get item 0) None))))
-          last-index (- (len items) 1))
-    (.join "" (gfor [i [item tag]] (enumerate (zip items tags))
-                (if (is tag None)
-                    (->str item)
-                    (render-node dialect tag (cut item 1 None)
-                      {"followed-by" (when (< i last-index)
-                                       (sibling-kind (get items (+ i 1)) (get tags (+ i 1))))
-                       "is-last-child" (and (is-not parent None) (= i last-index))
-                       "parent" (when parent (.lower parent))})))))
+  ; optional tags can be omitted
+  (defn render-nodes [dialect items [parent None] [tags None]]
+    (setv tags (if (is tags None) (node-tags items) tags)
+          last-index (- (len items) 1)
+          after-omitted None
+          parts [])
+    (for [[i [item tag]] (enumerate (zip items tags))]
+      (if (is tag None)
+          (setv after-omitted None
+                part (->str item))
+          (setv context {"followed-by" (when (< i last-index)
+                                         (sibling-kind (get items (+ i 1)) (get tags (+ i 1))))
+                         "is-last-child" (and (is-not parent None) (= i last-index))
+                         "parent" (when parent (.lower parent))
+                         "after-omitted" after-omitted}
+                part (render-node dialect tag (cut item 1 None) context)
+                kind (sibling-kind item tag)
+                after-omitted (when (and (get dialect "html") (optional? kind context)) kind)))
+      (.append parts part))
+    (.join "" parts))
 
   ; DOCTYPE parts: names as such, other strings in quotation marks
   (defn doctype-part [item]
@@ -235,12 +251,23 @@
     (when (and void content)
       (raise (HyMLError (% "Tag '%s' is a void element and cannot have content." #(tag)))))
     (setv start (+ "<" tag (concat-attributes attributes html))
-          body (render-nodes dialect content tag))
+          tags (node-tags content)
+          body (render-nodes dialect content tag tags))
     (cond
       ; <br> in html, <br/> in xhtml
       void (+ start (if html ">" "/>"))
-      ; html has no self closing tags. end tag can be optional though
-      html (+ start ">" body (if (optional? tag context) "" (+ "</" tag ">")))
+      ; html has no self closing tags. end tag can be optional though,
+      ; and in the -min dialects start tag without attributes too
+      html (+ (if (and (get dialect "omit-start")
+                       (not attributes)
+                       (optional? tag
+                                  (| context {"first-child" (when content
+                                                              (sibling-kind (get content 0) (get tags 0)))})
+                                  optional-start-tags))
+                  ""
+                  (+ start ">"))
+              body
+              (if (optional? tag context) "" (+ "</" tag ">")))
       ; xml and xhtml use short tags for empty elements
       (not content) (+ start "/>")
       True (+ start ">" body "</" tag ">")))
@@ -279,3 +306,7 @@
 (defmacro html4 [#* code] (render "html4" code))
 ; strict set of html tag generator for html5
 (defmacro html5 [#* code] (render "html5" code))
+; html4 and html5 that omit optional start tags too: html, head, body,
+; colgroup, and tbody when the rules allow it
+(defmacro html4-min [#* code] (render "html4-min" code))
+(defmacro html5-min [#* code] (render "html5-min" code))

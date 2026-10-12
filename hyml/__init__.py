@@ -11,9 +11,11 @@ From Python, HyML source text can be rendered with :func:`render`.
 
 import hy  # noqa: F401  (makes the .hy modules importable)
 
-__version__ = "1.0.0"
+from hyml.core import escape  # noqa: E402,F401
 
-DIALECTS = ("ml", "xml", "xhtml", "xhtml5", "html4", "html5")
+__version__ = "1.1.0"
+
+DIALECTS = ("ml", "xml", "xhtml", "xhtml5", "html4", "html5", "html4-min", "html5-min")
 
 
 def render(source, dialect="ml", variables=None):
