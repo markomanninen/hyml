@@ -83,6 +83,18 @@ def static_dominate():
         lang="en").render(pretty=False)
 
 
+def static_fstring():
+    e = html.escape
+    links = "".join(f'<li><a href="{e(u)}">{e(t)}</a></li>' for u, t in LINKS)
+    words = "".join(f"<li>{e(w)}</li>" for w in WORDS)
+    return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{e("HyML benchmark")}</title>'
+            f"</head><body><header><h1>HyML benchmark</h1><nav><ul>{links}</ul></nav></header>"
+            f"<main><article><h2>Markup as data</h2><p>HyML writes HTML as s-expressions.</p>"
+            f"<p>{e('Text is escaped: <b> & co.')}</p><ul>{words}</ul>"
+            f'<p><a href="{e("https://example.com/?a=1&b=2")}">A link</a></p></article></main>'
+            f"<footer><p>MIT licensed</p></footer></body></html>")
+
+
 STATIC = {
     "HyML html5 macro (compiled)": pages.static_page,
     "HyML render_data, JSON": lambda: hyml.render_data(STATIC_JSON),
@@ -92,6 +104,7 @@ STATIC = {
     "Jinja2 template": static_jinja,
     "htpy": static_htpy,
     "dominate": static_dominate,
+    "f-strings + html.escape": static_fstring,
 }
 
 # table from data
@@ -105,6 +118,19 @@ def table_data(rows):
     return ["table", ["thead", ["tr", ["th", "Name"], ["th", "Price"], ["th", "Qty"]]],
             ["tbody"] + [["tr", ["td", ["a", {"href": r["url"]}, r["name"]]], ["td", r["price"]], ["td", r["qty"]]]
                          for r in rows]]
+
+
+def sexp(node):
+    """The same table as s-expression text, the way an agent would send it."""
+    if not isinstance(node, list):
+        return '"' + str(node).replace("\\", "\\\\").replace('"', '\\"') + '"'
+    tag, *rest = node
+    attrs = rest.pop(0) if rest and isinstance(rest[0], dict) else {}
+    parts = [tag] + [f":{k} {sexp(v)}" for k, v in attrs.items()] + [sexp(child) for child in rest]
+    return "(" + " ".join(parts) + ")"
+
+
+TABLE_SEXP = sexp(table_data(ROWS))
 
 
 def table_htpy(rows):
@@ -128,6 +154,7 @@ def table_fstring(rows):
 
 TABLE = {
     "HyML render_data, JSON built in Python": lambda: hyml.render_data(table_data(ROWS), max_nodes=100000),
+    "HyML render_data, s-expression text": lambda: hyml.render_data(TABLE_SEXP, max_nodes=100000),
     "HyML render with ~@ code (evaluated per call)": lambda: hyml.render(pages.table_source, "html5", {"rows": ROWS}),
     "Jinja2 template": lambda: TABLE_TEMPLATE.render(rows=ROWS),
     "htpy": lambda: table_htpy(ROWS),
