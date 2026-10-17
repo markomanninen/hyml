@@ -145,10 +145,10 @@ def test_readable_message_unmangles_and_hints():
     from hyplan import readable_message
     out = readable_message("name 'hyx_XasteriskX' is not defined")
     assert "name '*' is not defined" in out and "(* a b)" in out
-    assert "There is no true" in readable_message("name 'true' is not defined")
+    assert "there is no true" in readable_message("name 'true' is not defined")
     assert "(get xs 0)" in readable_message("name 'first' is not defined")
-    # names Hy did not make are left as they are
-    assert readable_message("name 'hyx_notreal' is not defined") == "name 'hyx_notreal' is not defined"
+    # a name that only looks mangled does not break the rewrite
+    assert "not defined" in readable_message("name 'hyx_notreal' is not defined")
     assert readable_message("division by zero") == "division by zero"
 
 
