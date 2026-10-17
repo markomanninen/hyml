@@ -164,3 +164,37 @@ the `important_instructions` attack never succeeded even without policies,
 because injected text only reaches the quarantined model, which cannot call
 tools. And the banking policies cut utility roughly in half, mostly by
 denying legitimate transfers whose recipient came from tool data.
+
+## Round two: what closes the gap
+
+The first round showed why Hy plans did worse. The model carried Python and
+Clojure habits into Hy (`true`, `first`, infix `*`, `str | None`, Python
+escaping in f-strings), and Hy reported some of these by mangled names such as
+`hyx_XasteriskX` that the model never wrote. Round two tests two remedies,
+each on its own, against the same Python and Hy baselines.
+
+| Condition | Change |
+|---|---|
+| `hy-errors` | Error messages show the names as written, and an undefined operator, `true`, `first` and similar get a one-line hint, such as "`*` is a function in Hy, not an infix operator. Write (* a b)". The prompt is the round-one Hy prompt. |
+| `hy-sheet` | The prompt adds a short list of these common mistakes. Errors are reported as in round one. |
+
+Everything else is as in round one: the same model, interpreter, policies and
+procedure. The question is whether the gap comes from the model not knowing
+Hy, which a better prompt or better errors can fix, or from something they
+cannot.
+
+### Hypotheses, written before running
+
+| | Hypothesis | Expected |
+|---|---|---|
+| H6 | Readable errors cut the retries that Hy plans needed | `hy-errors` retries per run at least a third below `hy` |
+| H7 | The list of common mistakes prevents errors before they happen | `hy-sheet` retries per run at least a third below `hy` |
+| H8 | Either remedy recovers most of the utility gap | `hy-errors` or `hy-sheet` within 5 points of Python |
+| H9 | Security is unchanged | no attack succeeds in any condition |
+
+### Procedure
+
+A pilot of 10 banking tasks without attack per condition comes first, to
+measure tokens and cost before the full run. The full run then covers all
+16 tasks without attack and all 144 attacked pairs in every condition, so the
+attacked sample is not limited to the tasks that finished first.

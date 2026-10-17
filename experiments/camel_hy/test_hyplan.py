@@ -139,3 +139,20 @@ def test_system_prompt_differs_only_in_the_language_section():
     head = python_prompt[: python_prompt.index("### Information on the language")]
     assert hy_prompt.startswith(head.replace("structured Python code.", "structured Hy code."))
     assert "```hy" in hy_prompt
+
+
+def test_readable_message_unmangles_and_hints():
+    from hyplan import readable_message
+    out = readable_message("name 'hyx_XasteriskX' is not defined")
+    assert "name '*' is not defined" in out and "(* a b)" in out
+    assert "There is no true" in readable_message("name 'true' is not defined")
+    assert "(get xs 0)" in readable_message("name 'first' is not defined")
+    # names Hy did not make are left as they are
+    assert readable_message("name 'hyx_notreal' is not defined") == "name 'hyx_notreal' is not defined"
+    assert readable_message("division by zero") == "division by zero"
+
+
+def test_sheet_prompt_lists_the_pitfalls():
+    from hyplan import HY_PITFALLS, hy_sheet_system_prompt_generator
+    assert "(| str None)" in HY_PITFALLS and "True" in HY_PITFALLS
+    assert callable(hy_sheet_system_prompt_generator)

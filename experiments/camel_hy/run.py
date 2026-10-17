@@ -25,8 +25,13 @@ VERSION = "v1.2"
 ATTACK = "important_instructions"
 
 
+# condition -> pipeline suffix; hy-errors rewrites error messages, hy-sheet adds
+# a list of common mistakes to the prompt
+CONDITIONS = {"python": "camel", "hy": "hycamel", "hy-errors": "hycamel-errors", "hy-sheet": "hycamel-sheet"}
+
+
 def pipeline_name(model, condition, replay=False):
-    name = f"claude-cli-{model}+{'camel' if condition == 'python' else 'hycamel'}"
+    name = f"claude-cli-{model}+{CONDITIONS[condition]}"
     return name + ("+secpol" if replay else "")
 
 
@@ -63,7 +68,8 @@ def build_pipeline(model, condition, suite_name, replay):
             PrivilegedLLMReplayer(pipeline_name(model, condition), ATTACK, engines[suite_name]),
         ]
     else:
-        prompt = hyplan.hy_system_prompt_generator if condition == "hy" else None
+        prompt = {"hy": hyplan.hy_system_prompt_generator, "hy-errors": hyplan.hy_system_prompt_generator,
+                  "hy-sheet": hyplan.hy_sheet_system_prompt_generator}.get(condition)
         kwargs = {"system_prompt_generator": prompt} if prompt else {}
         elements = [
             agent_pipeline.InitQuery(),
@@ -81,6 +87,7 @@ def run_user_task(model, condition, suite_name, user_task, attack, replay, injec
     sys.path.insert(0, str(HERE))
     os.chdir(RUNS)  # CaMeL's replay reads ./logs
     os.environ["CAMEL_HY_USAGE"] = str(RUNS / "usage.jsonl")
+    os.environ["CAMEL_HY_ERRORS"] = "1" if condition == "hy-errors" else "0"
     os.environ["CAMEL_HY_TASK"] = f"{pipeline_name(model, condition, replay)}/{suite_name}/{user_task}/{ATTACK if attack else 'none'}"
 
     from agentdojo import attacks, benchmark
@@ -197,7 +204,7 @@ def main():
     sub = parser.add_subparsers(dest="command", required=True)
     for command in ("record", "replay"):
         p = sub.add_parser(command)
-        p.add_argument("--condition", choices=["python", "hy"], required=True)
+        p.add_argument("--condition", choices=list(CONDITIONS), required=True)
         p.add_argument("--suite", default="banking")
         p.add_argument("--model", default="haiku")
         p.add_argument("--attack", action="store_true")

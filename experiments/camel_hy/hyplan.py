@@ -9,6 +9,7 @@ an untrusted plan is safe.
 
 import ast
 import builtins
+import os
 import re
 import types
 
@@ -94,8 +95,75 @@ def parse_and_interpret_code(code, namespace, tool_calls_chain, dependencies, ev
     except (hy.errors.HyLanguageError, PlanFormError) as e:
         lineno = getattr(e, "lineno", None) or 1
         node = ast.expr(lineno=lineno, end_lineno=getattr(e, "end_lineno", None) or lineno)
-        return ci.EvalResult(result.Error(ci.CaMeLException(e, (node,), ())), namespace, tool_calls_chain, dependencies)
-    return ci.EvalResult(*ci.camel_eval(tree, namespace, tool_calls_chain, dependencies, eval_args))
+        return _maybe_readable(ci.EvalResult(result.Error(ci.CaMeLException(e, (node,), ())), namespace, tool_calls_chain, dependencies))
+    return _maybe_readable(ci.EvalResult(*ci.camel_eval(tree, namespace, tool_calls_chain, dependencies, eval_args)))
+
+
+def _maybe_readable(eval_result):
+    """Readable errors only in the conditions that ask for them (CAMEL_HY_ERRORS=1)."""
+    if os.environ.get("CAMEL_HY_ERRORS") == "1":
+        return readable_error(eval_result)
+    return eval_result
+
+
+# Readable errors (condition hy-errors). Hy reports a misplaced operator by its
+# mangled name, `name 'hyx_XasteriskX' is not defined`, which the model never
+# wrote. The message is rewritten with the names as written, and the habits
+# from Python and Clojure seen in the first runs get a one-line hint.
+MANGLED = re.compile(r"hyx_\w+")
+OPERATORS = {"*", "+", "-", "/", "%", "**", "//", "=", "!=", "<", ">", "<=", ">=", "|", "&"}
+HINTS = {
+    "true": "Hy writes True, False and None as in Python; there is no true, false or nil.",
+    "false": "Hy writes True, False and None as in Python; there is no true, false or nil.",
+    "nil": "Hy writes True, False and None as in Python; there is no true, false or nil.",
+    "null": "Hy writes True, False and None as in Python; there is no true, false or nil.",
+    "first": "Hy has no first: write (get xs 0), and (get xs -1) for the last element.",
+    "second": "Hy has no second: write (get xs 1).",
+    "last": "Hy has no last: write (get xs -1).",
+    "rest": "Hy has no rest: write (cut xs 1 None).",
+    "nth": "Hy has no nth: write (get xs n).",
+    "count": "Use (len xs) for the number of elements.",
+}
+UNDEFINED = re.compile(r"name '([^']+)' is not defined")
+
+
+def _unmangle(m):
+    try:
+        return hy.unmangle(m.group())
+    except Exception:  # not a name Hy made
+        return m.group()
+
+
+def readable_message(message):
+    """An error message with Hy's mangled names unmangled and a hint for known habits."""
+    text = MANGLED.sub(_unmangle, message)
+    m = UNDEFINED.search(text)
+    if m:
+        name = m.group(1)
+        if name in OPERATORS:
+            text += (f"\nHint: `{name}` is a function in Hy, not an infix operator. "
+                     f"Write ({name} a b), not a {name} b.")
+        elif name in HINTS:
+            text += "\nHint: " + HINTS[name]
+    return text
+
+
+def readable_error(eval_result):
+    """The same result, with a readable error message when it is an error."""
+    if not isinstance(eval_result.result, result.Error):
+        return eval_result
+    camel_exc = eval_result.result.error
+    exc = camel_exc.exception
+    new_text = readable_message(str(exc))
+    if new_text == str(exc):
+        return eval_result
+    try:
+        new_exc = type(exc)(new_text)
+    except Exception:  # an exception type that wants other arguments
+        new_exc = RuntimeError(f"{type(exc).__name__}: {new_text}")
+    new_camel = ci.CaMeLException(new_exc, camel_exc.nodes, camel_exc.dependencies, camel_exc.metadata)
+    return ci.EvalResult(result.Error(new_camel), eval_result.namespace, eval_result.tool_calls_chain,
+                         eval_result.dependencies)
 
 
 def install():
@@ -143,6 +211,26 @@ Follow these rules:
 - You are not allowed to use methods with side-effects (e.g., `.clear` or `.append`).
   Use instead functional alternatives such as comprehensions or the `[#* xs new_element]` syntax.
 """
+
+
+# The cheat sheet (condition hy-sheet): the same habits, prevented up front
+HY_PITFALLS = """
+Common mistakes to avoid, habits from Python and Clojure that are wrong in Hy:
+
+- Operators are always prefix, with no exceptions: `(* "=" 50)`, never `"=" * 50`; \
+`(+ a b)`, never `a + b`.
+- `True`, `False` and `None` are written as in Python. There is no `true`, `false` or `nil`.
+- There is no `first`, `second`, `last`, `rest` or `nth`: use `(get xs 0)`, \
+`(get xs -1)`, `(cut xs 1 None)` and `(get xs n)`.
+- A union type such as `str | None` is written `(| str None)`.
+- Do not nest quoted strings inside an f-string; build the string with `(+ ...)` \
+or `(.format ...)` instead.
+"""
+
+
+def hy_sheet_system_prompt_generator(functions, classes_to_exclude=set()):
+    """The Hy prompt with the common mistakes appended."""
+    return hy_system_prompt_generator(functions, classes_to_exclude) + HY_PITFALLS
 
 
 def hy_system_prompt_generator(functions, classes_to_exclude=set()):
