@@ -85,6 +85,7 @@ The other suites follow only if the pilot gives a reason.
 | `claude_cli.py` | `claude -p` as CaMeL's privileged model and as the quarantined model |
 | `run.py` | record, replay with policies, summarize |
 | `test_hyplan.py` | tests of the front end, no model calls |
+| `repair_test.py` | round two's repair test, readable against original error messages; prepared, not run |
 
 ## Running
 
@@ -198,3 +199,79 @@ A pilot of 10 banking tasks without attack per condition comes first, to
 measure tokens and cost before the full run. The full run then covers all
 16 tasks without attack and all 144 attacked pairs in every condition, so the
 attacked sample is not limited to the tasks that finished first.
+
+### Results
+
+Run on 17 October 2026 with Claude Haiku through `claude -p`. Only the pilot
+was run. The analysis below, made from round one's logs at no cost, showed
+that the full run could not answer the question, so it was not made.
+
+**The pilot**, user tasks 0 to 9 of the banking suite without attack, against
+round one's runs of the same tasks:
+
+| Condition | Utility | Retries | Output tokens | Cost |
+|---|---:|---:|---:|---:|
+| Python (`camel`) | 9 of 10 | 17 | 52,700 | $0.58 |
+| Hy (`hycamel`) | 8 of 10 | 16 | 91,500 | $0.73 |
+| Hy, readable errors (`hycamel-errors`) | 8 of 10 | 12 | 74,000 | $0.64 |
+| Hy, list of common mistakes (`hycamel-sheet`) | 8 of 10 | 10 | 96,700 | $0.78 |
+
+Errors caused by the language itself fell from about 9 in plain Hy to 5 with
+readable errors and 6 with the list. Utility did not change, and without an
+attack the gap to Python was one task, too small for the pilot to show
+whether it closes. Each new condition had one task crash inside CaMeL's
+interpreter on a class definition written in Hy (`TypeError: 'type' object
+is not iterable`), as in round one, and the crash counts as a failure.
+
+**What the Hy errors were.** Round one's Hy runs had 36 errors that come from
+the language. The readable rewrite was then extended to cover 30 of them, and
+round one's own logs show what the model did with the original messages.
+
+| Error | Cases | Fixed on the next attempt with the original message |
+|---|---:|---:|
+| `if` without an else branch, a Clojure habit, reported as `parse error for pattern macro 'if': got unexpected end of macro call` | 10 | 10 |
+| An undefined name: `first`, `true`, an infix `*` reported as `hyx_XasteriskX` | 9 | 9 |
+| An unbalanced parenthesis | 3 | 3 |
+| Python quoting inside a Hy f-string | 4 | 2 |
+| `lfor` without the value to collect | 4 | 1 |
+
+The model understood nearly every error at once, however cryptic its
+message. A readable message could have helped in five cases at most, so a
+test of readable against original messages, prepared in `repair_test.py`, was
+not run.
+
+**What cost Hy the tasks.** Python solved 8 of round one's runs that Hy did
+not. None of the 8 Hy runs crashed or ran out of attempts. Each finished
+with a wrong result. What these runs had in common was more retries.
+
+| | Mean retries, solved runs | Mean retries, failed runs |
+|---|---:|---:|
+| Python | 0.81 | 0.50 |
+| Hy | 1.02 | 2.00 |
+
+In the 8 lost tasks Hy needed 0 to 4 retries, mostly 3 or 4, where Python
+needed 0 to 4, mostly none. CaMeL continues each retry from a partly run plan,
+so each extra round is another chance for the plan to go astray. With 8 tasks
+this is a lead, not a result.
+
+### What the hypotheses came to
+
+| | Hypothesis | Outcome |
+|---|---|---|
+| H6 | Readable errors cut retries by a third | Pilot only, 16 to 12 retries in 10 tasks. The model fixed most errors at once without them, so there was little to cut. |
+| H7 | The list of common mistakes cuts retries by a third | Pilot only, 16 to 10 retries in 10 tasks. |
+| H8 | A remedy recovers most of the utility gap | Not tested. The pilot showed no change, and the gap rests on round one's small sample. |
+| H9 | Security unchanged | Not tested, since no attacked runs were made. |
+
+### Conclusion of round two
+
+The gap between Hy and Python plans did not come from the model failing to
+understand Hy's error messages. It fixed nearly all of them at the next
+attempt. It came, as far as 8 tasks can show, from Hy plans needing more
+attempts, each of which continues from a partly run plan. Avoiding the errors
+matters more than explaining them, which points at the list of common
+mistakes rather than at readable messages, but showing a gain in completed
+tasks would take the full run and would likely find a small effect. The
+experiment stops here, at $1.42 for the pilot. Both remedies stay in the
+code as conditions (`hy-errors`, `hy-sheet`) for anyone who wants to run them
+further.

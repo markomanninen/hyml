@@ -125,6 +125,18 @@ HINTS = {
     "count": "Use (len xs) for the number of elements.",
 }
 UNDEFINED = re.compile(r"name '([^']+)' is not defined")
+# Messages from Hy's reader and compiler that do not say what went wrong
+SYNTAX_HINTS = [
+    (re.compile(r"pattern macro 'if': got unexpected end of macro call"),
+     "Hy's `if` needs both branches: (if test then else). For one branch use (when test body ...)."),
+    (re.compile(r"pattern macro 'lfor': got unexpected end of macro call"),
+     "`lfor` takes its loop clauses and then the value to collect: (lfor x xs :if (test x) value)."),
+    (re.compile(r"f-string: trailing junk in field|invalid string prefix"),
+     "Inside a Hy f-string, write the field as a Hy expression without Python quotes or backslash "
+     "escapes. If it needs quotes, build the string with (+ ...) or (.format ...) instead."),
+    (re.compile(r"Ran into a '\)' where it wasn't expected"),
+     "There is one more ) than ( before this point. Check the parentheses of the form that ends here."),
+]
 
 
 def _unmangle(m):
@@ -145,6 +157,10 @@ def readable_message(message):
                      f"Write ({name} a b), not a {name} b.")
         elif name in HINTS:
             text += "\nHint: " + HINTS[name]
+    for pattern, hint in SYNTAX_HINTS:
+        if pattern.search(text):
+            text += "\nHint: " + hint
+            break
     return text
 
 
